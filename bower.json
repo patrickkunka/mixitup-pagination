@@ -1,0 +1,8 @@
+{
+  "name": "mixitup-pagination",
+  "version": "1.0.0",
+  "dependencies": {
+    "jquery": ">=1.7",
+	"mixitup": "~2.0.0"
+  }
+}
