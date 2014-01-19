@@ -3,7 +3,7 @@
  * MixItUp Pagination v1.0.0-beta
  * Copyright 2014 KunkaLabs Limited.
  * This is a premium extension.
- * https://mixitup.kunkalabs.co.
+ * https://mixitup.kunkalabs.com
  */
 
 (function($, undf){

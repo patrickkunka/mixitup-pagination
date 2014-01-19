@@ -33,7 +33,7 @@ The following API methods are added:
 
 ## <a name='state'>State Object</a>
 
-The state object is also extended with the following properites:
+The state object is also extended with the following properties:
 
 ``` javascript
 
