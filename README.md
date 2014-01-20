@@ -9,12 +9,21 @@ MixItUp Pagination Extension
 
 ## <a name='config'>Configuration Object</a>
 
-The pagination extension extends the MixItUp configuration object with the following properties:
+The pagination extension extends the MixItUp configuration object with the following properties (shown with their default values):
 
 ``` javascript
 
 {
-	
+	pagination: {
+		limit: 0,
+		page: 1,
+		generatePagers: false,
+		pagerClass: ''
+	},
+	selectors: {
+		pagersWrapper: '.pager-list',
+		pager: '.pager'
+	}
 }
 
 ```
@@ -25,9 +34,32 @@ The following API methods are added:
 
 1. [page](#page)
 
-### page
+### paginate
 
 ``` javascript
+	.mixItUp('paginate', arg, [,animate] [,callback])
+```
+
+#### arg
+
+Integer or object.
+
+``` javascript
+
+$('#Container').mixItUp('paginate', 2);
+
+// go to page 2
+
+```
+
+``` javascript
+
+$('#Container').mixItUp('paginate', {
+	limit: 8,
+	page: 1
+});
+
+// Switch limit to 8 items per page, and go to page 1.
 
 ```
 
@@ -38,7 +70,9 @@ The state object is also extended with the following properties:
 ``` javascript
 
 {
-	
+	limit: ... , // number of items per page
+	activePage: ... , // current page
+	totalPages: ... , // total number of pages
 }
 
 ```
