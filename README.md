@@ -41,24 +41,21 @@ The pagination extension extends the MixItUp configuration object with the follo
 
 The following API methods are added:
 
-1. [page](#page)
+1. [paginate](#page)
 
 ### paginate
 
 ``` javascript
-	.mixItUp('paginate', arg, [,animate] [,callback])
+.mixItUp('paginate', arg, [,animate] [,callback])
 ```
 
-#### arg
-
-Integer or object.
+Examples:
 
 ``` javascript
 
 $('#Container').mixItUp('paginate', 2);
 
 // go to page 2
-
 ```
 
 ``` javascript
@@ -69,7 +66,6 @@ $('#Container').mixItUp('paginate', {
 });
 
 // Switch limit to 8 items per page, and go to page 1.
-
 ```
 
 ## <a name='state'>State Object</a>
