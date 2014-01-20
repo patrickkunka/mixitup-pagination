@@ -3,9 +3,18 @@ MixItUp Pagination Extension
 
 ## <a name='TOC'>Table of Contents</a>
 
+1. [Introduction](#introduction)
 1. [Configuration Object](#config)
 1. [API Methods](#methods)
 1. [State Object](#state)
+
+## <a name='introduction'>Introduction</a>
+
+The pagination extension adds the ability to apply a dynamic subset restriction to all MixItUp target elements. Currently, this is a client-side only functionality, so the entire set of target elements should be loaded into the DOM.
+
+Page numbers, and total pages are dynamically calculated based on the current filter and sort parameters, and the pagination "limit" set in the configuration object.
+
+Pagination controls, if enabled, are therefore also dynamically generated, added and removed, based on the above parameters. Create an empty element in your document with the class '.pager-list', and pagination controls will be appended to this element.
 
 ## <a name='config'>Configuration Object</a>
 
