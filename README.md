@@ -68,6 +68,20 @@ $('#Container').mixItUp('paginate', {
 // Switch limit to 8 items per page, and go to page 1.
 ```
 
+The **multiMix** method is also extended:
+
+``` javascript
+
+$('#Container').mixItUp('multiMix', {
+	filter: '.category-2',
+	pagination: {
+		limit: 10
+	},
+});
+
+// Filter items with class 'category-2', and show 10 items per page.
+```
+
 ## <a name='state'>State Object</a>
 
 The state object is also extended with the following properties:
