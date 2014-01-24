@@ -156,9 +156,9 @@
 			},
 			multiMix: {
 				pre: {
-					pagination: function(arguments){
+					pagination: function(args){
 						var self = this,
-							args = self._parseMultiMixArgs(arguments);
+							args = self._parseMultiMixArgs(args);
 
 						if(args.command.paginate !== undf){
 							typeof args.command.paginate === 'object' ? 
