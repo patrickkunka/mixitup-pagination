@@ -14,7 +14,7 @@ The pagination extension adds the ability to apply a dynamic subset restriction 
 
 Page numbers, and total pages are dynamically calculated based on the current filter and sort parameters, and the pagination "limit" set in the configuration object.
 
-Pagination controls, if enabled, are therefore also dynamically generated, added and removed, based on the above parameters. Create an empty element in your document with the class '.pager-list', and pagination controls will be appended to this element.
+Pagination controls, if enabled (`pagination: {generatePagers: true}`), are therefore also dynamically generated, added and removed, based on the above parameters. Create an empty element in your document with the class '.pager-list', and pagination controls will be appended to this element.
 
 ## <a name='config'>Configuration Object</a>
 
@@ -26,8 +26,9 @@ The pagination extension extends the MixItUp configuration object with the follo
 	pagination: {
 		limit: 0,
 		page: 1,
+		loop: false,
 		generatePagers: false,
-		pagerClass: ''
+		pagerClass: '',
 	},
 	selectors: {
 		pagersWrapper: '.pager-list',
@@ -41,7 +42,9 @@ The pagination extension extends the MixItUp configuration object with the follo
 
 The following API methods are added:
 
-1. [paginate](#page)
+1. [paginate](#paginate)
+1. [nextPage](#nextPage)
+1. [prevPage](#prevPage)
 
 ### paginate
 
@@ -81,6 +84,22 @@ $('#Container').mixItUp('multiMix', {
 
 // Filter items with class 'category-2', and show 10 items per page.
 ```
+
+### nextPage
+
+``` javascript
+.mixItUp('nextPage' [,animate] [,callback])
+```
+
+Go to the next page
+
+### prevPage
+
+``` javascript
+.mixItUp('prevPage' [,animate] [,callback])
+```
+
+Go to the previous page
 
 ## <a name='state'>State Object</a>
 
