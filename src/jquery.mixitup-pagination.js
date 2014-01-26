@@ -2,14 +2,20 @@
  * @license
  * MixItUp Pagination v1.0.0-beta
  * Copyright 2014 KunkaLabs Limited.
- * This is a premium extension.
- * https://mixitup.kunkalabs.com
+ *
+ * A Premium Extension for MixItUp.
+ * 
+ * Non-commercial use permitted under CC-BY-NC license.
+ * creativecommons.org/licenses/by-nc/3.0/
+ *
+ * Commercial use requires a commercial license. 
+ * mixitup.kunkalabs.com
  */
 
 (function($, undf){
 	$.extend(true, $.MixItUp.prototype, {
 		
-		/* Extend Hooks
+		/* Extend Action Hooks
 		---------------------------------------------------------------------- */
 		
 		_actions: {
@@ -185,6 +191,11 @@
 		/* Private Methods
 		---------------------------------------------------------------------- */
 		
+		/**
+		 * Get Next Page
+		 * @return {number} page
+		 */
+		
 		_getNextPage: function(){
 			var self = this,
 				page = self._activePage + 1,
@@ -193,9 +204,14 @@
 						self.pagination.loop ?
 							1 :
 							self._activePage;
-				
-			return page * 1;
+
+			return self._execFilter('_getNextPage', page * 1);
 		},
+		
+		/**
+		 * Get Previous Page
+		 * @return {number} page
+		 */
 		
 		_getPrevPage: function(){
 			var self = this,
@@ -206,8 +222,12 @@
 							self._totalPages :
 							self._activePage;
 			
-			return page * 1;
+			return self._execFilter('_getPrevPage', page * 1);
 		},
+		
+		/**
+		 * Generate Pagination Controls
+		 */
 		
 		_generatePagers: function(){
 			var self = this,
@@ -223,6 +243,8 @@
 				totalButtons = self._totalPages > 5 ? 5 : self._totalPages,
 				pagerButtonsHTML = '',
 				pagersHTML = '';
+				
+			self._execAction('_generatePagers', 0);
 
 			for(var i = 0; i < totalButtons; i++){
 				var pagerNumber = null,
@@ -262,7 +284,15 @@
 			pagersHTML = self._totalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
 			
 			self._$pagersWrapper.html(pagersHTML);
+			
+			self._execAction('_generatePagers', 1);
 		},
+		
+		/**
+		 * Parse Paginate Arguments
+		 * @param {array} args
+		 * @return {object} output
+		 */
 		
 		_parsePaginateArgs: function(args){
 			var self = this,
@@ -286,11 +316,17 @@
 				}
 			}
 
-			return output;
+			return self._execFilter('_parsePaginateArgs', output, arguments);
 		},
 		
 		/* Public Methods
 		---------------------------------------------------------------------- */
+		
+		/**
+		 * Paginate
+		 * @param {array} arguments
+		 * @return {string|object} 'busy' or domNode
+		 */
 		
 		paginate: function(){
 			var self = this,
@@ -299,12 +335,24 @@
 			self.multiMix({paginate: args.command}, args.animate, args.callback);
 		},
 		
+		/**
+		 * nextPage
+		 * @param {array} arguments
+		 * @return {string|object} 'busy' or domNode
+		 */
+		
 		nextPage: function(){
 			var self = this,
 				args = self._parsePaginateArgs(arguments);
 			
 			self.multiMix({paginate: self._getNextPage()}, args.animate, args.callback);
 		},
+		
+		/**
+		 * prevPage
+		 * @param {array} arguments
+		 * @return {string|object} 'busy' or domNode
+		 */
 		
 		prevPage: function(){
 			var self = this,

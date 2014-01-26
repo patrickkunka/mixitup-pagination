@@ -51,8 +51,14 @@ module.exports = function(grunt) {
 							' * @license\n' +
 							' * MixItUp Pagination v<%= pkg.version %>-beta\n' +
 							' * Copyright '+(new Date().getFullYear())+' KunkaLabs Limited.\n' +
-							' * This is a premium extension.\n' +
-							' * https://mixitup.kunkalabs.com\n' +
+							' *\n' +
+							' * A Premium Extension for MixItUp.\n' +
+							' *\n' +
+							' * Non-commercial use permitted under CC-BY-NC license.\n' +
+							' * creativecommons.org/licenses/by-nc/3.0/\n' +
+							' *\n' +
+							' * Commercial use requires a commercial license.\n' + 
+							' * mixitup.kunkalabs.com\n' +
 							' */',
 					linebreak: false
 				},
