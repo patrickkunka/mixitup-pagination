@@ -28,7 +28,7 @@
 							limit: 0,
 							page: 1,
 							loop: false,
-							generatePagers: false,
+							generatePagers: true,
 							pagerClass: ''
 						};
 
