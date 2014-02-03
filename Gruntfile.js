@@ -52,16 +52,16 @@ module.exports = function(grunt) {
 							' * MixItUp Pagination\n' + 
 							' * A Premium Extension for MixItUp\n' + 
 							' *\n' +
-							' * @version	v<%= pkg.version %>-beta\n' +
-							' * @copyright	Copyright '+(new Date().getFullYear())+' KunkaLabs Limited.\n' +
-							' * @author		KunkaLabs Limited.\n' +
-							' * @link		https://mixitup.kunkalabs.com\n' +
+							' * @version   v<%= pkg.version %>-beta\n' +
+							' * @copyright Copyright '+(new Date().getFullYear())+' KunkaLabs Limited.\n' +
+							' * @author    KunkaLabs Limited.\n' +
+							' * @link      https://mixitup.kunkalabs.com\n' +
 							' *\n' +
-							' * @license	Commercial use requires a commercial license.\n' + 
-							' *				https://mixitup.kunkalabs.com/licenses/\n' +
+							' * @license   Commercial use requires a commercial license.\n' + 
+							' *            https://mixitup.kunkalabs.com/licenses/\n' +
 							' *\n' +
-							' *				Non-commercial use permitted under terms of CC-BY-NC license.\n' +
-							' *				http://creativecommons.org/licenses/by-nc/3.0/\n' +
+							' *            Non-commercial use permitted under terms of CC-BY-NC license.\n' +
+							' *            http://creativecommons.org/licenses/by-nc/3.0/\n' +
 							' *\n' +
 							' */',
 					linebreak: false
