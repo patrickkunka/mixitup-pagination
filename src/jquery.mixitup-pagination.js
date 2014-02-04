@@ -254,7 +254,8 @@
 
 				totalButtons = self._totalPages > 5 ? 5 : self._totalPages,
 				pagerButtonsHTML = '',
-				pagersHTML = '';
+				pagersHTML = '',
+				wrapperClass = '',
 
 			self._execAction('_generatePagers', 0);
 
@@ -294,8 +295,10 @@
 			}
 
 			pagersHTML = self._totalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
+			
+			wrapperClass = self._totalPages > 1 ? '' : 'no-pagers';
 
-			self._$pagersWrapper.html(pagersHTML);
+			self._$pagersWrapper.html(pagersHTML).removeClass('no-pagers').addClass(wrapperClass);
 
 			self._execAction('_generatePagers', 1);
 		},
