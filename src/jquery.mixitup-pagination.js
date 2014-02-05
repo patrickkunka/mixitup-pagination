@@ -244,7 +244,7 @@
 
 				prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>',
 				prevButtonHTML = (self._activePage > 1) ? 
-					prevButtonHTML : self.pagination.loop ? prevButtonHTML : 
+					prevButtonHTML : self.pagination.loop ? prevButtonHTML :
 					'<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
 
 				nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>',
