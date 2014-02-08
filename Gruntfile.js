@@ -48,11 +48,9 @@ module.exports = function(grunt) {
 				options: {
 					position: 'top',
 					banner: '/**!\n' + 
-							' *\n' +
-							' * MixItUp Pagination\n' + 
+							' * MixItUp Pagination v<%= pkg.version %>-beta\n' +
 							' * A Premium Extension for MixItUp\n' + 
-							' *\n' +
-							' * @version   v<%= pkg.version %>-beta\n' +
+							' *\n' +  
 							' * @copyright Copyright '+(new Date().getFullYear())+' KunkaLabs Limited.\n' +
 							' * @author    KunkaLabs Limited.\n' +
 							' * @link      https://mixitup.kunkalabs.com\n' +
@@ -62,7 +60,6 @@ module.exports = function(grunt) {
 							' *\n' +
 							' *            Non-commercial use permitted under terms of CC-BY-NC license.\n' +
 							' *            http://creativecommons.org/licenses/by-nc/3.0/\n' +
-							' *\n' +
 							' */',
 					linebreak: false
 				},

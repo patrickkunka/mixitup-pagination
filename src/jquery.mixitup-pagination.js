@@ -1,9 +1,7 @@
  /**! 
- *
- * MixItUp Pagination
+ * MixItUp Pagination v1.0.0-beta
  * A Premium Extension for MixItUp
  *
- * @version   v1.0.0-beta
  * @copyright Copyright 2014 KunkaLabs Limited.
  * @author    KunkaLabs Limited.
  * @link      https://mixitup.kunkalabs.com
@@ -13,7 +11,6 @@
  *
  *            Non-commercial use permitted under terms of CC-BY-NC license.
  *            http://creativecommons.org/licenses/by-nc/3.0/
- *
  */
 
 (function($, undf){
