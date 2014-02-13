@@ -23,7 +23,7 @@ An empty element with the class `pager-list` should be added to your markup wher
 ```
 > An empty element should be added to your markup to contain the pagination controls
 
-The class of this wrapper may be changed via the selectors.pagersWrapper configuration option.
+The class of this wrapper may be changed via the `selectors.pagersWrapper` configuration option.
 
 As with all MixItUp operations, pagination may also be controlled directly via the MixItUp API. Physical pagination buttons may therefore be disabled either via the controls.enable or pagination.generatePagers configuration options.
 

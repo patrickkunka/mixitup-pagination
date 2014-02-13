@@ -38,6 +38,12 @@ Options groups added or extended by the pagination extension are listed below.
 
 <h2 name='options-by-group'>Options by Group</h2>
 
+### load
+
+This group defines MixItUp's initial behaviour on first load.
+
+1. [page](#loadpage)
+
 ### pagination
 
 This group is added by the pagination extension and contains properties relating to pagination.
@@ -56,12 +62,6 @@ This group allows the customisation of the default selector strings used for tar
 1. [pagersWrapper](#selectorspagerswrapper)
 1. [pager](#paginationpager)
 
-### load
-
-This group defines MixItUp's initial behaviour on first load.
-
-1. [page](#loadpage)
-
 <h2 name='option-details'>Option Details</h2>
 
 <h3 name='loadpage'>load.page</h3>
@@ -74,7 +74,7 @@ Page numbers are 1-indexed (starting from 1, not 0). By default, the first page 
 
 ```
 $('#Container').mixItUp({
-	pagination: {
+	load: {
 		page: 4
 	}
 });
@@ -191,6 +191,41 @@ $('#Container').mixItUp({
 });
 ```
 > Change previous and next button HTML to custom text.
+
+<br/>
+<hr/>
+
+<h3 name='selectorspagerswrapper'>selectors.pagersWrapper</h3>
+
+type: **String** / default `'.pager-list'`
+
+A selector used to find the wrapper in which pagination controls are generated.
+
+```
+$('#Container').mixItUp({
+	selectors: {
+		pagersWrapper: '.pagination-controls'
+	}
+});
+```
+> Generate pagination controls inside the element with the class ".pagination-controls"
+
+<h3 name='selectorspager'>selectors.pager</h3>
+
+type: **String** / default `'.pager'`
+
+A selector used to bind click events on pager buttons.
+
+You may wish to change this if you are building your own physical controls. This does not affect the markup generated for pagination buttons, which are always given the class "pager".
+
+```
+$('#Container').mixItUp({
+	selectors: {
+		pager: '.pager-btn'
+	}
+});
+```
+> Bind click event handlers for pagination to any element with the class "pager-btn"
 
 <br/>
 
