@@ -14,16 +14,24 @@ The Pagination extension extends the MixItUp configuration object with the follo
 
 Options groups added or extended by the pagination extension are listed below.
 
-!!To do
-
 ```
 {
+	load: {
+		page: 1
+	},
+	
 	pagination: {
-		
-	}
+		limit: 0,
+		loop: false,
+		generatePagers: true,
+		pagerClass: '',
+		prevButtonHTML: '«',
+		nextButtonHTML: '»'
+	},
 	
 	selectors: {
-		
+		pagersWrapper: '.pager-list',
+		pager: '.pager'
 	}
 }
 ```
@@ -32,29 +40,157 @@ Options groups added or extended by the pagination extension are listed below.
 
 ### pagination
 
-!!To do
+This group is added by the pagination extension and contains properties relating to pagination.
 
-This group contains properties related to MixItUp's animation and effects options.
-
-1. [enable](#animationenable)
-1. [effects](#animationeffects)
-1. [duration](#animationduration)
+1. [limit](#paginationlimit)
+1. [loop](#paginationloop)
+1. [generatePagers](#paginationgeneratepagers)
+1. [pagerClass](#paginationpagerclass)
+1. [prevButtonHTML](#paginationprevbuttonhtml)
+1. [nextButtonHTML](#paginationnextbuttonhtml)
 
 ### selectors
 
-!!To do
-
 This group allows the customisation of the default selector strings used for target elements, and clickable user-interface elements.
 
-1. [target](#selectorstarget)
-1. [filter](#selectorsfilter)
-1. [sort](#selectorssort)
+1. [pagersWrapper](#selectorspagerswrapper)
+1. [pager](#paginationpager)
+
+### load
+
+This group defines MixItUp's initial behaviour on first load.
+
+1. [page](#loadpage)
 
 <h2 name='option-details'>Option Details</h2>
 
-!!To do
+<h3 name='loadpage'>load.page</h3>
 
-<h3 name='pagination-blabla'>pagination.blabla</h3>
+type: **Number** / default `1`
+
+The page to load when MixItUp first instantiates.
+
+Page numbers are 1-indexed (starting from 1, not 0). By default, the first page is loaded.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		page: 4
+	}
+});
+```
+> Show page 4 when MixItUp first loads
+
+<br/>
+<hr/>
+
+<h3 name='paginationlimit'>pagination.limit</h3>
+
+type: **Number** / default `0`
+
+The maximum number of target elements per page.
+
+A limit of 0 disables page limiting, and no pages are therefore created by default.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		limit: 8
+	}
+});
+```
+> Set a limit of 8 target elements per page.
+
+<h3 name='paginationloop'>pagination.loop</h3>
+
+type: **Boolean** / default `false`
+
+Enable or disable page looping.
+
+By default, when the last page is active, the next page button is disabled, and similarly when the first page active, the previous page button is disabled.
+
+When set to `true`, the user may page from the last page to the first and from the first to last as with an infinite carousel.
+
+This option also affects the behaviour of the nextPage and prevPage API methods.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		loop: true
+	}
+});
+```
+> Enabling looping
+
+<h3 name='paginationgeneratePagers'>pagination.generatePagers</h3>
+
+type: **Boolean** / default `true`
+
+Enable or disable the automatic generation of pagination buttons, or “pagers”.
+
+This may be set to `false` if you are interacting directly via the API.
+
+See Pagination Controls for more information.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		generatePagers: false
+	}
+});
+```
+> Disable automatic generation of pagination buttons
+
+<h3 name='paginationpagerClass'>pagination.pagerClass</h3>
+
+type: **String** / default `''`
+
+An optional class to add to generated pagination buttons, for styling purposes.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		pagerClass: 'btn'
+	}
+});
+```
+> Add the class "btn" to all pagers
+
+<h3 name='paginationprevbuttonhtml'>pagination.prevButtonHTML</h3>
+
+type: **String** / default `'«'`
+
+The HTML content of the generated “previous page” button (with class `page-prev`). 
+
+By default this is the HTML character code for a left double angle quote, but can be customized to a string, glyph of icon-font character of your choice.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		prevButtonHTML: 'Newer Posts',
+		nextButtonHTML: 'Older Posts',	
+	}
+});
+```
+> Change previous and next button HTML to custom text.
+
+<h3 name='paginationnextbuttonhtml'>pagination.nextButtonHTML</h3>
+
+type: **String** / default `'»'`
+
+The HTML content of the generated "next page" button (with class page-next).
+
+By default this is the HTML character code for a right double angle quote, but can be customized to a string, glyph of icon-font character of your choice.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		prevButtonHTML: 'Newer Posts',
+		nextButtonHTML: 'Older Posts',	
+	}
+});
+```
+> Change previous and next button HTML to custom text.
 
 <br/>
 

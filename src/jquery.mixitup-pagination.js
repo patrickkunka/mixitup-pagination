@@ -27,7 +27,6 @@
 
 						self.pagination = {
 							limit: 0,
-							page: 1,
 							loop: false,
 							generatePagers: true,
 							pagerClass: '',
@@ -38,6 +37,10 @@
 						$.extend(self.selectors, {
 							pagersWrapper: '.pager-list',
 							pager: '.pager'
+						});
+						
+						$.extend(self.load, {
+							page: 1,
 						});
 
 						self._activePage = null;
@@ -52,7 +55,7 @@
 					pagination: function(){
 						var self = this;
 
-						self._activePage = self.pagination.page;
+						self._activePage = self.load.page;
 					}
 				}
 			},
@@ -133,12 +136,12 @@
 				post: {
 					pagination: function(){
 						var self = this,
-							startPageAt = self.pagination.limit * (self.pagination.page - 1),
-							endPageAt = (self.pagination.limit * self.pagination.page) - 1,
+							startPageAt = self.pagination.limit * (self.load.page - 1),
+							endPageAt = (self.pagination.limit * self.load.page) - 1,
 							$inPage = null,
 							$notInPage = null;
 
-						self._activePage = self.pagination.page;
+						self._activePage = self.load.page;
 						self._totalPages = self.pagination.limit ? Math.ceil(self._$show.length / self.pagination.limit) : 1;
 
 						if(self.pagination.limit > 0){
@@ -174,10 +177,10 @@
 						if(args.command.paginate !== undf){
 							typeof args.command.paginate === 'object' ? 
 								$.extend(self.pagination, args.command.paginate) :
-								self.pagination.page = args.command.paginate;
+								self.load.page = args.command.paginate;
 
 						} else if(args.command.filter !== undf || args.command.sort !== undf){
-							self.pagination.page = 1;
+							self.load.page = 1;
 						}
 					}	
 				}
