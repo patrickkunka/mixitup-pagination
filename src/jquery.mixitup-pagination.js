@@ -55,7 +55,7 @@
 					pagination: function(){
 						var self = this;
 
-						self._activePage = self.load.page;
+						self._activePage = self.load.page * 1;
 					}
 				}
 			},
