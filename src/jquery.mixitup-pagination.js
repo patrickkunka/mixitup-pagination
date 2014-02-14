@@ -289,7 +289,7 @@
 					}
 				}
 
-				classes = (pagerNumber === self._activePage) ? classes+' '+self.controls.activeClass : classes;
+				classes = (pagerNumber == self._activePage) ? classes+' '+self.controls.activeClass : classes;
 
 				pagerButtonsHTML += '<'+pagerTag+' class="'+pagerClass+'pager page-number'+classes+'" data-page="'+pagerNumber+'"><span>'+pagerNumber+'</span></'+pagerTag+'> ';
 			}
