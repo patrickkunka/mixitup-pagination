@@ -340,7 +340,6 @@
 		/**
 		 * Paginate
 		 * @param {array} arguments
-		 * @return {string|object} 'busy' or domNode
 		 */
 
 		paginate: function(){
@@ -353,7 +352,6 @@
 		/**
 		 * nextPage
 		 * @param {array} arguments
-		 * @return {string|object} 'busy' or domNode
 		 */
 
 		nextPage: function(){
@@ -366,7 +364,6 @@
 		/**
 		 * prevPage
 		 * @param {array} arguments
-		 * @return {string|object} 'busy' or domNode
 		 */
 
 		prevPage: function(){
