@@ -1,5 +1,5 @@
  /**! 
- * MixItUp Pagination v1.0.0-beta
+ * MixItUp Pagination v1.0.0
  * A Premium Extension for MixItUp
  *
  * @copyright Copyright 2014 KunkaLabs Limited.
