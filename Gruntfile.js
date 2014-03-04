@@ -5,8 +5,8 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		replace: {
 			clearBanner: {
-				src: ['src/js/jquery.mixitup-pagination.js'],
-				dest: ['src/js/jquery.mixitup-pagination.js'],
+				src: ['src/jquery.mixitup-pagination.js'],
+				dest: ['src/jquery.mixitup-pagination.js'],
 				replacements: [{
 					from: /\/\*([\s\S]*?)\*\//,
 					to: ''
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
 				options: {
 					position: 'top',
 					banner: '/**!\n' + 
-							' * MixItUp Pagination v<%= pkg.version %>-beta\n' +
+							' * MixItUp Pagination v<%= pkg.version %>\n' +
 							' * A Premium Extension for MixItUp\n' + 
 							' *\n' +  
 							' * @copyright Copyright '+(new Date().getFullYear())+' KunkaLabs Limited.\n' +
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
 					linebreak: false
 				},
 				files: {
-					src: ['src/js/jquery.mixitup-pagination.js']
+					src: ['src/jquery.mixitup-pagination.js']
 				}
 			}
 		}
@@ -85,8 +85,7 @@ module.exports = function(grunt) {
 			'bump-only:'+target, 
 			'replace:clearBanner',
 			'usebanner:addBanner',
-			'build',
-			'bump-commit'
+			'build'
 		);
 	});
 	
