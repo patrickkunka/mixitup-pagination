@@ -38,8 +38,8 @@ module.exports = function(grunt) {
 			options: {
 				files: ['package.json','bower.json'],
 				updateConfigs: ['pkg'],
-				commit: true,
-				push: true,
+				commit: false,
+				push: false,
 				createTag: true
 			}
 		},
