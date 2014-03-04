@@ -85,7 +85,8 @@ module.exports = function(grunt) {
 			'bump-only:'+target, 
 			'replace:clearBanner',
 			'usebanner:addBanner',
-			'build'
+			'build',
+			'bump-commit'
 		);
 	});
 	
