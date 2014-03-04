@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		replace: {
-			bumpMixItUpCore: {
+			clearBanner: {
 				src: ['src/js/jquery.mixitup-pagination.js'],
 				dest: ['src/js/jquery.mixitup-pagination.js'],
 				replacements: [{
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
 			}
 		},
 		usebanner: {
-			mixItUpCore:{
+			addBanner:{
 				options: {
 					position: 'top',
 					banner: '/**!\n' + 
@@ -83,9 +83,10 @@ module.exports = function(grunt) {
 		}
 		return grunt.task.run(
 			'bump-only:'+target, 
-			'replace:bumpMixItUpCore',
-			'usebanner:mixItUpCore',
-			'build'
+			'replace:clearBanner',
+			'usebanner:addBanner',
+			'build',
+			'bump-commit'
 		);
 	});
 	
