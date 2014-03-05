@@ -37,7 +37,7 @@
 						});
 						
 						$.extend(self.load, {
-							page: 1,
+							page: 1
 						});
 
 						self._activePage = null;
@@ -252,7 +252,7 @@
 				totalButtons = self._totalPages > 5 ? 5 : self._totalPages,
 				pagerButtonsHTML = '',
 				pagersHTML = '',
-				wrapperClass = '',
+				wrapperClass = '';
 
 			self._execAction('_generatePagers', 0);
 
