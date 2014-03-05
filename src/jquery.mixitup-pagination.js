@@ -1,5 +1,5 @@
- /**! 
- * MixItUp Pagination v1.0.0
+/**!
+ * MixItUp Pagination v1.0.1
  * A Premium Extension for MixItUp
  *
  * @copyright Copyright 2014 KunkaLabs Limited.
@@ -8,7 +8,7 @@
  *
  * @license   To be used under the same terms as MixItUp core.
  *            https://mixitup.kunkalabs.com/licenses/
- */
+ */ 
 
 (function($, undf){
 	$.extend(true, $.MixItUp.prototype, {
