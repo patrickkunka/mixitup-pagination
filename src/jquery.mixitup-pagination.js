@@ -310,7 +310,7 @@
 			var self = this,
 				output = {
 					command: null,
-					animate: true,
+					animate: self.animation.enable,
 					callback: null
 				};
 
