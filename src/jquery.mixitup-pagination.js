@@ -1,5 +1,5 @@
 /**!
- * MixItUp Pagination v1.0.1
+ * MixItUp Pagination v1.1.0
  * A Premium Extension for MixItUp
  *
  * @copyright Copyright 2014 KunkaLabs Limited.
@@ -11,191 +11,222 @@
  */ 
 
 (function($, undf){
-	$.extend(true, $.MixItUp.prototype, {
+	
+	/* Add Actions
+	---------------------------------------------------------------------- */
+	
+	/**
+	 * Constructor
+	 * @extends _constructor
+	 */
+	
+	$.MixItUp.prototype.addAction('_constructor', 'pagination', function(){
+		var self = this;
 
-		/* Extend Action Hooks
-		---------------------------------------------------------------------- */
+		self.pagination = {
+			limit: 0,
+			loop: false,
+			generatePagers: true,
+			maxPagers: 5,
+			pagerClass: '',
+			prevButtonHTML: '&laquo;',
+			nextButtonHTML: '&raquo;'
+		};
 
-		_actions: {
-			_constructor: {
-				post: {
-					pagination: function(){
-						var self = this;
+		$.extend(self.selectors, {
+			pagersWrapper: '.pager-list',
+			pager: '.pager'
+		});
+		
+		$.extend(self.load, {
+			page: 1
+		});
 
-						self.pagination = {
-							limit: 0,
-							loop: false,
-							generatePagers: true,
-							pagerClass: '',
-							prevButtonHTML: '&laquo;',
-							nextButtonHTML: '&raquo;'
-						};
+		self._activePage = null;
+		self._totalPages = null;
 
-						$.extend(self.selectors, {
-							pagersWrapper: '.pager-list',
-							pager: '.pager'
-						});
-						
-						$.extend(self.load, {
-							page: 1
-						});
+		self._$pagersWrapper = $();
+	}, 1);
+	
+	/**
+	 * Initialize
+	 * @extends $.MixItUp.prototype._init
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_init', 'pagination', function(){
+		var self = this;
 
-						self._activePage = null;
-						self._totalPages = null;
+		self._activePage = self.load.page * 1;
+		self.pagination.maxPagers = (
+										typeof self.pagination.maxPagers === 'number' && 
+										self.pagination.maxPagers < 5
+									) ? 
+										5 : 
+										self.pagination.maxPagers;
+	}, 1);
+	
+	/**
+	 * Bind Handlers
+	 * @extends $.MixItUp.prototype._bindHandlers
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_bindHandlers', 'pagination', function(){
+		var self = this;
 
-						self._$pagersWrapper = $();
-					}
-				}
-			},
-			_init: {
-				post: {
-					pagination: function(){
-						var self = this;
+		if(self.pagination.generatePagers){
+			self._$pagersWrapper = $(self.selectors.pagersWrapper);
+		};
 
-						self._activePage = self.load.page * 1;
-					}
-				}
-			},
-			_bindHandlers: {
-				post: {
-					pagination: function(){
-						var self = this;
+		if(self.controls.live){
+			self._$body.on('click.mixItUp.'+self._id, self.selectors.pager, function(){
+				self._processClick($(this), 'page');
+			});
+		} else {
+			self._$pagersWrapper.on('click.mixItUp.'+self._id, self.selectors.pager, function(){;
+				self._processClick($(this), 'page');
+			});
+		}
+	}, 1);
+	
+	/**
+	 * Process Click
+	 * @extends $.MixItUp.prototype._processClick
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_processClick', 'pagination', function(args){
+		var self = this,
+			pageNumber = null,
+			$button = args[0],
+			type = args[1];
 
-						if(self.pagination.generatePagers){
-							self._$pagersWrapper = $(self.selectors.pagersWrapper);
-						};
+		if(type === 'page'){
+			pageNumber = $button.attr('data-page') || false;
 
-						if(self.controls.live){
-							self._$body.on('click.mixItUp.'+self._id, self.selectors.pager, function(){
-								self._processClick($(this), 'page');
-							});
-						} else {
-							self._$pagersWrapper.on('click.mixItUp.'+self._id, self.selectors.pager, function(){;
-								self._processClick($(this), 'page');
-							});
-						}
-					}
-				}
-			},
-			_processClick: {
-				post: {
-					pagination: function(args){
-						var self = this,
-							pageNumber = null,
-							$button = args[0],
-							type = args[1];
-
-						if(type === 'page'){
-							pageNumber = $button.attr('data-page') || false;
-
-							if(pageNumber === 'prev'){
-								pageNumber = self._getPrevPage();
-							} else if(pageNumber === 'next'){
-								pageNumber = self._getNextPage();
-							} else if(pageNumber){
-								pageNumber = pageNumber * 1;
-							} else {
-								return false;
-							}
-							
-							if(!$button.hasClass(self.controls.activeClass)){
-								self.paginate(pageNumber);
-							}
-						}
-					}
-				}
-			},
-			_buildState: {
-				post: {
-					pagination: function(){
-						var self = this;
-
-						$.extend(self._state, {
-							limit: self.pagination.limit,
-							activePage: self._activePage,
-							totalPages: self._totalPages
-						});
-					}
-				}
-			},
-			_sort: {
-				post: {
-					pagination: function(){
-						var self = this;
-
-						if(self.pagination.limit > 0){
-							self._printSort();
-						}
-					}
-				}
-			},
-			_filter: {
-				post: {
-					pagination: function(){
-						var self = this,
-							startPageAt = self.pagination.limit * (self.load.page - 1),
-							endPageAt = (self.pagination.limit * self.load.page) - 1,
-							$inPage = null,
-							$notInPage = null;
-
-						self._activePage = self.load.page;
-						self._totalPages = self.pagination.limit ? Math.ceil(self._$show.length / self.pagination.limit) : 1;
-
-						if(self.pagination.limit > 0){
-
-							$inPage = self._$show.filter(function(index){
-								return index >= startPageAt && index <= endPageAt;
-							});
-
-							$notInPage = self._$show.filter(function(index){
-								return index < startPageAt || index > endPageAt;
-							});
-
-							self._$show = $inPage;
-							self._$hide = self._$hide.add($notInPage);
-
-							if(self._sorting){
-								self._printSort(true);
-							}
-						}
-
-						if(self.pagination.generatePagers && self._$pagersWrapper.length){
-							self._generatePagers();	
-						};
-					}
-				}
-			},
-			multiMix: {
-				pre: {
-					pagination: function(args){
-						var self = this,
-							args = self._parseMultiMixArgs(args);
-
-						if(args.command.paginate !== undf){
-							typeof args.command.paginate === 'object' ? 
-								$.extend(self.pagination, args.command.paginate) :
-								self.load.page = args.command.paginate;
-
-						} else if(args.command.filter !== undf || args.command.sort !== undf){
-							self.load.page = 1;
-						}
-					}	
-				}
-			},
-			destroy: {
-				post: {
-					pagination: function(){
-						var self = this;
-
-						self._$pagersWrapper.off('.mixItUp').html('');
-					}
-				}
+			if(pageNumber === 'prev'){
+				pageNumber = self._getPrevPage();
+			} else if(pageNumber === 'next'){
+				pageNumber = self._getNextPage();
+			} else if(pageNumber){
+				pageNumber = pageNumber * 1;
+			} else {
+				return false;
 			}
-		},
+			
+			if(!$button.hasClass(self.controls.activeClass)){
+				self.paginate(pageNumber);
+			}
+		}
+	}, 1);
+	
+	/**
+	 * Build State
+	 * @extends $.MixItUp.prototype._buildState
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_buildState', 'pagination', function(){
+		var self = this;
 
-		/* Private Methods
-		---------------------------------------------------------------------- */
+		$.extend(self._state, {
+			limit: self.pagination.limit,
+			activePage: self._activePage,
+			totalPages: self._totalPages
+		});
+	}, 1);
+	
+	/**
+	 * Sort
+	 * @extends $.MixItUp.prototype._sort
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_sort', 'pagination', function(){
+		var self = this;
 
+		if(self.pagination.limit > 0){
+			self._printSort();
+		}
+	}, 1);
+	
+	/**
+	 * Filter
+	 * @extends $.MixItUp.prototype._filter
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('_filter', 'pagination', function(){
+		var self = this,
+			startPageAt = self.pagination.limit * (self.load.page - 1),
+			endPageAt = (self.pagination.limit * self.load.page) - 1,
+			$inPage = null,
+			$notInPage = null;
+
+		self._activePage = self.load.page;
+		self._totalPages = self.pagination.limit ? Math.ceil(self._$show.length / self.pagination.limit) : 1;
+
+		if(self.pagination.limit > 0){
+
+			$inPage = self._$show.filter(function(index){
+				return index >= startPageAt && index <= endPageAt;
+			});
+
+			$notInPage = self._$show.filter(function(index){
+				return index < startPageAt || index > endPageAt;
+			});
+
+			self._$show = $inPage;
+			self._$hide = self._$hide.add($notInPage);
+
+			if(self._sorting){
+				self._printSort(true);
+			}
+		}
+
+		if(self.pagination.generatePagers && self._$pagersWrapper.length){
+			self._generatePagers();	
+		};
+	}, 1);
+	
+	/**
+	 * MultiMix
+	 * @extends $.MixItUp.prototype.multiMix
+	 * @priority 0
+	 */
+	
+	$.MixItUp.prototype.addAction('multiMix', 'pagination', function(args){
+		var self = this,
+			args = self._parseMultiMixArgs(args);
+
+		if(args.command.paginate !== undf){
+			typeof args.command.paginate === 'object' ? 
+				$.extend(self.pagination, args.command.paginate) :
+				self.load.page = args.command.paginate;
+
+		} else if(args.command.filter !== undf || args.command.sort !== undf){
+			self.load.page = 1;
+		}
+	}, 0);
+	
+	/**
+	 * Destory
+	 * @extends $.MixItUp.prototype.destroy
+	 * @priority 1
+	 */
+	
+	$.MixItUp.prototype.addAction('destroy', 'pagination', function(){
+		var self = this;
+
+		self._$pagersWrapper.off('.mixItUp').html('');
+	}, 1);
+	
+	/* Add Private Methods
+	---------------------------------------------------------------------- */
+	
+	$.MixItUp.prototype.extend({
+		
 		/**
 		 * Get Next Page
 		 * @return {number} page
@@ -249,7 +280,12 @@
 					nextButtonHTML : self.pagination.loop ? nextButtonHTML :
 					'<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
 
-				totalButtons = self._totalPages > 5 ? 5 : self._totalPages,
+				totalButtons = (
+									self.pagination.maxPagers !== false &&
+									self._totalPages > self.pagination.maxPagers
+								) ? 
+									self.pagination.maxPagers : 
+									self._totalPages,
 				pagerButtonsHTML = '',
 				pagersHTML = '',
 				wrapperClass = '';
@@ -262,25 +298,35 @@
 
 				if(i === 0){
 					pagerNumber = 1;
-					if(self._activePage > 3 && self._totalPages > 5){
+					if(
+						self.pagination.maxPagers !== false &&
+						self._activePage > (self.pagination.maxPagers - 2) && 
+						self._totalPages > self.pagination.maxPagers
+					){
 						classes = ' page-first';
 					}
 				} else {
-					if(totalButtons < 5){
-						pagerNumber = i+1;
+					if(
+						self.pagination.maxPagers === false ||
+						totalButtons < self.pagination.maxPagers
+					){
+						pagerNumber = i + 1;
 					} else {
-						if(i === 4){
+						if(i === self.pagination.maxPagers - 1){
 							pagerNumber = self._totalPages;
-							if(self._activePage < self._totalPages - 2 && self._totalPages > 5){
+							if(self._activePage < self._totalPages - 2 && self._totalPages > self.pagination.maxPagers){
 								classes = ' page-last';
 							}
 						} else{
-							if(self._activePage > 3 && self._activePage < self._totalPages - 2){
+							if(
+								self._activePage > self.pagination.maxPagers - 2 &&
+								self._activePage < self._totalPages - 2
+							){
 								pagerNumber = self._activePage - (2 - i);
-							} else if(self._activePage < 4){
+							} else if(self._activePage < self.pagination.maxPagers - 1){
 								pagerNumber = i + 1;
 							} else if(self._activePage >= self._totalPages - 2){
-								pagerNumber = self._totalPages - (4 - i);
+								pagerNumber = self._totalPages - (self.pagination.maxPagers - 1 - i);
 							}
 						}
 					}
@@ -329,11 +375,14 @@
 			}
 
 			return self._execFilter('_parsePaginateArgs', output, arguments);
-		},
-
-		/* Public Methods
-		---------------------------------------------------------------------- */
-
+		}
+	});
+	
+	/* Add Public Methods
+	---------------------------------------------------------------------- */
+	
+	$.MixItUp.prototype.extend({
+		
 		/**
 		 * Paginate
 		 * @param {array} arguments
@@ -369,7 +418,6 @@
 
 			self.multiMix({paginate: self._getPrevPage()}, args.animate, args.callback);
 		}
-
 	});
-
+	
 })(jQuery);

@@ -40,7 +40,7 @@ module.exports = function(grunt) {
 				updateConfigs: ['pkg'],
 				commit: false,
 				push: false,
-				createTag: true
+				createTag: false
 			}
 		},
 		usebanner: {

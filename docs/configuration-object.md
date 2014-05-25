@@ -24,6 +24,7 @@ Options groups added or extended by the pagination extension are listed below.
 		limit: 0,
 		loop: false,
 		generatePagers: true,
+		maxPagers: 5,
 		pagerClass: '',
 		prevButtonHTML: '«',
 		nextButtonHTML: '»'
@@ -51,6 +52,7 @@ This group is added by the pagination extension and contains properties relating
 1. [limit](#paginationlimit)
 1. [loop](#paginationloop)
 1. [generatePagers](#paginationgeneratepagers)
+1. [maxPagers](#paginationmaxpagers)
 1. [pagerClass](#paginationpagerclass)
 1. [prevButtonHTML](#paginationprevbuttonhtml)
 1. [nextButtonHTML](#paginationnextbuttonhtml)
@@ -140,6 +142,34 @@ $('#Container').mixItUp({
 });
 ```
 > Disable automatic generation of pagination buttons
+
+<h3 name='paginationmaxPagers'>pagination.maxPagers</h3>
+
+type: **Integer** or **Boolean** / default `5`
+
+Set the maximum number of pager controls to be generated. By default, a maximum of 5 buttons will be generated.
+
+If there are more than 5 pages, buttons for those pages not within the nearest 5-page range will be dynamically hidden and shown depending on the current active page. 
+
+The minimum number of pagers is 5. This property may also be set to `false` to allow for an infinite number of pager buttons.
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		maxPagers: 10
+	}
+});
+```
+> Allow up to 10 pager buttons to be generated at any time
+
+```
+$('#Container').mixItUp({
+	pagination: {
+		maxPagers: false
+	}
+});
+```
+> Disable pager button limiting
 
 <h3 name='paginationpagerClass'>pagination.pagerClass</h3>
 
