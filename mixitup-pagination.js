@@ -56,9 +56,10 @@
                     maxPagers: 5,
                     pagerClass: '',
                     prevButtonHTML: '&laquo;',
-                    nextButtonHTML: '&raquo;'
+                    nextButtonHTML: '&raquo;',
+                    pagersWrapperIsChild: true
                 },
-                self.load, {
+                load: {
                     page: 1
                 },
                 _activePage: null,
@@ -67,6 +68,7 @@
                 _dom: {
                     _pagersWrapper: null
                 }
+            });
         }, 1);
         
         /**
@@ -91,11 +93,13 @@
          * _cacheDom
          */
 
-        _MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
+        _MixItUp.prototype.addAction('_cacheDom', 'pagination', function() {
             var self = this;
 
             if (self.pagination.generatePagers) {
-                self._dom._pagersWrapper = document.querySelector(self.selectors.pagersWrapper);
+                self._dom._pagersWrapper = self.pagination.pagersWrapperIsChild ? 
+                    self._dom._container.querySelector(self.selectors.pagersWrapper) :
+                    document.querySelector(self.selectors.pagersWrapper);
             }
         }, 1);
         
@@ -135,27 +139,26 @@
             var self = this,
                 pageNumber = null,
                 e = args[0],
-                pageButton = _h.closestParent(
+                pageButton = _h._closestParent(
                     e.target,
                     self.selectors.pager,
                     true
                 );
 
-                pageNumber = pageButton.getAttribute('data-page') || false;
+            pageNumber = pageButton.getAttribute('data-page') || false;
 
-                if (pageNumber === 'prev') {
-                    pageNumber = self._getPrevPage();
-                } else if (pageNumber === 'next') {
-                    pageNumber = self._getNextPage();
-                } else if (pageNumber) {
-                    pageNumber = pageNumber * 1;
-                } else {
-                    return false;
-                }
-                
-                if (!_h._hasClass(pageButton, self.controls.activeClass)) {
-                    self.paginate(pageNumber);
-                }
+            if (pageNumber === 'prev') {
+                pageNumber = self._getPrevPage();
+            } else if (pageNumber === 'next') {
+                pageNumber = self._getNextPage();
+            } else if (pageNumber) {
+                pageNumber = pageNumber * 1;
+            } else {
+                return false;
+            }
+            
+            if (!_h._hasClass(pageButton, self.controls.activeClass)) {
+                self.paginate(pageNumber);
             }
         }, 1);
         
@@ -249,8 +252,9 @@
          */
         
         _MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
-            var self = this,
-                args = self._parseMultiMixArgs(args);
+            var self = this;
+
+            args = self._parseMultiMixArgs(args);
 
             if (args.command.paginate !== undf) {
                 typeof args.command.paginate === 'object' ? 
@@ -273,12 +277,13 @@
 
             _getNextPage: function() {
                 var self = this,
-                    page = self._activePage + 1,
-                    page = self._activePage < self._totalPages ? 
-                        page :
-                            self.pagination.loop ?
-                                1 :
-                                self._activePage;
+                    page = self._activePage + 1;
+
+                page = self._activePage < self._totalPages ? 
+                    page :
+                        self.pagination.loop ?
+                            1 :
+                            self._activePage;
 
                 return self._execFilter('_getNextPage', page * 1);
             },
@@ -290,12 +295,13 @@
 
             _getPrevPage: function() {
                 var self = this,
-                    page = self._activePage - 1,
-                    page = self._activePage > 1 ?
-                        page :
-                            self.pagination.loop ?
-                                self._totalPages :
-                                self._activePage;
+                    page = self._activePage - 1;
+
+                page = self._activePage > 1 ?
+                    page :
+                        self.pagination.loop ?
+                            self._totalPages :
+                            self._activePage;
 
                 return self._execFilter('_getPrevPage', page * 1);
             },
@@ -308,26 +314,27 @@
                 var self = this,
                     pagerTag = self._dom._pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
                     pagerClass = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
-
-                    prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>',
-                    prevButtonHTML = (self._activePage > 1) ? 
-                        prevButtonHTML : self.pagination.loop ? prevButtonHTML :
-                        '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
-
-                    nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>',
-                    nextButtonHTML = (self._activePage < self._totalPages) ? 
-                        nextButtonHTML : self.pagination.loop ? nextButtonHTML :
-                        '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
-
-                    totalButtons = (
-                                        self.pagination.maxPagers !== false &&
-                                        self._totalPages > self.pagination.maxPagers
-                                    ) ? 
-                                        self.pagination.maxPagers : 
-                                        self._totalPages,
+                    prevButtonHTML = '',
+                    nextButtonHTML = '',
                     pagerButtonsHTML = '',
                     pagersHTML = '',
-                    wrapperClass = '';
+                    totalButtons = (
+                                    self.pagination.maxPagers !== false &&
+                                    self._totalPages > self.pagination.maxPagers
+                                ) ? 
+                                    self.pagination.maxPagers : 
+                                    self._totalPages;
+                
+
+                    prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
+                    prevButtonHTML = (self._activePage > 1) ? 
+                        prevButtonHTML : self.pagination.loop ? prevButtonHTML :
+                            '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
+
+                    nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
+                    nextButtonHTML = (self._activePage < self._totalPages) ? 
+                        nextButtonHTML : self.pagination.loop ? nextButtonHTML :
+                            '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
 
                 self._execAction('_generatePagers', 0);
 
@@ -481,4 +488,4 @@
     } else if (window._MixItUp === undf || typeof window._MixItUp !== 'function') {
         window.mixItUp = mixItUp;
     }
-})(jQuery);
+})(window);
