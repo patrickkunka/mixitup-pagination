@@ -13,24 +13,9 @@
  */ 
 
 (function($, undf) {
-    var _MixItUp = null,
-        mixItUp = null,
-        _Target = null,
-        _h = null;
-
-    if (window._MixItUp !== undf) {
-        _MixItUp = window._MixItUp;
-        _h = window._MixItUp.prototype._h;
-        _Target = window._MixItUp.prototype._Target;
-        mixItUp = window._MixItUp.prototype.mixItUp;
-    } else {
-        console.error('[MixItUp] MixItUp core not found');
-
-        return;
-    }
-
-    if (!_MixItUp.prototype._extensions.dragndrop) {
-        _MixItUp.prototype._extensions.dragndrop = true;
+    var _applyExtension = function(_MixItUp) {
+        _Target = _MixItUp.prototype._Target;
+        _h = _MixItUp.prototype._h;
     
         /* Add Actions (_MixItUp)
         ---------------------------------------------------------------------- */
@@ -144,6 +129,8 @@
                     self.selectors.pager,
                     true
                 );
+
+            if (!pageButton) return;
 
             pageNumber = pageButton.getAttribute('data-page') || false;
 
@@ -474,18 +461,24 @@
                 self.multiMix({paginate: self._getPrevPage()}, args.animate, args.callback);
             }
         });
-    }
+
+        return _MixItUp;
+    };
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
 
     if (typeof exports === 'object' && typeof module === 'object') {
-        module.exports = mixItUp;
+        module.exports = _applyExtension;
     } else if (typeof define === 'function' && define.amd) {
         define(function() {
-            return mixItUp;
+            return _applyExtension;
         });
-    } else if (window._MixItUp === undf || typeof window._MixItUp !== 'function') {
-        window.mixItUp = mixItUp;
+    } else if (window.mixItUp && typeof window.mixItUp === 'function') {
+        _MixItUp = window.mixItUp.prototype._MixItUp;
+
+        _applyExtension(_MixItUp);
+    } else {
+        console.error('[MixItUp] MixItUp core not found');
     }
 })(window);
