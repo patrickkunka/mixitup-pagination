@@ -174,7 +174,7 @@
         _MixItUp.prototype.addAction('_sort', 'pagination', function(){
             var self = this;
 
-            if (self.pagination.limit > 0) {
+            if (self.pagination.limit > -1) {
                 self._printSort();
             }
         }, 1);
@@ -210,16 +210,20 @@
                     }
                 }
 
-                self._show = inPage;
+                self._show = inPage;    
 
                 for (i = 0; target = notInPage[i]; i++) {
-                    self._hide.push(target);
+                    if (self._show.indexOf(target) < 0) {
+                        self._hide.push(target);
+                    }
 
-                    if (self._toShow.indexOf(target)) {
+                    if (self._toShow.indexOf(target) > -1) {
                         self._toShow.splice(self._toShow.indexOf(target), 1);
                     }
 
-                    target._isShown && self._toHide.push(target);
+                    if (target._isShown) {
+                        self._toHide.push(target);
+                    }
                 }
 
                 if (self._isSorting) {
