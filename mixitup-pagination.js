@@ -47,7 +47,7 @@
                 load: {
                     page: 1
                 },
-                _activePage: null,
+                _activePage: -1,
                 _totalPages: -1,
 
                 _dom: {
@@ -155,7 +155,7 @@
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_buildState', 'pagination', function(){
+        _MixItUp.prototype.addAction('_buildState', 'pagination', function() {
             var self = this;
 
             _h._extend(self._state, {
@@ -164,6 +164,16 @@
                 totalPages: self._totalPages
             });
         }, 1);
+        
+        _MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
+            var self = this;
+
+            return _h._extend(state, {
+                limit: self.pagination.limit,
+                activePage: self._activePage,
+                totalPages: self._totalPages
+            });
+        });
         
         /**
          * _sort
