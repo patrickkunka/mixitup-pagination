@@ -42,7 +42,8 @@
                     pagerClass: '',
                     prevButtonHTML: '&laquo;',
                     nextButtonHTML: '&raquo;',
-                    pagersWrapperIsChild: true
+                    pagersWrapperIsChild: true,
+                    maintainActivePage: true
                 },
                 load: {
                     page: 1
@@ -197,15 +198,27 @@
         
         _MixItUp.prototype.addAction('_filter', 'pagination', function() {
             var self = this,
-                startPageAt = self.pagination.limit * (self.load.page - 1),
-                endPageAt = (self.pagination.limit * self.load.page) - 1,
+                startPageAt = -1,
+                endPageAt = -1,
                 inPage = [],
                 notInPage = [],
                 target = null,
                 i = -1;
 
+
             self._activePage = self.load.page;
-            self._totalPages = self.pagination.limit ? Math.ceil(self._show.length / self.pagination.limit) : 1;
+            self._totalPages = self.pagination.limit ? 
+                Math.max(Math.ceil(self._show.length / self.pagination.limit), 1) :
+                1;
+
+            if (self.pagination.maintainActivePage) {
+                self.load.page = self._activePage = (self._activePage > self._totalPages) ?
+                    self._totalPages :
+                    self._activePage;
+            }
+
+            startPageAt = self.pagination.limit * (self.load.page - 1);
+            endPageAt = (self.pagination.limit * self.load.page) - 1;
 
             if (self.pagination.limit > -1) {
                 for (i = 0; target = self._show[i]; i++) {
@@ -262,7 +275,11 @@
                     _h._extend(self.pagination, args.command.paginate) :
                     self.load.page = args.command.paginate;
             } else if (args.command.filter !== undf || args.command.sort !== undf) {
-                self.load.page = 1;
+                if (!self.pagination.maintainActivePage) {
+                    self.load.page = 1;
+                } else {
+                    self.load.page = self._activePage;
+                }
             }
         }, 0);
     
@@ -320,11 +337,11 @@
                     pagerButtonsHTML = '',
                     pagersHTML = '',
                     totalButtons = (
-                                    self.pagination.maxPagers !== false &&
-                                    self._totalPages > self.pagination.maxPagers
-                                ) ? 
-                                    self.pagination.maxPagers : 
-                                    self._totalPages;
+                        self.pagination.maxPagers !== false &&
+                        self._totalPages > self.pagination.maxPagers
+                    ) ? 
+                        self.pagination.maxPagers : 
+                        self._totalPages;
                 
 
                     prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
