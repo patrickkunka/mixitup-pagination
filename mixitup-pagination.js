@@ -90,7 +90,7 @@
         
         /**
          * _bindEvents
-         * @extends _MixItUp.prototype._bindHandlers
+         * @extends _MixItUp.prototype._bindEvents
          * @priority 1
          */
         
@@ -98,20 +98,20 @@
             var self = this;
 
             if (!self.controls.live) {
-                _h._on(self._dom._pagersWrapper, 'click', self.handler);
+                _h._on(self._dom._pagersWrapper, 'click', self._handler);
             }
         }, 1);
 
         /**
          * _unbindEvents
-         * @extends _MixItUp.prototype._bindHandlers
+         * @extends _MixItUp.prototype._unbindHandlers
          * @priority 0
          */
         
         _MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
 
-            _h._off(self._dom._pagersWrapper, 'click', self.handler);
+            _h._off(self._dom._pagersWrapper, 'click', self._handler);
         }, 0);
         
         /**
@@ -120,7 +120,7 @@
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_processClick', 'pagination', function(args) {
+        _MixItUp.prototype.addAction('_handleClick', 'pagination', function(args) {
             var self = this,
                 pageNumber = null,
                 e = args[0],
