@@ -13,9 +13,11 @@
  */ 
 
 (function($, undf) {
+    'use strict';
+
     var _applyExtension = function(_MixItUp) {
-        _Target = _MixItUp.prototype._Target;
-        _h = _MixItUp.prototype._h;
+        var _Target = _MixItUp.prototype._Target,
+            _h = _MixItUp.prototype._h;
     
         /* Add Actions (_MixItUp)
         ---------------------------------------------------------------------- */
@@ -402,8 +404,6 @@
                 }
 
                 pagersHTML = self._totalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
-                
-                wrapperClass = self._totalPages > 1 ? '' : 'no-pagers';
 
                 self._dom._pagersWrapper.innerHTML = pagersHTML;
 
@@ -506,7 +506,7 @@
             return _applyExtension;
         });
     } else if (window.mixItUp && typeof window.mixItUp === 'function') {
-        _MixItUp = window.mixItUp.prototype._MixItUp;
+        var _MixItUp = window.mixItUp.prototype._MixItUp;
 
         _applyExtension(_MixItUp);
     } else {
