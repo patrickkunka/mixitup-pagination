@@ -68,6 +68,8 @@
         _MixItUp.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
 
+            if (!self.pagination || !self.pagination.enable) return;
+
             self._activePage = self.load.page * 1;
             self.pagination.maxPagers = (
                 typeof self.pagination.maxPagers === 'number' && 
@@ -83,6 +85,8 @@
 
         _MixItUp.prototype.addAction('_cacheDom', 'pagination', function() {
             var self = this;
+
+            if (!self.pagination || !self.pagination.enable) return;
 
             if (self.pagination.generatePagers) {
                 self._dom._pagersWrapper = self.pagination.pagersWrapperIsChild ? 
@@ -100,6 +104,8 @@
         _MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
             var self = this;
 
+            if (!self.pagination || !self.pagination.enable) return;
+
             if (!self.controls.live) {
                 _h._on(self._dom._pagersWrapper, 'click', self._handler);
             }
@@ -113,6 +119,8 @@
         
         _MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
+
+            if (!self.pagination || !self.pagination.enable) return;
 
             _h._off(self._dom._pagersWrapper, 'click', self._handler);
         }, 0);
@@ -132,6 +140,8 @@
                     self.selectors.pager,
                     true
                 );
+
+            if (!self.pagination || !self.pagination.enable) return;
 
             if (!pageButton) return;
 
@@ -161,6 +171,8 @@
         _MixItUp.prototype.addAction('_buildState', 'pagination', function() {
             var self = this;
 
+            if (!self.pagination || !self.pagination.enable) return;
+
             _h._extend(self._state, {
                 limit: self.pagination.limit,
                 activePage: self._activePage,
@@ -170,6 +182,8 @@
         
         _MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
             var self = this;
+
+            if (!self.pagination || !self.pagination.enable) return state;
 
             return _h._extend(state, {
                 limit: self.pagination.limit,
@@ -207,6 +221,7 @@
                 target = null,
                 i = -1;
 
+            if (!self.pagination || !self.pagination.enable) return;
 
             self._activePage = self.load.page;
             self._totalPages = self.pagination.limit ? 
@@ -269,6 +284,8 @@
         
         _MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
             var self = this;
+
+            if (!self.pagination || !self.pagination.enable) return;
 
             args = self._parseMultiMixArgs(args);
 
