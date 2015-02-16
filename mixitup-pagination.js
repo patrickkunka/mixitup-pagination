@@ -141,7 +141,7 @@
                     true
                 );
 
-            if (!self.pagination || !self.pagination.enable) return;
+            if (!self.pagination || self.pagination.limit < 0) return;
 
             if (!pageButton) return;
 
