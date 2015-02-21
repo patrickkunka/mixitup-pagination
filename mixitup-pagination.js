@@ -474,39 +474,42 @@
              * paginate
              * @shorthand self.multiMix
              * @param {Mixed} arguments
+             * @return {Object} promise
              */
 
             paginate: function() {
                 var self = this,
                     args = self._parsePaginateArgs(arguments);
 
-                self.multiMix({paginate: args.command}, args.animate, args.callback);
+                return self.multiMix({paginate: args.command}, args.animate, args.callback);
             },
 
             /**
              * nextPage
              * @shorthand self.multiMix
              * @param {Mixed} arguments
+             * @return {Object} promise
              */
 
             nextPage: function() {
                 var self = this,
                     args = self._parsePaginateArgs(arguments);
 
-                self.multiMix({paginate: self._getNextPage()}, args.animate, args.callback);
+                return self.multiMix({paginate: self._getNextPage()}, args.animate, args.callback);
             },
 
             /**
              * prevPage
              * @shorthand self.multiMix
              * @param {Mixed} arguments
+             * @return {Object} promise
              */
 
             prevPage: function() {
                 var self = this,
                     args = self._parsePaginateArgs(arguments);
 
-                self.multiMix({paginate: self._getPrevPage()}, args.animate, args.callback);
+                return self.multiMix({paginate: self._getPrevPage()}, args.animate, args.callback);
             }
         });
 
