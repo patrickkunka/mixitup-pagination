@@ -9,10 +9,10 @@
  * @license   To be used under the same terms as MixItUp core.
  *            https://mixitup.kunkalabs.com/licenses/
  *
- * @depends   mixitup.js v3.0.0
+ * @depends   mixitup.js >= 3.0.0
  */ 
 
-(function($, undf) {
+(function(window, undf) {
     'use strict';
 
     var _applyExtension = function(_MixItUp) {
