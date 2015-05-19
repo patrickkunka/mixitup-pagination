@@ -183,7 +183,7 @@
         _MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0) return state;
 
             return _h._extend(state, {
                 limit: self.pagination.limit,
@@ -201,9 +201,9 @@
         _MixItUp.prototype.addAction('_sort', 'pagination', function(){
             var self = this;
 
-            if (self.pagination.limit > -1) {
-                self._printSort();
-            }
+            if (!self.pagination || self.pagination.limit < 0) return;
+
+            self._printSort();
         }, 1);
         
         /**
