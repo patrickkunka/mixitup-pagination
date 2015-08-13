@@ -15,23 +15,25 @@
 (function(window, undf) {
     'use strict';
 
-    var _applyExtension = function(_MixItUp) {
-        var _Target = _MixItUp.prototype._Target,
-            _h = _MixItUp.prototype._h;
+    var applyExtension = null;
+
+    applyExtension = function(MixItUp) {
+        var Target = MixItUp.prototype.Target,
+            _h = MixItUp.prototype._h;
     
-        /* Add Actions (_MixItUp)
+        /* Add Actions (MixItUp)
         ---------------------------------------------------------------------- */
     
         /**
          * _constructor
-         * @extends _MixItUp
+         * @extends MixItUp
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_constructor', 'pagination', function() {
+        MixItUp.prototype.addAction('_constructor', 'pagination', function() {
             var self = this;
 
-            _h._extend(self, {
+            _h.extend(self, {
                 selectors: {
                     pagersWrapper: '.pager-list',
                     pager: '.pager'
@@ -61,11 +63,11 @@
         
         /**
          * _getFinalMixData
-         * @extends _MixItUp.prototype._getFinalMixData
+         * @extends MixItUp.prototype._getFinalMixData
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_getFinalMixData', 'pagination', function() {
+        MixItUp.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -83,59 +85,59 @@
          * _cacheDom
          */
 
-        _MixItUp.prototype.addAction('_cacheDom', 'pagination', function() {
+        MixItUp.prototype.addAction('_cacheDom', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
             if (self.pagination.generatePagers) {
-                self._dom._pagersWrapper = self.pagination.pagersWrapperIsChild ? 
-                    self._dom._container.querySelector(self.selectors.pagersWrapper) :
+                self._dom.pagersWrapper = self.pagination.pagersWrapperIsChild ? 
+                    self._dom.container.querySelector(self.selectors.pagersWrapper) :
                     document.querySelector(self.selectors.pagersWrapper);
             }
         }, 1);
         
         /**
          * _bindEvents
-         * @extends _MixItUp.prototype._bindEvents
+         * @extends MixItUp.prototype._bindEvents
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
+        MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
             if (!self.controls.live) {
-                _h._on(self._dom._pagersWrapper, 'click', self._handler);
+                _h.on(self._dom.pagersWrapper, 'click', self._handler);
             }
         }, 1);
 
         /**
          * _unbindEvents
-         * @extends _MixItUp.prototype._unbindHandlers
+         * @extends MixItUp.prototype._unbindHandlers
          * @priority 0
          */
         
-        _MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
+        MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            _h._off(self._dom._pagersWrapper, 'click', self._handler);
+            _h.off(self._dom.pagersWrapper, 'click', self._handler);
         }, 0);
         
         /**
          * _handleClick
-         * @extends _MixItUp.prototype._handleClick
+         * @extends MixItUp.prototype._handleClick
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_handleClick', 'pagination', function(args) {
+        MixItUp.prototype.addAction('_handleClick', 'pagination', function(args) {
             var self = this,
                 pageNumber = null,
                 e = args[0],
-                pageButton = _h._closestParent(
+                pageButton = _h.closestParent(
                     e.target,
                     self.selectors.pager,
                     true
@@ -157,35 +159,35 @@
                 return false;
             }
             
-            if (!_h._hasClass(pageButton, self.controls.activeClass)) {
+            if (!_h.hasClass(pageButton, self.controls.activeClass)) {
                 self.paginate(pageNumber);
             }
         }, 1);
         
         /**
          * _buildState
-         * @extends _MixItUp.prototype._buildState
+         * @extends MixItUp.prototype._buildState
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_buildState', 'pagination', function() {
+        MixItUp.prototype.addAction('_buildState', 'pagination', function() {
             var self = this; 
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            _h._extend(self._state, {
+            _h.extend(self._state, {
                 limit: self.pagination.limit,
                 activePage: self._activePage,
                 totalPages: self._totalPages
             });
         }, 1);
         
-        _MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
+        MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return state;
 
-            return _h._extend(state, {
+            return _h.extend(state, {
                 limit: self.pagination.limit,
                 activePage: self._activePage,
                 totalPages: self._totalPages
@@ -194,11 +196,11 @@
         
         /**
          * _sort
-         * @extends _MixItUp.prototype._sort
+         * @extends MixItUp.prototype._sort
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_sort', 'pagination', function(){
+        MixItUp.prototype.addAction('_sort', 'pagination', function(){
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -208,11 +210,11 @@
         
         /**
          * _filter
-         * @extends _MixItUp.prototype._filter
+         * @extends MixItUp.prototype._filter
          * @priority 1
          */
         
-        _MixItUp.prototype.addAction('_filter', 'pagination', function() {
+        MixItUp.prototype.addAction('_filter', 'pagination', function() {
             var self = this,
                 startPageAt = -1,
                 endPageAt = -1,
@@ -271,18 +273,18 @@
                 }
             }
 
-            if (self.pagination.generatePagers && self._dom._pagersWrapper) {
+            if (self.pagination.generatePagers && self._dom.pagersWrapper) {
                 self._generatePagers(); 
             }
         }, 1);
         
         /**
          * multiMix
-         * @extends _MixItUp.prototype.multiMix
+         * @extends MixItUp.prototype.multiMix
          * @priority 0
          */
         
-        _MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
+        MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -291,7 +293,7 @@
 
             if (args.command.paginate !== undf) {
                 typeof args.command.paginate === 'object' ? 
-                    _h._extend(self.pagination, args.command.paginate) :
+                    _h.extend(self.pagination, args.command.paginate) :
                     self.load.page = args.command.paginate;
             } else if (args.command.filter !== undf || args.command.sort !== undf) {
                 if (!self.pagination.maintainActivePage) {
@@ -305,7 +307,7 @@
         /* Add Private Methods
         ---------------------------------------------------------------------- */
         
-        _MixItUp.prototype.extend({
+        MixItUp.prototype.extend({
             
             /**
              * _getNextPage
@@ -349,7 +351,7 @@
 
             _generatePagers: function() {
                 var self = this,
-                    pagerTag = self._dom._pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
+                    pagerTag = self._dom.pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
                     pagerClass = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
                     prevButtonHTML = '',
                     nextButtonHTML = '',
@@ -422,12 +424,12 @@
 
                 pagersHTML = self._totalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
 
-                self._dom._pagersWrapper.innerHTML = pagersHTML;
+                self._dom.pagersWrapper.innerHTML = pagersHTML;
 
                 if (self._totalPages > 1) {
-                    _h._removeClass(self._dom._pagersWrapper, 'no-pagers');
+                    _h.removeClass(self._dom.pagersWrapper, 'no-pagers');
                 } else {
-                    _h._addClass(self._dom._pagersWrapper, 'no-pagers');
+                    _h.addClass(self._dom.pagersWrapper, 'no-pagers');
                 }
 
                 self._execAction('_generatePagers', 1);
@@ -468,7 +470,7 @@
         /* Add Public Methods
         ---------------------------------------------------------------------- */
         
-        _MixItUp.prototype.extend({
+        MixItUp.prototype.extend({
             
             /**
              * paginate
@@ -513,23 +515,21 @@
             }
         });
 
-        return _MixItUp;
+        return MixItUp;
     };
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
 
     if (typeof exports === 'object' && typeof module === 'object') {
-        module.exports = _applyExtension;
+        module.exports = applyExtension;
     } else if (typeof define === 'function' && define.amd) {
         define(function() {
-            return _applyExtension;
+            return applyExtension;
         });
     } else if (window.mixItUp && typeof window.mixItUp === 'function') {
-        var _MixItUp = window.mixItUp.prototype._MixItUp;
-
-        _applyExtension(_MixItUp);
+        applyExtension(window.mixItUp.prototype.MixItUp);
     } else {
-        console.error('[MixItUp] MixItUp core not found');
+        console.error('[MixItUp-pagination] MixItUp core not found');
     }
 })(window);
