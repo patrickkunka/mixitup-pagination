@@ -187,11 +187,16 @@
 
             if (!self.pagination || self.pagination.limit < 0) return state;
 
-            return _h.extend(state, {
+            _h.extend(state, {
                 limit: self.pagination.limit,
                 activePage: self._activePage,
                 totalPages: self._totalPages
             });
+
+            // TODO: once the state is refactored to be a constructor,
+            // we should extend it there with an action
+
+            return state;
         });
         
         /**
