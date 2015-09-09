@@ -18,7 +18,8 @@
     var applyExtension = null;
 
     applyExtension = function(MixItUp) {
-        var Target = MixItUp.prototype.Target,
+        var Operation = MixItUp.prototype.Operation,
+            Target = MixItUp.prototype.Target,
             _h = MixItUp.prototype._h;
     
         /* Add Actions (MixItUp)
@@ -290,16 +291,41 @@
          */
         
         MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
-            var self = this;
+            var self = this,
+                command = null;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
             args = self._parseMultiMixArgs(args);
 
-            if (args.command.paginate !== undf) {
-                typeof args.command.paginate === 'object' ? 
-                    _h.extend(self.pagination, args.command.paginate) :
-                    self.load.page = args.command.paginate;
+            command = args.command.paginate;
+
+            if (command) {
+                switch (typeof command) {
+                    case 'object':
+                        typeof command.page === 'number' && (self.load.page = command.page);
+                        typeof command.limit === 'number' && (self.pagination.limit = command.limit);
+
+                        if (self.load.page === 'next') {
+                            self.load.page = self._getNextPage();
+                        } else if (self.load.page === 'prev') {
+                            self.load.page = self._getPrevPage();
+                        }
+
+                        break;
+                    case 'number':
+                        self.load.page = command.page;
+
+                        break;
+                    case 'string':
+                        if (command === 'next') {
+                            self.load.page = self._getNextPage();
+                        } else if (command === 'prev') {
+                            self.load.page = self._getPrevPage();
+                        }
+
+                        break;
+                }
             } else if (args.command.filter !== undf || args.command.sort !== undf) {
                 if (!self.pagination.maintainActivePage) {
                     self.load.page = 1;
@@ -502,7 +528,7 @@
                 var self = this,
                     args = self._parsePaginateArgs(arguments);
 
-                return self.multiMix({paginate: self._getNextPage()}, args.animate, args.callback);
+                return self.multiMix({paginate: 'next'}, args.animate, args.callback);
             },
 
             /**
@@ -516,12 +542,30 @@
                 var self = this,
                     args = self._parsePaginateArgs(arguments);
 
-                return self.multiMix({paginate: self._getPrevPage()}, args.animate, args.callback);
+                return self.multiMix({paginate: 'prev'}, args.animate, args.callback);
             }
         });
 
+        /* Add Actions (Operation)
+        ---------------------------------------------------------------------- */
+
+        /**
+         * _constructor
+         * @extends Operation
+         * @priority 1
+         */
+            
+        Operation.prototype.addAction('_constructor', 'pagination', function() {
+            var self = this;
+
+            _h.extend(this, {
+                paginate: null
+            });
+        }, 1);
+
         return MixItUp;
     };
+
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
