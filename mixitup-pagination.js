@@ -220,8 +220,9 @@
          * @priority 1
          */
         
-        MixItUp.prototype.addAction('_filter', 'pagination', function() {
+        MixItUp.prototype.addAction('_filter', 'pagination', function(args) {
             var self = this,
+                operation = args && args[0],
                 startPageAt = -1,
                 endPageAt = -1,
                 inPage = [],
@@ -230,6 +231,57 @@
                 i = -1;
 
             if (!self.pagination || self.pagination.limit < 0) return;
+
+            // New code:
+
+            if (operation) {
+                operation.newTotalPages = operation.newLimit ? 
+                    Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
+                    1;
+
+                if (self.pagination.maintainActivePage) {
+                    operation.newPage = (operation.newPage > operation.newTotalPages) ?
+                        operation.newTotalPages :
+                        operation.newPage;
+                }
+
+                startPageAt = self.pagination.limit * (operation.newPage - 1);
+                endPageAt = (self.pagination.limit * operation.newPage) - 1;
+
+                if (operation.newLimit > -1) {
+                    for (i = 0; target = operation.show[i]; i++) {
+                        if (i >= startPageAt && i <= endPageAt) {
+                            inPage.push(target);
+                        } else if (i < startPageAt || i > endPageAt) {
+                            notInPage.push(target);
+                        }
+                    }
+
+                    operation.show = inPage;    
+
+                    for (i = 0; target = notInPage[i]; i++) {
+                        if (operation.show.indexOf(target) < 0) {
+                            operation.hide.push(target);
+                        }
+
+                        if (operation.toShow.indexOf(target) > -1) {
+                            operation.toShow.splice(operation.toShow.indexOf(target), 1);
+                        }
+
+                        if (target._isShown) {
+                            operation.toHide.push(target);
+                        }
+                    }
+
+                    if (operation.willSort) {
+                        self._printSort(true, operation);
+                    }
+                }
+
+                return;
+            }
+
+            // Old code:
 
             self._activePage = self.load.page;
             self._totalPages = self.pagination.limit ? 
@@ -287,20 +339,19 @@
         /**
          * getOperation
          * @extends MixItUp.prototype.getOperation
-         * @param {Operation} operation
          * @param {Mixed[]} args
+         * @param {Operation} operation
          * @return {Operation}
          */
         
-        MixItUp.prototype.addFilter('getOperation', 'pagination', function(operation, args) {
+        MixItUp.prototype.addAction('getOperation', 'pagination', function(operation) {
             var self = this,
                 command = null,
-                totalPages = -1,
                 paginateCommand = null;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            command = self._parseMultiMixArgs(args).command;
+            command = operation.command;
 
             paginateCommand = command.paginate;
 
@@ -308,6 +359,8 @@
             operation.startLimit = operation.newLimit = self.pagination.limit;
 
             // TODO: should there be something like an "activeLimit", to keep the mixer stateless?
+            
+            operation.startTotalPages = self._totalPages;
 
             if (paginateCommand) {
                 switch (typeof paginateCommand) {
@@ -315,46 +368,44 @@
                         typeof paginateCommand.page === 'number' && (operation.newPage = paginateCommand.page);
                         typeof paginateCommand.limit === 'number' && (operation.newLimit = paginateCommand.limit);
 
-                        totalPages = operation.newLimit ? 
-                            Math.max(Math.ceil(operation.show.length / operation.newLimit), 1) :
-                            1;
+                        if (operation.newLimit !== operation.startLimit) {
+                            operation.newTotalPages = operation.newLimit ? 
+                                Math.max(Math.ceil(operation.show.length / operation.newLimit), 1) :
+                                1;
+                        }
 
                         if (operation.newPage === 'next') {
-                            operation.newPage = self._getNextPage(totalPages);
+                            operation.newPage = self._getNextPage(self._totalPages);
                         } else if (operation.newPage === 'prev') {
-                            operation.newPage = self._getPrevPage(totalPages);
+                            operation.newPage = self._getPrevPage(self._totalPages);
                         }
 
                         break;
                     case 'number':
                         operation.newPage = paginateCommand.page;
 
+                        // TODO: handle numbers outside available
+
                         break;
                     case 'string':
-                        totalPages = operation.newLimit ? 
-                            Math.max(Math.ceil(operation.show.length / operation.newLimit), 1) :
-                            1;
-
                         // TODO: make this DRYer - repeated above
 
                         if (paginateCommand === 'next') {
-                            operation.newPage = self._getNextPage(totalPages);
+                            operation.newPage = self._getNextPage(self._totalPages);
                         } else if (paginateCommand === 'prev') {
-                            operation.newPage = self._getPrevPage(totalPages);
+                            operation.newPage = self._getPrevPage(self._totalPages);
                         }
 
                         break;
                 }
-            } else if (args.command.filter !== undf || args.command.sort !== undf) {
+            } else if (command.filter !== undf || command.sort !== undf) {
                 if (!self.pagination.maintainActivePage) {
                     operation.newPage = 1;
                 } else {
                     operation.newPage = self._activePage;
                 }
             }
-
-            return operation;
-        });
+        }, 0);
         
         /**
          * multiMix
@@ -635,7 +686,9 @@
                 startPage: -1,
                 newPage: -1,
                 startLimit: -1,
-                newLimit: -1
+                newLimit: -1,
+                startTotalPages: -1,
+                newTotalPages: -1
             });
         }, 1);
 
