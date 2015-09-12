@@ -20,13 +20,14 @@
     applyExtension = function(MixItUp) {
         var Operation = MixItUp.prototype.Operation,
             Target = MixItUp.prototype.Target,
+            State = MixItUp.prototype.State,
             _h = MixItUp.prototype._h;
     
-        /* Add Actions (MixItUp)
+        /* Constructors
         ---------------------------------------------------------------------- */
     
         /**
-         * _constructor
+         * MixItUp
          * @extends MixItUp
          * @priority 1
          */
@@ -53,14 +54,68 @@
                 load: {
                     page: 1
                 },
-                _activePage: -1,
-                _totalPages: -1,
-
                 _dom: {
                     _pagersWrapper: null
                 }
             });
         }, 1);
+
+        /**
+         * Operation
+         * @extends Operation
+         * @priority 1
+         */
+            
+        Operation.prototype.addAction('_constructor', 'pagination', function() {
+            var self = this;
+
+            _h.extend(this, {
+                startPage: -1,
+                newPage: -1,
+                startLimit: -1,
+                newLimit: -1,
+                startTotalPages: -1,
+                newTotalPages: -1
+            });
+        }, 1);
+        
+        /**
+         * State
+         * @extends State
+         * @priority 1
+         */
+            
+        State.prototype.addAction('_constructor', 'pagination', function() {
+            var self = this;
+
+            _h.extend(this, {
+                limit: -1,
+                activePage: -1,
+                totalPages: -1
+            });
+        }, 1);
+        
+        /* Methods
+        ---------------------------------------------------------------------- */
+        
+        /**
+         * _init
+         * @extends MixItUp.prototype._init
+         * @priority 1
+         */
+        
+        MixItUp.prototype.addAction('_init', 'pagination', function() {
+            var self = this;
+
+            if (!self.pagination || self.pagination.limit < 0) return;
+            
+            self._state.limit = self.pagination.limit;
+            self._state.activePage = self.load.page;
+        }, 1);
+
+        /**
+         * _cacheDom
+         */
         
         /**
          * _getFinalMixData
@@ -74,6 +129,7 @@
             if (!self.pagination || self.pagination.limit < 0) return;
 
             self._activePage = self.load.page * 1;
+
             self.pagination.maxPagers = (
                 typeof self.pagination.maxPagers === 'number' && 
                 self.pagination.maxPagers < 5
@@ -151,9 +207,9 @@
             pageNumber = pageButton.getAttribute('data-page') || false;
 
             if (pageNumber === 'prev') {
-                pageNumber = self._getPrevPage(self._totalPages);
+                pageNumber = self._getPrevPage();
             } else if (pageNumber === 'next') {
-                pageNumber = self._getNextPage(self._totalPages);
+                pageNumber = self._getNextPage();
             } else if (pageNumber) {
                 pageNumber = pageNumber * 1;
             } else {
@@ -169,33 +225,21 @@
          * _buildState
          * @extends MixItUp.prototype._buildState
          * @priority 1
-         */
+         */ 
         
-        MixItUp.prototype.addAction('_buildState', 'pagination', function() {
-            var self = this; 
+        MixItUp.prototype.addFilter('_buildState', 'pagination', function(state, args) {
+            var self = this,
+                operation = args[0];
 
-            if (!self.pagination || self.pagination.limit < 0) return;
-
-            _h.extend(self._state, {
-                limit: self.pagination.limit,
-                activePage: self._activePage,
-                totalPages: self._totalPages
-            });
-        }, 1);
-        
-        MixItUp.prototype.addFilter('_buildState', 'pagination', function(state) {
-            var self = this;
-
-            if (!self.pagination || self.pagination.limit < 0) return state;
+            if (!self.pagination || self.pagination.limit < 0) {
+                return state;
+            }
 
             _h.extend(state, {
-                limit: self.pagination.limit,
-                activePage: self._activePage,
-                totalPages: self._totalPages
+                limit: operation.newLimit,
+                activePage: operation.newPage,
+                totalPages: operation.newTotalPages
             });
-
-            // TODO: once the state is refactored to be a constructor,
-            // we should extend it there with an action
 
             return state;
         });
@@ -232,102 +276,46 @@
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            // New code:
-
-            if (operation) {
-                operation.newTotalPages = operation.newLimit ? 
-                    Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
-                    1;
-
-                if (self.pagination.maintainActivePage) {
-                    operation.newPage = (operation.newPage > operation.newTotalPages) ?
-                        operation.newTotalPages :
-                        operation.newPage;
-                }
-
-                startPageAt = self.pagination.limit * (operation.newPage - 1);
-                endPageAt = (self.pagination.limit * operation.newPage) - 1;
-
-                if (operation.newLimit > -1) {
-                    for (i = 0; target = operation.show[i]; i++) {
-                        if (i >= startPageAt && i <= endPageAt) {
-                            inPage.push(target);
-                        } else if (i < startPageAt || i > endPageAt) {
-                            notInPage.push(target);
-                        }
-                    }
-
-                    operation.show = inPage;    
-
-                    for (i = 0; target = notInPage[i]; i++) {
-                        if (operation.show.indexOf(target) < 0) {
-                            operation.hide.push(target);
-                        }
-
-                        if (operation.toShow.indexOf(target) > -1) {
-                            operation.toShow.splice(operation.toShow.indexOf(target), 1);
-                        }
-
-                        if (target._isShown) {
-                            operation.toHide.push(target);
-                        }
-                    }
-
-                    if (operation.willSort) {
-                        self._printSort(true, operation);
-                    }
-                }
-
-                return;
-            }
-
-            // Old code:
-
-            self._activePage = self.load.page;
-            self._totalPages = self.pagination.limit ? 
-                Math.max(Math.ceil(self._show.length / self.pagination.limit), 1) :
+            operation.newTotalPages = operation.newLimit ? 
+                Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
                 1;
 
             if (self.pagination.maintainActivePage) {
-                self.load.page = self._activePage = (self._activePage > self._totalPages) ?
-                    self._totalPages :
-                    self._activePage;
+                operation.newPage = (operation.newPage > operation.newTotalPages) ?
+                    operation.newTotalPages :
+                    operation.newPage;
             }
 
-            startPageAt = self.pagination.limit * (self.load.page - 1);
-            endPageAt = (self.pagination.limit * self.load.page) - 1;
+            startPageAt = self.pagination.limit * (operation.newPage - 1);
+            endPageAt = (self.pagination.limit * operation.newPage) - 1;
 
-            if (self.pagination.limit > -1) {
-                for (i = 0; target = self._show[i]; i++) {
+            if (operation.newLimit > -1) {
+                for (i = 0; target = operation.show[i]; i++) {
                     if (i >= startPageAt && i <= endPageAt) {
                         inPage.push(target);
-                    }
-                }
-
-                for (i = 0; target = self._show[i]; i++) {
-                    if (i < startPageAt || i > endPageAt) {
+                    } else if (i < startPageAt || i > endPageAt) {
                         notInPage.push(target);
                     }
                 }
 
-                self._show = inPage;    
+                operation.show = inPage;    
 
                 for (i = 0; target = notInPage[i]; i++) {
-                    if (self._show.indexOf(target) < 0) {
-                        self._hide.push(target);
+                    if (operation.show.indexOf(target) < 0) {
+                        operation.hide.push(target);
                     }
 
-                    if (self._toShow.indexOf(target) > -1) {
-                        self._toShow.splice(self._toShow.indexOf(target), 1);
+                    if (operation.toShow.indexOf(target) > -1) {
+                        operation.toShow.splice(operation.toShow.indexOf(target), 1);
                     }
 
                     if (target._isShown) {
-                        self._toHide.push(target);
+                        operation.toHide.push(target);
                     }
                 }
 
-                if (self._isSorting) {
-                    self._printSort(true);
+                if (operation.willSort) {
+                    self._printSort(true, operation);
                 }
             }
 
@@ -355,10 +343,8 @@
 
             paginateCommand = command.paginate;
 
-            operation.startPage = operation.newPage = self._activePage;
-            operation.startLimit = operation.newLimit = self.pagination.limit;
-
-            // TODO: should there be something like an "activeLimit", to keep the mixer stateless?
+            operation.startPage = operation.newPage = self._state.activePage;
+            operation.startLimit = operation.newLimit = self._state.limit;
             
             operation.startTotalPages = self._totalPages;
 
@@ -375,9 +361,9 @@
                         }
 
                         if (operation.newPage === 'next') {
-                            operation.newPage = self._getNextPage(self._totalPages);
+                            operation.newPage = self._getNextPage();
                         } else if (operation.newPage === 'prev') {
-                            operation.newPage = self._getPrevPage(self._totalPages);
+                            operation.newPage = self._getPrevPage();
                         }
 
                         break;
@@ -391,9 +377,9 @@
                         // TODO: make this DRYer - repeated above
 
                         if (paginateCommand === 'next') {
-                            operation.newPage = self._getNextPage(self._totalPages);
+                            operation.newPage = self._getNextPage();
                         } else if (paginateCommand === 'prev') {
-                            operation.newPage = self._getPrevPage(self._totalPages);
+                            operation.newPage = self._getPrevPage();
                         }
 
                         break;
@@ -402,58 +388,7 @@
                 if (!self.pagination.maintainActivePage) {
                     operation.newPage = 1;
                 } else {
-                    operation.newPage = self._activePage;
-                }
-            }
-        }, 0);
-        
-        /**
-         * multiMix
-         * @extends MixItUp.prototype.multiMix
-         * @priority 0
-         */
-        
-        MixItUp.prototype.addAction('multiMix', 'pagination', function(args) {
-            var self = this,
-                command = null;
-
-            if (!self.pagination || self.pagination.limit < 0) return;
-
-            args = self._parseMultiMixArgs(args);
-
-            command = args.command.paginate;
-
-            if (command) {
-                switch (typeof command) {
-                    case 'object':
-                        typeof command.page === 'number' && (self.load.page = command.page);
-                        typeof command.limit === 'number' && (self.pagination.limit = command.limit);
-
-                        if (self.load.page === 'next') {
-                            self.load.page = self._getNextPage(self._totalPages);
-                        } else if (self.load.page === 'prev') {
-                            self.load.page = self._getPrevPage(self._totalPages);
-                        }
-
-                        break;
-                    case 'number':
-                        self.load.page = command.page;
-
-                        break;
-                    case 'string':
-                        if (command === 'next') {
-                            self.load.page = self._getNextPage(self._totalPages);
-                        } else if (command === 'prev') {
-                            self.load.page = self._getPrevPage(self._totalPages);
-                        }
-
-                        break;
-                }
-            } else if (args.command.filter !== undf || args.command.sort !== undf) {
-                if (!self.pagination.maintainActivePage) {
-                    self.load.page = 1;
-                } else {
-                    self.load.page = self._activePage;
+                    operation.newPage = self._state.activePage;
                 }
             }
         }, 0);
@@ -465,37 +400,36 @@
             
             /**
              * _getNextPage
-             * @param {Number} totalPages
              * @return {Number} page
              */
 
-            _getNextPage: function(totalPages) {
+            _getNextPage: function() {
                 var self = this,
-                    page = self._activePage + 1;
+                    page = self._state.activePage + 1;
 
-                page = self._activePage < totalPages ? 
+                page = self._state.activePage < self._state.totalPages ? 
                     page :
                         self.pagination.loop ?
                             1 :
-                            self._activePage;
+                            self._state.activePage;
 
                 return self._execFilter('_getNextPage', page * 1);
             },
 
             /**
              * _getPreviousPage
-             * @return {number} page
+             * @return {Number} page
              */
 
-            _getPrevPage: function(totalPages) {
+            _getPrevPage: function() {
                 var self = this,
-                    page = self._activePage - 1;
+                    page = self._state.activePage - 1;
 
                 page = self._activePage > 1 ?
                     page :
                         self.pagination.loop ?
-                            totalPages :
-                            self._activePage;
+                            self._state.totalPages :
+                            self._state.activePage;
 
                 return self._execFilter('_getPrevPage', page * 1);
             },
@@ -669,28 +603,6 @@
                 return self.multiMix({paginate: 'prev'}, args.animate, args.callback);
             }
         });
-
-        /* Add Actions (Operation)
-        ---------------------------------------------------------------------- */
-
-        /**
-         * _constructor
-         * @extends Operation
-         * @priority 1
-         */
-            
-        Operation.prototype.addAction('_constructor', 'pagination', function() {
-            var self = this;
-
-            _h.extend(this, {
-                startPage: -1,
-                newPage: -1,
-                startLimit: -1,
-                newLimit: -1,
-                startTotalPages: -1,
-                newTotalPages: -1
-            });
-        }, 1);
 
         return MixItUp;
     };
