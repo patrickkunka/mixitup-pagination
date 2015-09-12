@@ -55,7 +55,7 @@
                     page: 1
                 },
                 _dom: {
-                    _pagersWrapper: null
+                    pagersWrapper: null
                 }
             });
         }, 1);
@@ -127,8 +127,6 @@
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
-
-            self._activePage = self.load.page * 1;
 
             self.pagination.maxPagers = (
                 typeof self.pagination.maxPagers === 'number' && 
@@ -425,7 +423,7 @@
                 var self = this,
                     page = self._state.activePage - 1;
 
-                page = self._activePage > 1 ?
+                page = self._state.activePage > 1 ?
                     page :
                         self.pagination.loop ?
                             self._state.totalPages :
