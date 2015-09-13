@@ -10,7 +10,7 @@
  *            https://mixitup.kunkalabs.com/licenses/
  *
  * @depends   mixitup.js >= 3.0.0
- */ 
+ */
 
 (function(window, undf) {
     'use strict';
@@ -22,16 +22,16 @@
             Target = MixItUp.prototype.Target,
             State = MixItUp.prototype.State,
             _h = MixItUp.prototype._h;
-    
+
         /* Constructors
         ---------------------------------------------------------------------- */
-    
+
         /**
          * MixItUp
          * @extends MixItUp
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_constructor', 'pagination', function() {
             var self = this;
 
@@ -65,7 +65,7 @@
          * @extends Operation
          * @priority 1
          */
-            
+
         Operation.prototype.addAction('_constructor', 'pagination', function() {
             var self = this;
 
@@ -78,13 +78,13 @@
                 newTotalPages: -1
             });
         }, 1);
-        
+
         /**
          * State
          * @extends State
          * @priority 1
          */
-            
+
         State.prototype.addAction('_constructor', 'pagination', function() {
             var self = this;
 
@@ -94,21 +94,21 @@
                 totalPages: -1
             });
         }, 1);
-        
+
         /* Methods
         ---------------------------------------------------------------------- */
-        
+
         /**
          * _init
          * @extends MixItUp.prototype._init
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_init', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
-            
+
             self._state.limit = self.pagination.limit;
             self._state.activePage = self.load.page;
         }, 1);
@@ -116,23 +116,23 @@
         /**
          * _cacheDom
          */
-        
+
         /**
          * _getFinalMixData
          * @extends MixItUp.prototype._getFinalMixData
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
             self.pagination.maxPagers = (
-                typeof self.pagination.maxPagers === 'number' && 
+                typeof self.pagination.maxPagers === 'number' &&
                 self.pagination.maxPagers < 5
-            ) ? 
-                5 : 
+            ) ?
+                5 :
                 self.pagination.maxPagers;
         }, 1);
 
@@ -146,18 +146,18 @@
             if (!self.pagination || self.pagination.limit < 0) return;
 
             if (self.pagination.generatePagers) {
-                self._dom.pagersWrapper = self.pagination.pagersWrapperIsChild ? 
+                self._dom.pagersWrapper = self.pagination.pagersWrapperIsChild ?
                     self._dom.container.querySelector(self.selectors.pagersWrapper) :
                     document.querySelector(self.selectors.pagersWrapper);
             }
         }, 1);
-        
+
         /**
          * _bindEvents
          * @extends MixItUp.prototype._bindEvents
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
             var self = this;
 
@@ -173,7 +173,7 @@
          * @extends MixItUp.prototype._unbindHandlers
          * @priority 0
          */
-        
+
         MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
 
@@ -181,13 +181,13 @@
 
             _h.off(self._dom.pagersWrapper, 'click', self._handler);
         }, 0);
-        
+
         /**
          * _handleClick
          * @extends MixItUp.prototype._handleClick
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_handleClick', 'pagination', function(args) {
             var self = this,
                 pageNumber = null,
@@ -213,18 +213,18 @@
             } else {
                 return false;
             }
-            
+
             if (!_h.hasClass(pageButton, self.controls.activeClass)) {
                 self.paginate(pageNumber);
             }
         }, 1);
-        
+
         /**
          * _buildState
          * @extends MixItUp.prototype._buildState
          * @priority 1
-         */ 
-        
+         */
+
         MixItUp.prototype.addFilter('_buildState', 'pagination', function(state, args) {
             var self = this,
                 operation = args[0];
@@ -241,13 +241,13 @@
 
             return state;
         });
-        
+
         /**
          * _sort
          * @extends MixItUp.prototype._sort
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_sort', 'pagination', function(){
             var self = this;
 
@@ -255,13 +255,13 @@
 
             self._printSort();
         }, 1);
-        
+
         /**
          * _filter
          * @extends MixItUp.prototype._filter
          * @priority 1
          */
-        
+
         MixItUp.prototype.addAction('_filter', 'pagination', function(args) {
             var self = this,
                 operation = args && args[0],
@@ -274,7 +274,7 @@
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            operation.newTotalPages = operation.newLimit ? 
+            operation.newTotalPages = operation.newLimit ?
                 Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
                 1;
 
@@ -296,7 +296,7 @@
                     }
                 }
 
-                operation.show = inPage;    
+                operation.show = inPage;
 
                 for (i = 0; target = notInPage[i]; i++) {
                     if (operation.show.indexOf(target) < 0) {
@@ -318,7 +318,7 @@
             }
 
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
-                self._generatePagers(); 
+                self._generatePagers();
             }
         }, 1);
 
@@ -326,10 +326,11 @@
          * getOperation
          * @extends MixItUp.prototype.getOperation
          * @param {Mixed[]} args
-         * @param {Operation} operation
+         * @param {Operation} operation,
+         * @param [{State}] startState
          * @return {Operation}
          */
-        
+
         MixItUp.prototype.addAction('getOperation', 'pagination', function(operation) {
             var self = this,
                 command = null,
@@ -341,10 +342,10 @@
 
             paginateCommand = command.paginate;
 
-            operation.startPage = operation.newPage = self._state.activePage;
-            operation.startLimit = operation.newLimit = self._state.limit;
-            
-            operation.startTotalPages = self._totalPages;
+            operation.startPage = operation.newPage = operation.startState.activePage;
+            operation.startLimit = operation.newLimit = operation.startState.limit;
+
+            operation.startTotalPages = operation.startState.totalPages;
 
             if (paginateCommand) {
                 switch (typeof paginateCommand) {
@@ -353,7 +354,7 @@
                         typeof paginateCommand.limit === 'number' && (operation.newLimit = paginateCommand.limit);
 
                         if (operation.newLimit !== operation.startLimit) {
-                            operation.newTotalPages = operation.newLimit ? 
+                            operation.newTotalPages = operation.newLimit ?
                                 Math.max(Math.ceil(operation.show.length / operation.newLimit), 1) :
                                 1;
                         }
@@ -366,9 +367,9 @@
 
                         break;
                     case 'number':
-                        operation.newPage = paginateCommand.page;
+                        operation.newPage = paginateCommand;
 
-                        // TODO: handle numbers outside available
+                        // TODO: handle numbers outside available range
 
                         break;
                     case 'string':
@@ -390,12 +391,12 @@
                 }
             }
         }, 0);
-    
+
         /* Add Private Methods
         ---------------------------------------------------------------------- */
-        
+
         MixItUp.prototype.extend({
-            
+
             /**
              * _getNextPage
              * @return {Number} page
@@ -405,7 +406,7 @@
                 var self = this,
                     page = self._state.activePage + 1;
 
-                page = self._state.activePage < self._state.totalPages ? 
+                page = self._state.activePage < self._state.totalPages ?
                     page :
                         self.pagination.loop ?
                             1 :
@@ -447,18 +448,18 @@
                     totalButtons = (
                         self.pagination.maxPagers !== false &&
                         self._totalPages > self.pagination.maxPagers
-                    ) ? 
-                        self.pagination.maxPagers : 
+                    ) ?
+                        self.pagination.maxPagers :
                         self._totalPages;
-                
+
 
                     prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
-                    prevButtonHTML = (self._activePage > 1) ? 
+                    prevButtonHTML = (self._activePage > 1) ?
                         prevButtonHTML : self.pagination.loop ? prevButtonHTML :
                             '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
 
                     nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
-                    nextButtonHTML = (self._activePage < self._totalPages) ? 
+                    nextButtonHTML = (self._activePage < self._totalPages) ?
                         nextButtonHTML : self.pagination.loop ? nextButtonHTML :
                             '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
 
@@ -472,7 +473,7 @@
                         pagerNumber = 1;
                         if(
                             self.pagination.maxPagers !== false &&
-                            self._activePage > (self.pagination.maxPagers - 2) && 
+                            self._activePage > (self.pagination.maxPagers - 2) &&
                             self._totalPages > self.pagination.maxPagers
                         ){
                             classes = ' page-first';
@@ -539,7 +540,7 @@
                 for (var i = 0; i < args.length; i++) {
                     var arg = args[i];
 
-                    if (arg !== null) {   
+                    if (arg !== null) {
                         if (typeof arg === 'object' || typeof arg === 'number') {
                             output.command = arg;
                         } else if (typeof arg === 'boolean') {
@@ -553,12 +554,12 @@
                 return self._execFilter('_parsePaginateArgs', output, arguments);
             }
         });
-        
+
         /* Add Public Methods
         ---------------------------------------------------------------------- */
-        
+
         MixItUp.prototype.extend({
-            
+
             /**
              * paginate
              * @shorthand self.multiMix
