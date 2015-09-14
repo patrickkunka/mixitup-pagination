@@ -248,12 +248,13 @@
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_sort', 'pagination', function(){
-            var self = this;
+        MixItUp.prototype.addAction('_sort', 'pagination', function(args) {
+            var self = this,
+                operation = args && args[0];
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            self._printSort();
+            self._printSort(false, operation);
         }, 1);
 
         /**
@@ -288,7 +289,9 @@
             endPageAt = (self.pagination.limit * operation.newPage) - 1;
 
             if (operation.newLimit > -1) {
-                for (i = 0; target = operation.show[i]; i++) {
+                for (i = 0; target = operation.matching[i]; i++) {
+                    // Show may have already been manipulate by remove, so iterated through matching
+                    
                     if (i >= startPageAt && i <= endPageAt) {
                         inPage.push(target);
                     } else if (i < startPageAt || i > endPageAt) {
@@ -302,6 +305,13 @@
                     if (operation.show.indexOf(target) < 0) {
                         operation.hide.push(target);
                     }
+                    
+                    if (operation.toHide.indexOf(target) > -1) {
+                        // If anything outside the page has been moved into toHide by
+                        // remove, make sure it is removed
+
+                        operation.toHide.splice(operation.toHide.indexOf(target), 1);
+                    }
 
                     if (operation.toShow.indexOf(target) > -1) {
                         operation.toShow.splice(operation.toShow.indexOf(target), 1);
@@ -310,6 +320,8 @@
                     if (target._isShown) {
                         operation.toHide.push(target);
                     }
+                    
+                    // TODO: make sure off page targets that should be shown after a remove are reshown.
                 }
 
                 if (operation.willSort) {
