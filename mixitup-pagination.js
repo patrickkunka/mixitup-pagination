@@ -51,6 +51,9 @@
                     pagersWrapperIsChild: true,
                     maintainActivePage: true
                 },
+                callbacks: {
+                    onPagerClick: null  
+                },
                 load: {
                     page: 1
                 },
@@ -215,6 +218,16 @@
             }
 
             if (!_h.hasClass(pageButton, self.controls.activeClass)) {
+                if (typeof self.callbacks.onPagerClick === 'function') {
+                    self.callbacks.onPagerClick.call(pageButton, self._state, self, e);
+                }
+
+                _h.triggerCustom(pageButton, 'pagerClick', {
+                    state: self._state,
+                    instance: self,
+                    event: e
+                });
+
                 self.paginate(pageNumber);
             }
         }, 1);
@@ -328,19 +341,12 @@
                     self._printSort(true, operation);
                 }
             }
-
-            if (self.pagination.generatePagers && self._dom.pagersWrapper) {
-                self._generatePagers();
-            }
         }, 1);
 
         /**
          * getOperation
          * @extends MixItUp.prototype.getOperation
-         * @param {Mixed[]} args
          * @param {Operation} operation,
-         * @param [{State}] startState
-         * @return {Operation}
          */
 
         MixItUp.prototype.addAction('getOperation', 'pagination', function(operation) {
@@ -403,6 +409,33 @@
                 }
             }
         }, 0);
+        
+        /**
+         * multiMix
+         * @extends MixItUp.prototype.multiMix
+         * @param {Operation} operation
+         */
+
+        MixItUp.prototype.addFilter('multiMix', 'pagination', function(operation) {
+            var self = this;
+
+            if (self.pagination.generatePagers && self._dom.pagersWrapper) {
+                self._generatePagers(operation);
+            }
+        });
+        
+        /**
+         * _cleanUp
+         * @extends MixItUp.prototype._cleanUp
+         */
+
+        MixItUp.prototype.addAction('_cleanUp', 'pagination', function() {
+            var self = this;
+
+            if (self.pagination.generatePagers && self._dom.pagersWrapper) {
+                self._generatePagers(self._lastOperation);
+            }
+        }, 1);
 
         /* Add Private Methods
         ---------------------------------------------------------------------- */
@@ -447,9 +480,10 @@
 
             /**
              * _generatePagers
+             * @param {Operation} operation
              */
 
-            _generatePagers: function() {
+            _generatePagers: function(operation) {
                 var self = this,
                     pagerTag = self._dom.pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
                     pagerClass = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
@@ -459,74 +493,76 @@
                     pagersHTML = '',
                     totalButtons = (
                         self.pagination.maxPagers !== false &&
-                        self._totalPages > self.pagination.maxPagers
+                        operation.newTotalPages > self.pagination.maxPagers
                     ) ?
                         self.pagination.maxPagers :
-                        self._totalPages;
+                        operation.newTotalPages;
 
+                prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
+                prevButtonHTML = (operation.newPage > 1) ?
+                    prevButtonHTML : self.pagination.loop ? prevButtonHTML :
+                        '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
 
-                    prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
-                    prevButtonHTML = (self._activePage > 1) ?
-                        prevButtonHTML : self.pagination.loop ? prevButtonHTML :
-                            '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
-
-                    nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
-                    nextButtonHTML = (self._activePage < self._totalPages) ?
-                        nextButtonHTML : self.pagination.loop ? nextButtonHTML :
-                            '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
+                nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
+                nextButtonHTML = (operation.newPage < self._totalPages) ?
+                    nextButtonHTML : self.pagination.loop ? nextButtonHTML :
+                        '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
 
                 self._execAction('_generatePagers', 0);
+                
+                // TODO: this method needs a major refactor - some sort of templating system would be better
 
                 for (var i = 0; i < totalButtons; i++) {
                     var pagerNumber = null,
                         classes = '';
 
-                    if(i === 0){
+                    if(i === 0) {
                         pagerNumber = 1;
                         if(
                             self.pagination.maxPagers !== false &&
-                            self._activePage > (self.pagination.maxPagers - 2) &&
-                            self._totalPages > self.pagination.maxPagers
+                            operation.newPage > (self.pagination.maxPagers - 2) &&
+                            operation.newTotalPages > self.pagination.maxPagers
                         ){
                             classes = ' page-first';
                         }
                     } else {
-                        if(
+                        if (
                             self.pagination.maxPagers === false ||
                             totalButtons < self.pagination.maxPagers
-                        ){
+                        ) {
                             pagerNumber = i + 1;
                         } else {
-                            if(i === self.pagination.maxPagers - 1){
-                                pagerNumber = self._totalPages;
-                                if(self._activePage < self._totalPages - 2 && self._totalPages > self.pagination.maxPagers){
+                            if (i === self.pagination.maxPagers - 1) {
+                                pagerNumber = operation.newTotalPages;
+
+                                if (operation.newPage < operation.newTotalPages - 2 && operation.newTotalPages > self.pagination.maxPagers) {
                                     classes = ' page-last';
                                 }
-                            } else{
-                                if(
-                                    self._activePage > self.pagination.maxPagers - 2 &&
-                                    self._activePage < self._totalPages - 2
-                                ){
-                                    pagerNumber = self._activePage - (2 - i);
-                                } else if(self._activePage < self.pagination.maxPagers - 1){
+                            } else {
+                                if (
+                                    operation.newPage > self.pagination.maxPagers - 2 &&
+                                    operation.newPage < operation.newTotalPages - 2
+                                ) {
+                                    pagerNumber = operation.newPage - (2 - i);
+                                } else if (operation.newPage < self.pagination.maxPagers - 1) {
                                     pagerNumber = i + 1;
-                                } else if(self._activePage >= self._totalPages - 2){
-                                    pagerNumber = self._totalPages - (self.pagination.maxPagers - 1 - i);
+                                } else if (operation.newPage >= operation.newTotalPAges - 2) {
+                                    pagerNumber = operation.newTotalPAges - (self.pagination.maxPagers - 1 - i);
                                 }
                             }
                         }
                     }
 
-                    classes = (pagerNumber == self._activePage) ? classes+' '+self.controls.activeClass : classes;
+                    classes = (pagerNumber == operation.newPage) ? classes+' '+self.controls.activeClass : classes;
 
                     pagerButtonsHTML += '<'+pagerTag+' class="'+pagerClass+'pager page-number'+classes+'" data-page="'+pagerNumber+'"><span>'+pagerNumber+'</span></'+pagerTag+'> ';
                 }
 
-                pagersHTML = self._totalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
+                pagersHTML = operation.newTotalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
 
                 self._dom.pagersWrapper.innerHTML = pagersHTML;
 
-                if (self._totalPages > 1) {
+                if (operation.newTotalPages > 1) {
                     _h.removeClass(self._dom.pagersWrapper, 'no-pagers');
                 } else {
                     _h.addClass(self._dom.pagersWrapper, 'no-pagers');
@@ -574,7 +610,7 @@
 
             /**
              * paginate
-             * @shorthand self.multiMix
+             * @shorthand multiMix
              * @param {Mixed} arguments
              * @return {Object} promise
              */
@@ -588,7 +624,7 @@
 
             /**
              * nextPage
-             * @shorthand self.multiMix
+             * @shorthand multiMix
              * @param {Mixed} arguments
              * @return {Object} promise
              */
@@ -602,7 +638,7 @@
 
             /**
              * prevPage
-             * @shorthand self.multiMix
+             * @shorthand multiMix
              * @param {Mixed} arguments
              * @return {Object} promise
              */
