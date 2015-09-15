@@ -17,22 +17,22 @@
 
     var applyExtension = null;
 
-    applyExtension = function(MixItUp) {
-        var Operation = MixItUp.prototype.Operation,
-            Target = MixItUp.prototype.Target,
-            State = MixItUp.prototype.State,
-            _h = MixItUp.prototype._h;
+    applyExtension = function(mixItUp) {
+        var Operation = mixItUp.prototype.Operation,
+            Target = mixItUp.prototype.Target,
+            Mixer = mixItUp.prototype.Mixer,
+            State = mixItUp.prototype.State,
+            _h = mixItUp.prototype._h;
 
         /* Constructors
         ---------------------------------------------------------------------- */
 
         /**
-         * MixItUp
-         * @extends MixItUp
+         * Mixer
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_constructor', 'pagination', function() {
+        Mixer.prototype.addAction('_constructor', 'pagination', function() {
             var self = this;
 
             _h.extend(self, {
@@ -52,7 +52,7 @@
                     maintainActivePage: true
                 },
                 callbacks: {
-                    onPagerClick: null  
+                    onPagerClick: null
                 },
                 load: {
                     page: 1
@@ -65,7 +65,6 @@
 
         /**
          * Operation
-         * @extends Operation
          * @priority 1
          */
 
@@ -84,7 +83,6 @@
 
         /**
          * State
-         * @extends State
          * @priority 1
          */
 
@@ -103,11 +101,10 @@
 
         /**
          * _init
-         * @extends MixItUp.prototype._init
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_init', 'pagination', function() {
+        Mixer.prototype.addAction('_init', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -122,11 +119,10 @@
 
         /**
          * _getFinalMixData
-         * @extends MixItUp.prototype._getFinalMixData
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_getFinalMixData', 'pagination', function() {
+        Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -141,9 +137,10 @@
 
         /**
          * _cacheDom
+         * @priority 1
          */
 
-        MixItUp.prototype.addAction('_cacheDom', 'pagination', function() {
+        Mixer.prototype.addAction('_cacheDom', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -157,11 +154,10 @@
 
         /**
          * _bindEvents
-         * @extends MixItUp.prototype._bindEvents
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_bindEvents', 'pagination', function() {
+        Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -173,11 +169,10 @@
 
         /**
          * _unbindEvents
-         * @extends MixItUp.prototype._unbindHandlers
          * @priority 0
          */
 
-        MixItUp.prototype.addAction('_unbindEvents', 'pagination', function() {
+        Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -187,11 +182,11 @@
 
         /**
          * _handleClick
-         * @extends MixItUp.prototype._handleClick
+         * @param {Mixed[]} args
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_handleClick', 'pagination', function(args) {
+        Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
             var self = this,
                 pageNumber = null,
                 e = args[0],
@@ -234,11 +229,13 @@
 
         /**
          * _buildState
-         * @extends MixItUp.prototype._buildState
+         * @param {State} state
+         * @param {Mixed[]} args
+         * @return {State}
          * @priority 1
          */
 
-        MixItUp.prototype.addFilter('_buildState', 'pagination', function(state, args) {
+        Mixer.prototype.addFilter('_buildState', 'pagination', function(state, args) {
             var self = this,
                 operation = args[0];
 
@@ -257,11 +254,11 @@
 
         /**
          * _sort
-         * @extends MixItUp.prototype._sort
+         * @param {Mixed[]} args
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_sort', 'pagination', function(args) {
+        Mixer.prototype.addAction('_sort', 'pagination', function(args) {
             var self = this,
                 operation = args && args[0];
 
@@ -272,11 +269,11 @@
 
         /**
          * _filter
-         * @extends MixItUp.prototype._filter
+         * @param {Mixed[]} args
          * @priority 1
          */
 
-        MixItUp.prototype.addAction('_filter', 'pagination', function(args) {
+        Mixer.prototype.addAction('_filter', 'pagination', function(args) {
             var self = this,
                 operation = args && args[0],
                 startPageAt = -1,
@@ -284,6 +281,7 @@
                 inPage = [],
                 notInPage = [],
                 target = null,
+                index = -1,
                 i = -1;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -302,39 +300,50 @@
             endPageAt = (self.pagination.limit * operation.newPage) - 1;
 
             if (operation.newLimit > -1) {
-                for (i = 0; target = operation.matching[i]; i++) {
-                    // Show may have already been manipulate by remove, so iterated through matching
-                    
+                for (i = 0; target = operation.show[i]; i++) {
+                    // For each target in "show", include in page, only if within the range
+
                     if (i >= startPageAt && i <= endPageAt) {
                         inPage.push(target);
-                    } else if (i < startPageAt || i > endPageAt) {
+                    } else {
+                        // Else move to "notInPage""
+
                         notInPage.push(target);
                     }
                 }
 
+                // "show" is replaced with "inPage""
+
                 operation.show = inPage;
 
+                // For anything not in page, make sure it is correctly assigned
+
+                for (i = 0; target = operation.toHide[i]; i++) {
+                    if (!target._isShown) {
+                        operation.toHide.splice(i, 1);
+
+                        target._isShown = false;
+
+                        i--;
+                    }
+                }
+
                 for (i = 0; target = notInPage[i]; i++) {
-                    if (operation.show.indexOf(target) < 0) {
-                        operation.hide.push(target);
-                    }
-                    
-                    if (operation.toHide.indexOf(target) > -1) {
-                        // If anything outside the page has been moved into toHide by
-                        // remove, make sure it is removed
+                    // For each target not in page, move into "hide"
 
-                        operation.toHide.splice(operation.toHide.indexOf(target), 1);
-                    }
+                    operation.hide.push(target);
 
-                    if (operation.toShow.indexOf(target) > -1) {
-                        operation.toShow.splice(operation.toShow.indexOf(target), 1);
+                    if ((index = operation.toShow.indexOf(target)) > -1) {
+                        // Any targets due to be shown will no longer be shown
+
+                        operation.toShow.splice(index, 1);
                     }
 
                     if (target._isShown) {
+                        // If currently shown, move to "toHide"
+
                         operation.toHide.push(target);
                     }
-                    
-                    // TODO: make sure off page targets that should be shown after a remove are reshown.
                 }
 
                 if (operation.willSort) {
@@ -345,11 +354,11 @@
 
         /**
          * getOperation
-         * @extends MixItUp.prototype.getOperation
-         * @param {Operation} operation,
+         * @param {Operation} operation
+         * @priority 0
          */
 
-        MixItUp.prototype.addAction('getOperation', 'pagination', function(operation) {
+        Mixer.prototype.addAction('getOperation', 'pagination', function(operation) {
             var self = this,
                 command = null,
                 paginateCommand = null;
@@ -409,27 +418,26 @@
                 }
             }
         }, 0);
-        
+
         /**
          * multiMix
-         * @extends MixItUp.prototype.multiMix
          * @param {Operation} operation
          */
 
-        MixItUp.prototype.addFilter('multiMix', 'pagination', function(operation) {
+        Mixer.prototype.addFilter('multiMix', 'pagination', function(operation) {
             var self = this;
 
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
                 self._generatePagers(operation);
             }
         });
-        
+
         /**
          * _cleanUp
-         * @extends MixItUp.prototype._cleanUp
+         * @priority 1
          */
 
-        MixItUp.prototype.addAction('_cleanUp', 'pagination', function() {
+        Mixer.prototype.addAction('_cleanUp', 'pagination', function() {
             var self = this;
 
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
@@ -440,7 +448,7 @@
         /* Add Private Methods
         ---------------------------------------------------------------------- */
 
-        MixItUp.prototype.extend({
+        Mixer.prototype.extend({
 
             /**
              * _getNextPage
@@ -509,7 +517,7 @@
                         '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
 
                 self._execAction('_generatePagers', 0);
-                
+
                 // TODO: this method needs a major refactor - some sort of templating system would be better
 
                 for (var i = 0; i < totalButtons; i++) {
@@ -573,11 +581,11 @@
 
             /**
              * _parsePaginateArgs
-             * @param {array} args
-             * @return {object} output
+             * @param {Mixed[]} args
+             * @return {Object} output
              */
 
-            _parsePaginateArgs: function(args){
+            _parsePaginateArgs: function(args) {
                 var self = this,
                     output = {
                         command: null,
@@ -606,7 +614,7 @@
         /* Add Public Methods
         ---------------------------------------------------------------------- */
 
-        MixItUp.prototype.extend({
+        Mixer.prototype.extend({
 
             /**
              * paginate
@@ -651,7 +659,7 @@
             }
         });
 
-        return MixItUp;
+        return Mixer;
     };
 
 
@@ -665,7 +673,7 @@
             return applyExtension;
         });
     } else if (window.mixItUp && typeof window.mixItUp === 'function') {
-        applyExtension(window.mixItUp.prototype.MixItUp);
+        applyExtension(window.mixItUp);
     } else {
         console.error('[MixItUp-pagination] MixItUp core not found');
     }
