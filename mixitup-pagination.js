@@ -15,15 +15,27 @@
 (function(window, undf) {
     'use strict';
 
-    var applyExtension = null;
+    var mixItUpPagination = null;
 
-    applyExtension = function(mixItUp) {
+    mixItUpPagination = function(mixItUp) {
         var UserInstruction = mixItUp.prototype.UserInstruction,
             Operation       = mixItUp.prototype.Operation,
             Target          = mixItUp.prototype.Target,
             Mixer           = mixItUp.prototype.Mixer,
             State           = mixItUp.prototype.State,
             _h              = mixItUp.prototype._h;
+
+        // if (
+        //     !mixItUp.prototype.CORE_VERSION ||
+        //     mixItUp.prototype.CORE_VERSION < this.REQUIRE_CORE_VERSION
+        // ) {
+        //     throw new Error(
+        //         '[MixItUp-Pagination] MixItUp Pagination v' +
+        //         this.EXTENSION_VERSION +
+        //         ' requires at least MixItUp v' +
+        //         this.REQUIRE_CORE_VERSION
+        //     );
+        // }
 
         /* Constructors
         ---------------------------------------------------------------------- */
@@ -661,18 +673,23 @@
         return Mixer;
     };
 
+    /* Meta Data
+    ---------------------------------------------------------------------- */
+
+    mixItupPagination.prototype.EXTENSION_VERSION = '2.0.0';
+    mixItupPagination.prototype.REQUIRE_CORE_VERSION = '3.0.0';
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
 
     if (typeof exports === 'object' && typeof module === 'object') {
-        module.exports = applyExtension;
+        module.exports = mixItUpPagination;
     } else if (typeof define === 'function' && define.amd) {
         define(function() {
-            return applyExtension;
+            return mixItUpPagination;
         });
     } else if (window.mixItUp && typeof window.mixItUp === 'function') {
-        applyExtension(window.mixItUp);
+        mixItUpPagination(window.mixItUp);
     } else {
         console.error('[MixItUp-pagination] MixItUp core not found');
     }
