@@ -18,11 +18,12 @@
     var applyExtension = null;
 
     applyExtension = function(mixItUp) {
-        var Operation = mixItUp.prototype.Operation,
-            Target = mixItUp.prototype.Target,
-            Mixer = mixItUp.prototype.Mixer,
-            State = mixItUp.prototype.State,
-            _h = mixItUp.prototype._h;
+        var UserInstruction = mixItUp.prototype.UserInstruction,
+            Operation       = mixItUp.prototype.Operation,
+            Target          = mixItUp.prototype.Target,
+            Mixer           = mixItUp.prototype.Mixer,
+            State           = mixItUp.prototype.State,
+            _h              = mixItUp.prototype._h;
 
         /* Constructors
         ---------------------------------------------------------------------- */
@@ -109,8 +110,8 @@
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            self._state.limit = self.pagination.limit;
-            self._state.activePage = self.load.page;
+            self._state.limit       = self.pagination.limit;
+            self._state.activePage  = self.load.page;
         }, 1);
 
         /**
@@ -187,10 +188,10 @@
          */
 
         Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
-            var self = this,
-                pageNumber = null,
-                e = args[0],
-                pageButton = _h.closestParent(
+            var self        = this,
+                pageNumber  = null,
+                e           = args[0],
+                pageButton  = _h.closestParent(
                     e.target,
                     self.selectors.pager,
                     true
@@ -236,8 +237,8 @@
          */
 
         Mixer.prototype.addFilter('_buildState', 'pagination', function(state, args) {
-            var self = this,
-                operation = args[0];
+            var self        = this,
+                operation   = args[0];
 
             if (!self.pagination || self.pagination.limit < 0) {
                 return state;
@@ -259,8 +260,8 @@
          */
 
         Mixer.prototype.addAction('_sort', 'pagination', function(args) {
-            var self = this,
-                operation = args && args[0];
+            var self        = this,
+                operation   = args && args[0];
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
@@ -274,15 +275,15 @@
          */
 
         Mixer.prototype.addAction('_filter', 'pagination', function(args) {
-            var self = this,
-                operation = args && args[0],
+            var self        = this,
+                operation   = args && args[0],
                 startPageAt = -1,
-                endPageAt = -1,
-                inPage = [],
-                notInPage = [],
-                target = null,
-                index = -1,
-                i = -1;
+                endPageAt   = -1,
+                inPage      = [],
+                notInPage   = [],
+                target      = null,
+                index       = -1,
+                i           = -1;
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
@@ -297,7 +298,7 @@
             }
 
             startPageAt = self.pagination.limit * (operation.newPage - 1);
-            endPageAt = (self.pagination.limit * operation.newPage) - 1;
+            endPageAt   = (self.pagination.limit * operation.newPage) - 1;
 
             if (operation.newLimit > -1) {
                 for (i = 0; target = operation.show[i]; i++) {
@@ -359,8 +360,8 @@
          */
 
         Mixer.prototype.addAction('getOperation', 'pagination', function(operation) {
-            var self = this,
-                command = null,
+            var self            = this,
+                command         = null,
                 paginateCommand = null;
 
             if (!self.pagination || self.pagination.limit < 0) return;
@@ -369,7 +370,7 @@
 
             paginateCommand = command.paginate;
 
-            operation.startPage = operation.newPage = operation.startState.activePage;
+            operation.startPage  = operation.newPage  = operation.startState.activePage;
             operation.startLimit = operation.newLimit = operation.startState.limit;
 
             operation.startTotalPages = operation.startState.totalPages;
@@ -492,14 +493,14 @@
              */
 
             _generatePagers: function(operation) {
-                var self = this,
-                    pagerTag = self._dom.pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
-                    pagerClass = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
-                    prevButtonHTML = '',
-                    nextButtonHTML = '',
-                    pagerButtonsHTML = '',
-                    pagersHTML = '',
-                    totalButtons = (
+                var self                = this,
+                    pagerTag            = self._dom.pagersWrapper.nodeName === 'UL' ? 'li' : 'span',
+                    pagerClass          = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
+                    prevButtonHTML      = '',
+                    nextButtonHTML      = '',
+                    pagerButtonsHTML    = '',
+                    pagersHTML          = '',
+                    totalButtons        = (
                         self.pagination.maxPagers !== false &&
                         operation.newTotalPages > self.pagination.maxPagers
                     ) ?
@@ -522,7 +523,7 @@
 
                 for (var i = 0; i < totalButtons; i++) {
                     var pagerNumber = null,
-                        classes = '';
+                        classes     = '';
 
                     if(i === 0) {
                         pagerNumber = 1;
@@ -582,32 +583,30 @@
             /**
              * _parsePaginateArgs
              * @param {Mixed[]} args
-             * @return {Object} output
+             * @return {Object} instruction
              */
 
             _parsePaginateArgs: function(args) {
-                var self = this,
-                    output = {
-                        command: null,
-                        animate: self.animation.enable,
-                        callback: null
-                    };
+                var self        = this,
+                    instruction = new UserInstruction();
+
+                instruction.animate = self.animation.enable;
 
                 for (var i = 0; i < args.length; i++) {
                     var arg = args[i];
 
                     if (arg !== null) {
                         if (typeof arg === 'object' || typeof arg === 'number') {
-                            output.command = arg;
+                            instruction.command = arg;
                         } else if (typeof arg === 'boolean') {
-                            output.animate = arg;
+                            instruction.animate = arg;
                         } else if (typeof arg === 'function') {
-                            output.callback = arg;
+                            instruction.callback = arg;
                         }
                     }
                 }
 
-                return self._execFilter('_parsePaginateArgs', output, arguments);
+                return self._execFilter('_parsePaginateArgs', instruction, arguments);
             }
         });
 
@@ -619,43 +618,43 @@
             /**
              * paginate
              * @shorthand multiMix
-             * @param {Mixed} arguments
-             * @return {Object} promise
+             * @param {*[]} arguments
+             * @return {Promise} -> {State}
              */
 
             paginate: function() {
                 var self = this,
-                    args = self._parsePaginateArgs(arguments);
+                    instruction = self._parsePaginateArgs(arguments);
 
-                return self.multiMix({paginate: args.command}, args.animate, args.callback);
+                return self.multiMix({paginate: instruction.command}, instruction.animate, instruction.callback);
             },
 
             /**
              * nextPage
              * @shorthand multiMix
-             * @param {Mixed} arguments
-             * @return {Object} promise
+             * @param {*[]} arguments
+             * @return {Promise} -> {State}
              */
 
             nextPage: function() {
                 var self = this,
-                    args = self._parsePaginateArgs(arguments);
+                    instruction = self._parsePaginateArgs(arguments);
 
-                return self.multiMix({paginate: 'next'}, args.animate, args.callback);
+                return self.multiMix({paginate: 'next'}, instruction.animate, instruction.callback);
             },
 
             /**
              * prevPage
              * @shorthand multiMix
-             * @param {Mixed} arguments
-             * @return {Object} promise
+             * @param {*[]} argumentss
+             * @return {Promise} -> {State}
              */
 
             prevPage: function() {
                 var self = this,
-                    args = self._parsePaginateArgs(arguments);
+                    instruction = self._parsePaginateArgs(arguments);
 
-                return self.multiMix({paginate: 'prev'}, args.animate, args.callback);
+                return self.multiMix({paginate: 'prev'}, instruction.animate, instruction.callback);
             }
         });
 
