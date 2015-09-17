@@ -676,8 +676,8 @@
     /* Meta Data
     ---------------------------------------------------------------------- */
 
-    mixItupPagination.prototype.EXTENSION_VERSION = '2.0.0';
-    mixItupPagination.prototype.REQUIRE_CORE_VERSION = '3.0.0';
+    mixItUpPagination.prototype.EXTENSION_VERSION = '2.0.0';
+    mixItUpPagination.prototype.REQUIRE_CORE_VERSION = '3.0.0';
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
