@@ -2,7 +2,7 @@
  * MixItUp Pagination v2.0.0
  * A Premium Extension for MixItUp
  *
- * @copyright Copyright 2014 KunkaLabs Limited.
+ * @copyright Copyright 2015 KunkaLabs Limited.
  * @author    KunkaLabs Limited.
  * @link      https://mixitup.kunkalabs.com
  *
@@ -25,24 +25,63 @@
             State           = mixItUp.prototype.State,
             _h              = mixItUp.prototype._h;
 
-        // if (
-        //     !mixItUp.prototype.CORE_VERSION ||
-        //     mixItUp.prototype.CORE_VERSION < this.REQUIRE_CORE_VERSION
-        // ) {
-        //     throw new Error(
-        //         '[MixItUp-Pagination] MixItUp Pagination v' +
-        //         this.EXTENSION_VERSION +
-        //         ' requires at least MixItUp v' +
-        //         this.REQUIRE_CORE_VERSION
-        //     );
-        // }
+        if (
+            !mixItUp.prototype.CORE_VERSION ||
+            !_h.compareVersions(mixItUpPagination.prototype.REQUIRE_CORE_VERSION, mixItUp.prototype.CORE_VERSION)
+        ) {
+            throw new Error(
+                '[MixItUp-Pagination] MixItUp Pagination v' +
+                mixItUpPagination.prototype.EXTENSION_VERSION +
+                ' requires at least MixItUp v' +
+                mixItUpPagination.prototype.REQUIRE_CORE_VERSION
+            );
+        }
 
-        /* Constructors
+        /* <Operation> Hooks
+        ---------------------------------------------------------------------- */
+
+        /**
+         * Operation
+         * @exec after
+         */
+
+        Operation.prototype.addAction('_constructor', 'pagination', function() {
+            var self = this;
+
+            _h.extend(this, {
+                startPage: -1,
+                newPage: -1,
+                startLimit: -1,
+                newLimit: -1,
+                startTotalPages: -1,
+                newTotalPages: -1
+            });
+        }, 1);
+
+        /* <State> Hooks
+        ---------------------------------------------------------------------- */
+
+        /**
+         * State
+         * @exec after
+         */
+
+        State.prototype.addAction('_constructor', 'pagination', function() {
+            var self = this;
+
+            _h.extend(this, {
+                limit: -1,
+                activePage: -1,
+                totalPages: -1
+            });
+        }, 1);
+
+        /* <Mixer> Hooks
         ---------------------------------------------------------------------- */
 
         /**
          * Mixer
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_constructor', 'pagination', function() {
@@ -77,44 +116,8 @@
         }, 1);
 
         /**
-         * Operation
-         * @priority 1
-         */
-
-        Operation.prototype.addAction('_constructor', 'pagination', function() {
-            var self = this;
-
-            _h.extend(this, {
-                startPage: -1,
-                newPage: -1,
-                startLimit: -1,
-                newLimit: -1,
-                startTotalPages: -1,
-                newTotalPages: -1
-            });
-        }, 1);
-
-        /**
-         * State
-         * @priority 1
-         */
-
-        State.prototype.addAction('_constructor', 'pagination', function() {
-            var self = this;
-
-            _h.extend(this, {
-                limit: -1,
-                activePage: -1,
-                totalPages: -1
-            });
-        }, 1);
-
-        /* Methods
-        ---------------------------------------------------------------------- */
-
-        /**
          * _init
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_init', 'pagination', function() {
@@ -132,7 +135,7 @@
 
         /**
          * _getFinalMixData
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
@@ -150,7 +153,7 @@
 
         /**
          * _cacheDom
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_cacheDom', 'pagination', function() {
@@ -167,7 +170,7 @@
 
         /**
          * _bindEvents
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
@@ -182,7 +185,7 @@
 
         /**
          * _unbindEvents
-         * @priority 0
+         * @exec before
          */
 
         Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
@@ -195,8 +198,8 @@
 
         /**
          * _handleClick
-         * @param {Mixed[]} args
-         * @priority 1
+         * @param   {Mixed[]}   args
+         * @exec    after
          */
 
         Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
@@ -242,10 +245,10 @@
 
         /**
          * _buildState
-         * @param {State} state
-         * @param {Mixed[]} args
-         * @return {State}
-         * @priority 1
+         * @param   {State}     state
+         * @param   {Mixed[]}   args
+         * @return  {State}
+         * @exec    after
          */
 
         Mixer.prototype.addFilter('_buildState', 'pagination', function(state, args) {
@@ -267,8 +270,8 @@
 
         /**
          * _sort
-         * @param {Mixed[]} args
-         * @priority 1
+         * @param   {Mixed[]}   args
+         * @exec    after
          */
 
         Mixer.prototype.addAction('_sort', 'pagination', function(args) {
@@ -282,8 +285,8 @@
 
         /**
          * _filter
-         * @param {Mixed[]} args
-         * @priority 1
+         * @param   {Mixed[]}   args
+         * @exec    after
          */
 
         Mixer.prototype.addAction('_filter', 'pagination', function(args) {
@@ -367,8 +370,8 @@
 
         /**
          * getOperation
-         * @param {Operation} operation
-         * @priority 0
+         * @param   {Operation}     operation
+         * @exec    before
          */
 
         Mixer.prototype.addAction('getOperation', 'pagination', function(operation) {
@@ -447,7 +450,7 @@
 
         /**
          * _cleanUp
-         * @priority 1
+         * @exec after
          */
 
         Mixer.prototype.addAction('_cleanUp', 'pagination', function() {
@@ -458,7 +461,7 @@
             }
         }, 1);
 
-        /* Add Private Methods
+        /* <Mixer> Private Methods
         ---------------------------------------------------------------------- */
 
         Mixer.prototype.extend({
@@ -594,8 +597,8 @@
 
             /**
              * _parsePaginateArgs
-             * @param {Mixed[]} args
-             * @return {Object} instruction
+             * @param   {Mixed[]}   args
+             * @return  {Object}    instruction
              */
 
             _parsePaginateArgs: function(args) {
@@ -622,16 +625,16 @@
             }
         });
 
-        /* Add Public Methods
+        /* <Mixer> Public Methods
         ---------------------------------------------------------------------- */
 
         Mixer.prototype.extend({
 
             /**
              * paginate
-             * @shorthand multiMix
-             * @param {*[]} arguments
-             * @return {Promise} -> {State}
+             * @shorthand   multiMix
+             * @param       {*[]}           arguments
+             * @return      {Promise} ->    {State}
              */
 
             paginate: function() {
@@ -643,9 +646,9 @@
 
             /**
              * nextPage
-             * @shorthand multiMix
-             * @param {*[]} arguments
-             * @return {Promise} -> {State}
+             * @shorthand   multiMix
+             * @param       {*[]}           arguments
+             * @return      {Promise} ->    {State}
              */
 
             nextPage: function() {
@@ -657,9 +660,9 @@
 
             /**
              * prevPage
-             * @shorthand multiMix
-             * @param {*[]} argumentss
-             * @return {Promise} -> {State}
+             * @shorthand   multiMix
+             * @param       {*[]}           arguments
+             * @return      {Promise} ->    {State}
              */
 
             prevPage: function() {
@@ -673,11 +676,11 @@
         return Mixer;
     };
 
-    /* Meta Data
+    /* Extension Meta Data
     ---------------------------------------------------------------------- */
 
-    mixItUpPagination.prototype.EXTENSION_VERSION = '2.0.0';
-    mixItUpPagination.prototype.REQUIRE_CORE_VERSION = '3.0.0';
+    mixItUpPagination.prototype.EXTENSION_VERSION       = '2.0.0';
+    mixItUpPagination.prototype.REQUIRE_CORE_VERSION    = '3.0.0';
 
     /* Module Definitions
     ---------------------------------------------------------------------- */
