@@ -20,7 +20,6 @@
     mixItUpPagination = function(mixItUp) {
         var UserInstruction = mixItUp.prototype.UserInstruction,
             Operation       = mixItUp.prototype.Operation,
-            Target          = mixItUp.prototype.Target,
             Mixer           = mixItUp.prototype.Mixer,
             State           = mixItUp.prototype.State,
             _h              = mixItUp.prototype._h;
@@ -37,7 +36,7 @@
             );
         }
 
-        /* <Operation> Hooks
+        /* {Operation} class
         ---------------------------------------------------------------------- */
 
         /**
@@ -46,19 +45,15 @@
          */
 
         Operation.prototype.addAction('_constructor', 'pagination', function() {
-            var self = this;
-
-            _h.extend(this, {
-                startPage: -1,
-                newPage: -1,
-                startLimit: -1,
-                newLimit: -1,
-                startTotalPages: -1,
-                newTotalPages: -1
-            });
+            this.startPage          = -1;
+            this.newPage            = -1;
+            this.startLimit         = -1;
+            this.newLimit           = -1;
+            this.startTotalPages    = -1;
+            this.newTotalPages      = -1;
         }, 1);
 
-        /* <State> Hooks
+        /* {State} class
         ---------------------------------------------------------------------- */
 
         /**
@@ -67,16 +62,12 @@
          */
 
         State.prototype.addAction('_constructor', 'pagination', function() {
-            var self = this;
-
-            _h.extend(this, {
-                limit: -1,
-                activePage: -1,
-                totalPages: -1
-            });
+            this.limit      = -1;
+            this.activePage = -1;
+            this.totalPages = -1;
         }, 1);
 
-        /* <Mixer> Hooks
+        /* {Mixer} class
         ---------------------------------------------------------------------- */
 
         /**
@@ -117,6 +108,7 @@
 
         /**
          * _init
+         * @hook
          * @exec after
          */
 
@@ -130,11 +122,8 @@
         }, 1);
 
         /**
-         * _cacheDom
-         */
-
-        /**
          * _getFinalMixData
+         * @hook
          * @exec after
          */
 
@@ -153,6 +142,7 @@
 
         /**
          * _cacheDom
+         * @hook
          * @exec after
          */
 
@@ -170,6 +160,7 @@
 
         /**
          * _bindEvents
+         * @hook
          * @exec after
          */
 
@@ -185,6 +176,7 @@
 
         /**
          * _unbindEvents
+         * @hook
          * @exec before
          */
 
@@ -198,7 +190,8 @@
 
         /**
          * _handleClick
-         * @param   {Mixed[]}   args
+         * @hook
+         * @param   {*[]}   args
          * @exec    after
          */
 
@@ -245,8 +238,9 @@
 
         /**
          * _buildState
+         * @hook
          * @param   {State}     state
-         * @param   {Mixed[]}   args
+         * @param   {*[]}       args
          * @return  {State}
          * @exec    after
          */
@@ -269,23 +263,9 @@
         });
 
         /**
-         * _sort
-         * @param   {Mixed[]}   args
-         * @exec    after
-         */
-
-        Mixer.prototype.addAction('_sort', 'pagination', function(args) {
-            var self        = this,
-                operation   = args && args[0];
-
-            if (!self.pagination || self.pagination.limit < 0) return;
-
-            self._printSort(false, operation);
-        }, 1);
-
-        /**
          * _filter
-         * @param   {Mixed[]}   args
+         * @hook
+         * @param   {*[]}   args
          * @exec    after
          */
 
@@ -361,15 +341,12 @@
                         operation.toHide.push(target);
                     }
                 }
-
-                if (operation.willSort) {
-                    self._printSort(true, operation);
-                }
             }
         }, 1);
 
         /**
          * getOperation
+         * @hook
          * @param   {Operation}     operation
          * @exec    before
          */
@@ -437,6 +414,7 @@
 
         /**
          * multiMix
+         * @hook
          * @param {Operation} operation
          */
 
@@ -450,6 +428,7 @@
 
         /**
          * _cleanUp
+         * @hook
          * @exec after
          */
 
@@ -461,12 +440,11 @@
             }
         }, 1);
 
-        /* <Mixer> Private Methods
-        ---------------------------------------------------------------------- */
 
         Mixer.prototype.extend({
 
             /**
+             * @private
              * _getNextPage
              * @return {Number} page
              */
@@ -486,6 +464,7 @@
 
             /**
              * _getPreviousPage
+             * @private
              * @return {Number} page
              */
 
@@ -504,6 +483,7 @@
 
             /**
              * _generatePagers
+             * @private
              * @param {Operation} operation
              */
 
@@ -597,7 +577,8 @@
 
             /**
              * _parsePaginateArgs
-             * @param   {Mixed[]}   args
+             * @private
+             * @param   {*[]}       args
              * @return  {Object}    instruction
              */
 
@@ -623,15 +604,10 @@
 
                 return self._execFilter('_parsePaginateArgs', instruction, arguments);
             }
-        });
-
-        /* <Mixer> Public Methods
-        ---------------------------------------------------------------------- */
-
-        Mixer.prototype.extend({
 
             /**
              * paginate
+             * @public
              * @shorthand   multiMix
              * @param       {*[]}           arguments
              * @return      {Promise} ->    {State}
@@ -646,6 +622,7 @@
 
             /**
              * nextPage
+             * @public
              * @shorthand   multiMix
              * @param       {*[]}           arguments
              * @return      {Promise} ->    {State}
@@ -660,6 +637,7 @@
 
             /**
              * prevPage
+             * @public
              * @shorthand   multiMix
              * @param       {*[]}           arguments
              * @return      {Promise} ->    {State}
