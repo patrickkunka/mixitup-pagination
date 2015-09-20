@@ -603,7 +603,7 @@
                 }
 
                 return self._execFilter('_parsePaginateArgs', instruction, arguments);
-            }
+            },
 
             /**
              * paginate
