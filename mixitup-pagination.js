@@ -40,7 +40,7 @@
         ---------------------------------------------------------------------- */
 
         /**
-         * Operation
+         * _constructor
          * @exec after
          */
 
@@ -57,7 +57,7 @@
         ---------------------------------------------------------------------- */
 
         /**
-         * State
+         * _constructor
          * @exec after
          */
 
@@ -71,7 +71,8 @@
         ---------------------------------------------------------------------- */
 
         /**
-         * Mixer
+         * _constructor
+         * @hook
          * @exec after
          */
 
@@ -415,7 +416,7 @@
         /**
          * multiMix
          * @hook
-         * @param {Operation} operation
+         * @param   {Operation}     operation
          */
 
         Mixer.prototype.addFilter('multiMix', 'pagination', function(operation) {
@@ -429,7 +430,7 @@
         /**
          * _cleanUp
          * @hook
-         * @exec after
+         * @exec    after
          */
 
         Mixer.prototype.addAction('_cleanUp', 'pagination', function() {
@@ -444,9 +445,9 @@
         Mixer.prototype.extend({
 
             /**
-             * @private
              * _getNextPage
-             * @return {Number} page
+             * @private
+             * @return  {Number}    page
              */
 
             _getNextPage: function() {
@@ -465,7 +466,7 @@
             /**
              * _getPreviousPage
              * @private
-             * @return {Number} page
+             * @return  {Number}    page
              */
 
             _getPrevPage: function() {
@@ -484,7 +485,7 @@
             /**
              * _generatePagers
              * @private
-             * @param {Operation} operation
+             * @param   {Operation}     operation
              */
 
             _generatePagers: function(operation) {
