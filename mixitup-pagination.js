@@ -422,6 +422,8 @@
         Mixer.prototype.addFilter('multiMix', 'pagination', function(operation) {
             var self = this;
 
+            if (!self.pagination || self.pagination.limit < 0) return;
+
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
                 self._generatePagers(operation);
             }
@@ -435,6 +437,8 @@
 
         Mixer.prototype.addAction('_cleanUp', 'pagination', function() {
             var self = this;
+
+            if (!self.pagination || self.pagination.limit < 0) return;
 
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
                 self._generatePagers(self._lastOperation);
