@@ -281,7 +281,7 @@
                 index       = -1,
                 i           = -1;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || operation.newLimit < 0) return;
 
             operation.newTotalPages = operation.newLimit ?
                 Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
@@ -293,8 +293,8 @@
                     operation.newPage;
             }
 
-            startPageAt = self.pagination.limit * (operation.newPage - 1);
-            endPageAt   = (self.pagination.limit * operation.newPage) - 1;
+            startPageAt = operation.newLimit * (operation.newPage - 1);
+            endPageAt   = (operation.newLimit * operation.newPage) - 1;
 
             if (operation.newLimit > -1) {
                 for (i = 0; target = operation.show[i]; i++) {
