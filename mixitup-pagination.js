@@ -283,8 +283,12 @@
 
             if (!self.pagination || operation.newLimit < 0) return;
 
+            // Calculate the new total pages as a matter of course (i.e. a change in filter)
+
+            // New matching array has already been set at this point
+
             operation.newTotalPages = operation.newLimit ?
-                Math.max(Math.ceil(operation.show.length / operation.startLimit), 1) :
+                Math.max(Math.ceil(operation.matching.length / operation.newLimit), 1) :
                 1;
 
             if (self.pagination.maintainActivePage) {
@@ -375,8 +379,10 @@
                         typeof paginateCommand.limit === 'number' && (operation.newLimit = paginateCommand.limit);
 
                         if (operation.newLimit !== operation.startLimit) {
+                            // A new limit has been sent via the API, calculate total pages
+
                             operation.newTotalPages = operation.newLimit ?
-                                Math.max(Math.ceil(operation.show.length / operation.newLimit), 1) :
+                                Math.max(Math.ceil(operation.startState.matching.length / operation.newLimit), 1) :
                                 1;
                         }
 
@@ -422,11 +428,9 @@
         Mixer.prototype.addFilter('multiMix', 'pagination', function(operation) {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
-
-            if (self.pagination.generatePagers && self._dom.pagersWrapper) {
-                self._generatePagers(operation);
-            }
+            // if (self.pagination.generatePagers && self._dom.pagersWrapper) {
+            //     self._generatePagers(operation);
+            // }
         });
 
         /**
@@ -437,8 +441,6 @@
 
         Mixer.prototype.addAction('_cleanUp', 'pagination', function() {
             var self = this;
-
-            if (!self.pagination || self.pagination.limit < 0) return;
 
             if (self.pagination.generatePagers && self._dom.pagersWrapper) {
                 self._generatePagers(self._lastOperation);
