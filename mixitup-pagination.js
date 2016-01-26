@@ -13,7 +13,7 @@
  *            https://mixitup.kunkalabs.com/licenses/
  */
 
-(function(window, undf) {
+(function(window) {
     'use strict';
 
     var mixItUpPagination = null;
@@ -39,11 +39,19 @@
             this.limit                  = -1;
             this.loop                   = false;
             this.generatePagers         = true;
-            this.maxPagers              = 5;
-            this.pagerClass             = '';
-            this.prevButtonHTML         = '&laquo;';
-            this.nextButtonHTML         = '&raquo;';
+            this.maxPagers              = Infinity;
             this.maintainActivePage     = true;
+            this.pagerClass             = 'mixitup-pager';
+            this.pagerClassDisabled     = 'mixitup-pager-disabled';
+            this.pagerClassFirst        = 'mixitup-pager-first';
+            this.pagerClassLast         = 'mixitup-pager-last';
+            this.pagerPrevClass         = 'mixitup-pager-prev';
+            this.pagerNextClass         = 'mixitup-pager-next';
+            this.pagerListClassDisabled = 'mixitup-pager-list-disabled';
+            this.templatePager          = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
+            this.templatePrevPage       = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
+            this.templateNextPage       = '<span class="{{classes}}" data-page="next">&raquo;</span>';
+            this.templateEllipses       = '...';
 
             h.seal(this);
         };
@@ -74,8 +82,7 @@
         }, 1);
 
         mixitup.ConfigSelectors.prototype.addAction('construct', 'pagination', function() {
-            this.pagerList          = '.pager-list';
-            this.pager              = '.pager';
+            this.pagerList          = '.mixitup-pager-list';
         }, 1);
 
         mixitup.ConfigCallbacks.prototype.addAction('construct', 'pagination', function() {
@@ -92,14 +99,18 @@
 
         // Extend mixitup.Mixer methods:
 
-        mixitup.Mixer.prototype.addAction('_init', 'pagination', function() {
+        mixitup.Mixer.prototype.addFilter('_init', 'pagination', function(state, args) {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0) {
+                return state;
+            }
 
-            self._state.limit       = self.pagination.limit;
-            self._state.activePage  = self.load.page;
-        }, 1);
+            state.limit       = self.pagination.limit;
+            state.activePage  = self.load.page;
+
+            return state;
+        });
 
         mixitup.Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
@@ -153,7 +164,9 @@
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
-            pager = h.closestParent(e.target, self.selectors.pager, true);
+            pager = h.closestParent(e.target, '.' + self.pagination.pagerClass, true, self._dom.document);
+
+            console.log(pager);
 
             if (!pager) return;
 
@@ -181,7 +194,7 @@
                 state: self._state,
                 instance: self,
                 event: e
-            });
+            }, self._dom.document);
 
             self.paginate(pageNumber);
         }, 1);
@@ -256,10 +269,10 @@
                 // now already hidden as not in the page, make sure it is removed from `toHide`
                 // so it is not included in the operation.
 
-                if (!target._isShown) {
+                if (!target.isShown) {
                     operation.toHide.splice(i, 1);
 
-                    target._isShown = false;
+                    target.isShown = false;
 
                     i--;
                 }
@@ -276,7 +289,7 @@
                     operation.toShow.splice(index, 1);
                 }
 
-                if (target._isShown) {
+                if (target.isShown) {
                     // If currently shown, move to `toHide`
 
                     operation.toHide.push(target);
@@ -288,6 +301,10 @@
             var self            = this,
                 command         = null,
                 paginateCommand = null;
+
+            // TODO: this should really be a filter as we don't pull in operation
+            // from args - at has to be passed directly in the mixer. A todo has
+            // been placed there for consideration too.
 
             if (!self.pagination || self.pagination.limit < 0) return;
 
@@ -301,7 +318,7 @@
 
             if (paginateCommand) {
                 self._parsePaginationCommand(paginateCommand, operation);
-            } else if (command.filter !== undf || command.sort !== undf) {
+            } else if (typeof command.filter !=='undefined' || typeof command.sort !== 'undefined') {
                 // No other functionality is taking place that could affect
                 // the active page, reset to 1, or maintain active:
 
@@ -311,13 +328,19 @@
                     operation.newPage = self._state.activePage;
                 }
             }
+        }, 0);
 
-            if (self.pagination.generatePagers && self._dom.pagersList) {
+        mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation) {
+            var self = this;
+
+            if (self.pagination.generatePagers && self._dom.pagerList) {
                 // Update the pagers
 
-                self._generatePagers(operation);
+                self._renderPagers(operation);
             }
-        }, 0);
+
+            return operation;
+        });
 
         // Add new mixitup.Mixer methods:
 
@@ -389,7 +412,7 @@
 
                 page = self._state.activePage + 1;
 
-                if (self._state.activePage >= self._state.totalPages) {
+                if (page > self._state.totalPages) {
                     page = self.pagination.loop ? 1 : self._state.activePage;
                 }
 
@@ -407,7 +430,7 @@
 
                 page = self._state.activePage - 1;
 
-                if (self._state.activePage <= self._state.totalPages) {
+                if (page < 1) {
                     page = self.pagination.loop ? self._state.totalPages : self._state.activePage;
                 }
 
@@ -420,94 +443,92 @@
              * @return  {void}
              */
 
-            _generatePagers: function(operation) {
-                // TODO: replace all of this with some sort of templating concept
+            _renderPagers: function(operation) {
+                var self            = this,
+                    totalButtons    = -1,
+                    pagerHtml       = '',
+                    buttonList      = [],
+                    classList       = [],
+                    html            = '',
+                    i               = -1;
 
-                var self                = this,
-                    pagerTag            = self._dom.pagerList.nodeName === 'UL' ? 'li' : 'span',
-                    pagerClass          = self.pagination.pagerClass ? self.pagination.pagerClass+' ' : '',
-                    prevButtonHTML      = '',
-                    nextButtonHTML      = '',
-                    pagerButtonsHTML    = '',
-                    pagersHTML          = '',
-                    totalButtons        = (
-                        self.pagination.maxPagers !== false &&
-                        operation.newTotalPages > self.pagination.maxPagers
-                    ) ?
-                        self.pagination.maxPagers :
-                        operation.newTotalPages;
+                if (self.pagination.maxPagers !== Infinity && operation.newTotalPages > self.pagination.maxPagers) {
+                    totalButtons = self.pagination.maxPagers;
+                } else {
+                    totalButtons = operation.newTotalPages;
+                }
 
-                prevButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-prev" data-page="prev"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
-                prevButtonHTML = (operation.newPage > 1) ?
-                    prevButtonHTML : self.pagination.loop ? prevButtonHTML :
-                        '<'+pagerTag+' class="'+pagerClass+'pager page-prev disabled"><span>'+self.pagination.prevButtonHTML+'</span></'+pagerTag+'>';
+                // Render prev button
 
-                nextButtonHTML = '<'+pagerTag+' class="'+pagerClass+'pager page-next" data-page="next"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
-                nextButtonHTML = (operation.newPage < self._totalPages) ?
-                    nextButtonHTML : self.pagination.loop ? nextButtonHTML :
-                        '<'+pagerTag+' class="'+pagerClass+'pager page-next disabled"><span>'+self.pagination.nextButtonHTML+'</span></'+pagerTag+'>';
+                classList.push(self.pagination.pagerClass);
+                classList.push(self.pagination.pagerPrevClass);
 
-                self._execAction('_generatePagers', 0);
+                // If first and not looping, disable the prev button
 
-                // TODO: this method needs a major refactor - some sort of templating system would be better
+                if (operation.newPage === 1 && !self.pagination.loop) {
+                    classList.push(self.pagination.pagerClassDisabled);
+                }
 
-                for (var i = 0; i < totalButtons; i++) {
-                    var pagerNumber = null,
-                        classes     = '';
+                pagerHtml = self.pagination.templatePrevPage.replace(/{{classes}}/g, classList.join(' '));
 
-                    if(i === 0) {
-                        pagerNumber = 1;
-                        if(
-                            self.pagination.maxPagers !== false &&
-                            operation.newPage > (self.pagination.maxPagers - 2) &&
-                            operation.newTotalPages > self.pagination.maxPagers
-                        ){
-                            classes = ' page-first';
-                        }
-                    } else {
-                        if (
-                            self.pagination.maxPagers === false ||
-                            totalButtons < self.pagination.maxPagers
-                        ) {
-                            pagerNumber = i + 1;
-                        } else {
-                            if (i === self.pagination.maxPagers - 1) {
-                                pagerNumber = operation.newTotalPages;
+                buttonList.push(pagerHtml);
 
-                                if (operation.newPage < operation.newTotalPages - 2 && operation.newTotalPages > self.pagination.maxPagers) {
-                                    classes = ' page-last';
-                                }
-                            } else {
-                                if (
-                                    operation.newPage > self.pagination.maxPagers - 2 &&
-                                    operation.newPage < operation.newTotalPages - 2
-                                ) {
-                                    pagerNumber = operation.newPage - (2 - i);
-                                } else if (operation.newPage < self.pagination.maxPagers - 1) {
-                                    pagerNumber = i + 1;
-                                } else if (operation.newPage >= operation.newTotalPAges - 2) {
-                                    pagerNumber = operation.newTotalPAges - (self.pagination.maxPagers - 1 - i);
-                                }
-                            }
-                        }
+                // Render per-page pagers
+
+                for (i = 0; i < totalButtons; i++) {
+                    classList = [];
+
+                    classList.push(self.pagination.pagerClass);
+
+                    if (i === 0) {
+                        classList.push(self.pagination.pagerClassFirst);
                     }
 
-                    classes = (pagerNumber == operation.newPage) ? classes+' '+self.controls.activeClass : classes;
+                    if (i === totalButtons - 1) {
+                        classList.push(self.pagination.pagerClassLast);
+                    }
 
-                    pagerButtonsHTML += '<'+pagerTag+' class="'+pagerClass+'pager page-number'+classes+'" data-page="'+pagerNumber+'"><span>'+pagerNumber+'</span></'+pagerTag+'> ';
+                    if (i + 1 === operation.newPage) {
+                        classList.push(self.controls.activeClass);
+                    }
+
+                    pagerHtml = self.pagination.templatePager
+                        .replace(/{{classes}}/g, classList.join(' '))
+                        .replace(/{{pageNumber}}/g, (i + 1));
+
+                    buttonList.push(pagerHtml);
                 }
 
-                pagersHTML = operation.newTotalPages > 1 ? prevButtonHTML+' '+pagerButtonsHTML+' '+nextButtonHTML : '';
+                // TODO: think about how to truncate the list if max pagers enabled, and insert ellipses
 
-                self._dom.pagerList.innerHTML = pagersHTML;
+                // Render next button
+
+                classList = [];
+
+                classList.push(self.pagination.pagerClass);
+                classList.push(self.pagination.pagerNextClass);
+
+                // If last page and not looping, disable the next button
+
+                if (operation.newPage === totalButtons && !self.pagination.loop) {
+                    classList.push(self.pagination.pagerClassDisabled);
+                }
+
+                pagerHtml = self.pagination.templateNextPage.replace(/{{classes}}/g, classList.join(' '));
+
+                buttonList.push(pagerHtml);
+
+                // Replace markup
+
+                html = buttonList.join(' ');
+
+                self._dom.pagerList.innerHTML = html;
 
                 if (operation.newTotalPages > 1) {
-                    h.removeClass(self._dom.pagerList, 'no-pagers'); // this should be configurable
+                    h.removeClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
                 } else {
-                    h.addClass(self._dom.pagerList, 'no-pagers');
+                    h.addClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
                 }
-
-                self._execAction('_generatePagers', 1);
             },
 
             /**
@@ -536,7 +557,7 @@
                     }
                 }
 
-                return self._execFilter('_parsePaginateArgs', instruction, arguments);
+                return instruction;
             },
 
             /**
