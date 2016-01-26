@@ -118,7 +118,9 @@
             if (!self.pagination || self.pagination.limit < 0) return;
 
             if (typeof self.pagination.maxPagers === 'number') {
-                // Restrict max pagers to a minimum of 5
+                // Restrict max pagers to a minimum of 5. There must always
+                // be a first, last, and one on either side of the active pager.
+                // e.g. « 1 ... 4 5 6 ... 10 »
 
                 self.pagination.maxPagers = Math.max(5, self.pagination.maxPagers);
             }
@@ -475,7 +477,20 @@
 
                 // Render per-page pagers
 
+                // « 1 ... 4 *5* 6 ... 10 »         maxPagers = 5       Range = (5 - 2 / 2) = Floor(1.5)    = 1
+                // « 1 ... 3 4 *5* 6 ... 10 »       maxPagers = 6       Range = (6 - 2 / 2) = Floor(2)      = 2 // hmm how do we decide which side wins?
+                // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7       Range = (7 - 2 / 2) = Floor(2.5)    = 2
+
                 for (i = 0; i < totalButtons; i++) {
+                    if (self.pagination.maxPagers < Infinity) {
+                        // A pager must be:
+                        // - The first or last
+                        // - Within ((maxPagers - 2)/2) of the active pager
+                        //
+                        // When a pager is ommited on either side, a flag must be set
+                        // once it has been subsituted to ensure it is only substituted once
+                    }
+
                     classList = [];
 
                     classList.push(self.pagination.pagerClass);
