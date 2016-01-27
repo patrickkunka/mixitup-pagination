@@ -51,7 +51,7 @@
             this.templatePager          = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
             this.templatePrevPage       = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
             this.templateNextPage       = '<span class="{{classes}}" data-page="next">&raquo;</span>';
-            this.templateEllipses       = '...';
+            this.templateEllipses       = '&hellip;';
 
             h.seal(this);
         };
@@ -167,8 +167,6 @@
             if (!self.pagination || self.pagination.limit < 0) return;
 
             pager = h.closestParent(e.target, '.' + self.pagination.pagerClass, true, self._dom.document);
-
-            console.log(pager);
 
             if (!pager) return;
 
@@ -446,19 +444,12 @@
              */
 
             _renderPagers: function(operation) {
-                var self            = this,
-                    totalButtons    = -1,
-                    pagerHtml       = '',
-                    buttonList      = [],
-                    classList       = [],
-                    html            = '',
-                    i               = -1;
-
-                if (self.pagination.maxPagers !== Infinity && operation.newTotalPages > self.pagination.maxPagers) {
-                    totalButtons = self.pagination.maxPagers;
-                } else {
-                    totalButtons = operation.newTotalPages;
-                }
+                var self                = this,
+                    pagerHtml           = '',
+                    buttonList          = [],
+                    classList           = [],
+                    html                = '',
+                    i                   = -1;
 
                 // Render prev button
 
@@ -477,44 +468,9 @@
 
                 // Render per-page pagers
 
-                // « 1 ... 4 *5* 6 ... 10 »         maxPagers = 5       Range = (5 - 2 / 2) = Floor(1.5)    = 1
-                // « 1 ... 3 4 *5* 6 ... 10 »       maxPagers = 6       Range = (6 - 2 / 2) = Floor(2)      = 2 // hmm how do we decide which side wins?
-                // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7       Range = (7 - 2 / 2) = Floor(2.5)    = 2
-
-                for (i = 0; i < totalButtons; i++) {
-                    if (self.pagination.maxPagers < Infinity) {
-                        // A pager must be:
-                        // - The first or last
-                        // - Within ((maxPagers - 2)/2) of the active pager
-                        //
-                        // When a pager is ommited on either side, a flag must be set
-                        // once it has been subsituted to ensure it is only substituted once
-                    }
-
-                    classList = [];
-
-                    classList.push(self.pagination.pagerClass);
-
-                    if (i === 0) {
-                        classList.push(self.pagination.pagerClassFirst);
-                    }
-
-                    if (i === totalButtons - 1) {
-                        classList.push(self.pagination.pagerClassLast);
-                    }
-
-                    if (i + 1 === operation.newPage) {
-                        classList.push(self.controls.activeClass);
-                    }
-
-                    pagerHtml = self.pagination.templatePager
-                        .replace(/{{classes}}/g, classList.join(' '))
-                        .replace(/{{pageNumber}}/g, (i + 1));
-
-                    buttonList.push(pagerHtml);
+                for (i = 0; i < operation.newTotalPages; i++) {
+                    buttonList.push(self._renderPager(i, operation));
                 }
-
-                // TODO: think about how to truncate the list if max pagers enabled, and insert ellipses
 
                 // Render next button
 
@@ -525,7 +481,7 @@
 
                 // If last page and not looping, disable the next button
 
-                if (operation.newPage === totalButtons && !self.pagination.loop) {
+                if (operation.newPage === operation.newTotalPages && !self.pagination.loop) {
                     classList.push(self.pagination.pagerClassDisabled);
                 }
 
@@ -544,6 +500,78 @@
                 } else {
                     h.addClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
                 }
+            },
+
+            /**
+             * @private
+             * @param   {number}              i
+             * @param   {mixitup.Operation}   operation
+             * @param   {number[]}            [allowedIndices]
+             * @return  {string}
+             */
+
+            _renderPager: function(i, operation, allowedIndices) {
+                var self        = this,
+                    activePage  = operation.newPage - 1,
+                    classList   = [],
+                    output      = '';
+
+                // « 1 ... 4 *5* 6 ... 10 »         maxPagers = 5
+                // « 1 ... 3 4 *5* 6 ... 10 »       maxPagers = 6
+                // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7
+                // « *1* 2 3 4 5 6 ... 10 »         maxPagers = 7
+
+                // Max pagers essentially means that directly surrounding the active pager at
+                // any time, are a maximum of max - 2 siblings (padding range), evenly distributed (accounting for first and last)
+
+                // If the first or last is also the active pager, then that value increases to max - 1 siblings
+
+                // By default we would try to split that figure and place an even amount on either side of the active pager
+
+                // If the active pager is too close to the front or back for this to work, we offset as needed
+
+                // If the figure is an even number, the remainder is placed behind the active pager.. hmm how?
+
+                // Suggest creating an array of valid indices before hand, then checking against it if exists
+
+                // - calculate "padding range"
+                // - Insert 0 into array to mark first pager as allowed
+                // - Find the center of the padding range and assign it as active pager. If even range, Ceil the center as above.
+                // - If the first index of the padding range is less/equal 0, offset until 1
+                // - If the last number of the padding range is greater/equal than totalPages, negative offset until within range
+                // - (both can't be true)
+                // - Map indices into array from start index, for the padding range
+                // - Map last into array to mark last pager
+
+                if (
+                    self.pagination.maxPagers < Infinity &&
+                    allowedIndices &&
+                    allowedIndices.indexOf(i) < 0
+                ) {
+                    // maxPagers is set, and this pager is not in the allowed range
+
+                    return '';
+                }
+
+                classList.push(self.pagination.pagerClass);
+
+                if (i === 0) {
+                    classList.push(self.pagination.pagerClassFirst);
+                }
+
+                if (i === operation.newTotalPages - 1) {
+                    classList.push(self.pagination.pagerClassLast);
+                }
+
+                if (i === activePage) {
+                    classList.push(self.controls.activeClass);
+                }
+
+                output = self.pagination.templatePager
+                    .replace(/{{classes}}/g, classList.join(' '))
+                    .replace(/{{pageNumber}}/g, (i + 1));
+
+                return output;
             },
 
             /**
