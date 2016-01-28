@@ -51,7 +51,7 @@
             this.templatePager          = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
             this.templatePrevPage       = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
             this.templateNextPage       = '<span class="{{classes}}" data-page="next">&raquo;</span>';
-            this.templateEllipses       = '&hellip;';
+            this.templateTruncated      = '&hellip;';
 
             h.seal(this);
         };
@@ -445,11 +445,22 @@
 
             _renderPagers: function(operation) {
                 var self                = this,
+                    activeIndex         = -1,
                     pagerHtml           = '',
                     buttonList          = [],
                     classList           = [],
+                    allowedIndices      = [],
+                    truncatedBefore     = false,
+                    truncatedAfter      = false,
+                    pagerHtml           = '',
                     html                = '',
                     i                   = -1;
+
+                activeIndex = operation.newPage - 1;
+
+                if (self.pagination.maxPagers < Infinity && operation.newTotalPages > self.pagination.maxPagers) {
+                    allowedIndices = self._getAllowedIndices(operation);
+                }
 
                 // Render prev button
 
@@ -469,7 +480,23 @@
                 // Render per-page pagers
 
                 for (i = 0; i < operation.newTotalPages; i++) {
-                    buttonList.push(self._renderPager(i, operation));
+                    pagerHtml = self._renderPager(i, operation, allowedIndices);
+
+                    // Replace gaps between pagers with a truncation maker, but only once
+
+                    if (!pagerHtml && i < activeIndex && !truncatedBefore) {
+                        pagerHtml = self.pagination.templateTruncated;
+
+                        truncatedBefore = true;
+                    }
+
+                    if (!pagerHtml && i > activeIndex && !truncatedAfter) {
+                        pagerHtml = self.pagination.templateTruncated;
+
+                        truncatedAfter = true;
+                    }
+
+                    buttonList.push(pagerHtml);
                 }
 
                 // Render next button
@@ -503,6 +530,97 @@
             },
 
             /**
+             * An algorithm that checks which pagers should be rendered based on their index
+             * and the current active page, when a `pagination.maxPagers` value is applied.
+             *
+             * @private
+             * @param   {mixitup.Operation} operation
+             * @return  {number[]}
+             */
+
+            _getAllowedIndices: function(operation) {
+                var self                = this,
+                    activeIndex         = operation.newPage - 1,
+                    lastIndex           = operation.newTotalPages - 1,
+                    indices             = [],
+                    paddingRange        = -1,
+                    paddingBack         = -1,
+                    paddingFront        = -1,
+                    paddingRangeStart   = -1,
+                    paddingRangeEnd     = -1,
+                    paddingRangeOffset  = -1,
+                    i                   = -1;
+
+                // Examples:
+
+                // « 1 2 *3* 4 5 »                  maxPagers = 5
+                // « 1 ... 4 *5* 6 ... 10 »         maxPagers = 5
+
+                // « 1 ... 6 7 *8* 9 10 »           maxPagers = 6
+                // « 1 ... 3 4 *5* 6 ... 10 »       maxPagers = 6
+
+                // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7
+                // « *1* 2 3 4 5 6 ... 10 »         maxPagers = 7
+
+                // This algorithm is based on the assumption, that at any time, the active pager
+                // should be surrounded by as many "padding" pagers as possible to equal the
+                // value of `pagination.maxPagers`, accounting for the fact the first and last
+                // pager should also always be rendered.
+
+                // Push in index 0 to represent the first pager
+
+                indices.push(0);
+
+                // Calculate the "padding range" by subtracting 2 from `pagination.maxPagers`
+
+                paddingRange  = self.pagination.maxPagers - 2;
+
+                // Distribute the padding equally behind and in front of the active pager.
+                // If the padding range is an even number, we allow an extra pager behind the active pager.
+
+                paddingBack   = Math.ceil((paddingRange - 1) / 2);
+                paddingFront  = Math.floor((paddingRange - 1) / 2);
+
+                // Calculate where the range should start and finish based on the active index
+
+                paddingRangeStart   = activeIndex - paddingBack;
+                paddingRangeEnd     = activeIndex + paddingFront;
+
+                // Set the offset to 0
+
+                paddingRangeOffset  = 0;
+
+                // If the start of the range has collided with the first pager, positively offset as needed
+
+                if (paddingRangeStart < 1) {
+                    paddingRangeOffset = 1 - paddingRangeStart;
+                }
+
+                // If the end of the range has collided with the last pager, negatively offset as needed
+
+                if (paddingRangeEnd > lastIndex - 1) {
+                    paddingRangeOffset = (lastIndex - 1) - paddingRangeEnd;
+                }
+
+                // Calcuate the first index of the range taking into account any offset
+
+                i = paddingRangeStart + paddingRangeOffset;
+
+                // Iteratate through the range, adding the respective indices:
+
+                while (paddingRange) {
+                    indices.push(i);
+
+                    i++;
+                    paddingRange--;
+                }
+
+                indices.push(lastIndex);
+
+                return indices;
+            },
+
+            /**
              * @private
              * @param   {number}              i
              * @param   {mixitup.Operation}   operation
@@ -516,36 +634,9 @@
                     classList   = [],
                     output      = '';
 
-                // « 1 ... 4 *5* 6 ... 10 »         maxPagers = 5
-                // « 1 ... 3 4 *5* 6 ... 10 »       maxPagers = 6
-                // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7
-                // « *1* 2 3 4 5 6 ... 10 »         maxPagers = 7
-
-                // Max pagers essentially means that directly surrounding the active pager at
-                // any time, are a maximum of max - 2 siblings (padding range), evenly distributed (accounting for first and last)
-
-                // If the first or last is also the active pager, then that value increases to max - 1 siblings
-
-                // By default we would try to split that figure and place an even amount on either side of the active pager
-
-                // If the active pager is too close to the front or back for this to work, we offset as needed
-
-                // If the figure is an even number, the remainder is placed behind the active pager.. hmm how?
-
-                // Suggest creating an array of valid indices before hand, then checking against it if exists
-
-                // - calculate "padding range"
-                // - Insert 0 into array to mark first pager as allowed
-                // - Find the center of the padding range and assign it as active pager. If even range, Ceil the center as above.
-                // - If the first index of the padding range is less/equal 0, offset until 1
-                // - If the last number of the padding range is greater/equal than totalPages, negative offset until within range
-                // - (both can't be true)
-                // - Map indices into array from start index, for the padding range
-                // - Map last into array to mark last pager
-
                 if (
                     self.pagination.maxPagers < Infinity &&
-                    allowedIndices &&
+                    allowedIndices.length &&
                     allowedIndices.indexOf(i) < 0
                 ) {
                     // maxPagers is set, and this pager is not in the allowed range
