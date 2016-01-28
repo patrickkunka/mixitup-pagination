@@ -39,6 +39,7 @@
             this.limit                  = -1;
             this.loop                   = false;
             this.generatePagers         = true;
+            this.generateStats          = true;
             this.maxPagers              = Infinity;
             this.maintainActivePage     = true;
             this.pagerClass             = 'mixitup-pager';
@@ -51,6 +52,7 @@
             this.templatePager          = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
             this.templatePrevPage       = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
             this.templateNextPage       = '<span class="{{classes}}" data-page="next">&raquo;</span>';
+            this.templatePageStats     = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}'
             this.templateTruncated      = '&hellip;';
 
             h.seal(this);
@@ -83,6 +85,7 @@
 
         mixitup.ConfigSelectors.prototype.addAction('construct', 'pagination', function() {
             this.pagerList          = '.mixitup-pager-list';
+            this.pageStats          = '.mixitup-page-stats';
         }, 1);
 
         mixitup.ConfigCallbacks.prototype.addAction('construct', 'pagination', function() {
@@ -95,6 +98,7 @@
 
         mixitup.MixerDom.prototype.addAction('construct', 'pagination', function() {
             this.pagerList          = null;
+            this.pageStats          = null;
         }, 1);
 
         // Extend mixitup.Mixer methods:
@@ -134,10 +138,17 @@
             if (!self.pagination.generatePagers) return;
 
             if (!(self._dom.pagerList = self._dom.container.querySelector(self.selectors.pagerList))) {
-                // Attempt to find controls within the container to begin with, else
+                // Attempt to find page stats container within the container to begin with, else
                 // query entire DOM
 
                 self._dom.pagerList = self._dom.document.querySelector(self.selectors.pagerList);
+            }
+
+            if (!(self._dom.pageStats = self._dom.container.querySelector(self.selectors.pageStats))) {
+                // Attempt to find page stats container within the container to begin with, else
+                // query entire DOM
+
+                self._dom.pageStats = self._dom.document.querySelector(self.selectors.pageStats);
             }
         }, 1);
 
@@ -344,6 +355,12 @@
                 // Update the pagers
 
                 self._renderPagers(operation);
+            }
+
+            if (self.pagination.generateStats && self._dom.pageStats) {
+                // Update the stats
+
+                self._renderStats(operation);
             }
 
             return operation;
@@ -669,6 +686,31 @@
                     .replace(/{{pageNumber}}/g, (i + 1));
 
                 return output;
+            },
+
+            /**
+             * @private
+             * @param   {mixitup.Operation} operation
+             * @return  {void}
+             */
+
+            _renderStats: function(operation) {
+                var self            = this,
+                    output          = '',
+                    startPageAt     = -1,
+                    endPageAt       = -1,
+                    totalTargets    = -1;
+
+                startPageAt     = ((operation.startPage - 1) * operation.newLimit) + 1;
+                totalTargets    = operation.matching.length;
+                endPageAt       = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+
+                output = self.pagination.templatePageStats
+                    .replace(/{{startPageAt}}/g, startPageAt)
+                    .replace(/{{endPageAt}}/g, endPageAt)
+                    .replace(/{{totalTargets}}/g, totalTargets);
+
+                self._dom.pageStats.innerHTML = output;
             },
 
             /**
