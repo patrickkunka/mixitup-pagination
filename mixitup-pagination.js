@@ -133,7 +133,12 @@
 
             if (!self.pagination.generatePagers) return;
 
-            self._dom.pagerList = self._dom.document.querySelector(self.selectors.pagerList);
+            if (!(self._dom.pagerList = self._dom.container.querySelector(self.selectors.pagerList))) {
+                // Attempt to find controls within the container to begin with, else
+                // query entire DOM
+
+                self._dom.pagerList = self._dom.document.querySelector(self.selectors.pagerList);
+            }
         }, 1);
 
         mixitup.Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
@@ -333,6 +338,8 @@
         mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation) {
             var self = this;
 
+            if (!self.pagination || self.pagination.limit < 0) return operation;
+
             if (self.pagination.generatePagers && self._dom.pagerList) {
                 // Update the pagers
 
@@ -452,7 +459,6 @@
                     allowedIndices      = [],
                     truncatedBefore     = false,
                     truncatedAfter      = false,
-                    pagerHtml           = '',
                     html                = '',
                     i                   = -1;
 
