@@ -49,10 +49,12 @@
             this.pagerPrevClass         = 'mixitup-pager-prev';
             this.pagerNextClass         = 'mixitup-pager-next';
             this.pagerListClassDisabled = 'mixitup-pager-list-disabled';
+            this.pageStatsClassDisabled = 'mixitup-page-stats-disabled';
             this.templatePager          = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
             this.templatePrevPage       = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
             this.templateNextPage       = '<span class="{{classes}}" data-page="next">&raquo;</span>';
-            this.templatePageStats     = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}'
+            this.templatePageStats      = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}';
+            this.templatePageStatsFail  = 'None found';
             this.templateTruncated      = '&hellip;';
 
             h.seal(this);
@@ -697,20 +699,34 @@
             _renderStats: function(operation) {
                 var self            = this,
                     output          = '',
+                    template        = '',
                     startPageAt     = -1,
                     endPageAt       = -1,
                     totalTargets    = -1;
 
-                startPageAt     = ((operation.startPage - 1) * operation.newLimit) + 1;
                 totalTargets    = operation.matching.length;
+
+                if (totalTargets) {
+                    template = self.pagination.templatePageStats;
+                } else {
+                    template = self.pagination.templatePageStatsFail;
+                }
+
+                startPageAt     = totalTargets ? ((operation.newPage - 1) * operation.newLimit) + 1 : 0;
                 endPageAt       = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
 
-                output = self.pagination.templatePageStats
-                    .replace(/{{startPageAt}}/g, startPageAt)
-                    .replace(/{{endPageAt}}/g, endPageAt)
-                    .replace(/{{totalTargets}}/g, totalTargets);
+                output = template
+                    .replace(/{{startPageAt}}/g, startPageAt.toString())
+                    .replace(/{{endPageAt}}/g, endPageAt.toString())
+                    .replace(/{{totalTargets}}/g, totalTargets.toString());
 
                 self._dom.pageStats.innerHTML = output;
+
+                if (totalTargets) {
+                    h.removeClass(self._dom.pageStats, self.pagination.pageStatsClassDisabled);
+                } else {
+                    h.addClass(self._dom.pageStats, self.pagination.pageStatsClassDisabled);
+                }
             },
 
             /**
