@@ -323,6 +323,10 @@ mixitup.Mixer.prototype.extend(
 
                 break;
         }
+
+        if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+            operation.newPage = 1;
+        }
     },
 
     /**

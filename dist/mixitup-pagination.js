@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build 9078058d-f101-4bf3-a88d-4bd4537d6040
+ * Build 13888f7e-8129-40fb-a882-e92a273d3d96
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -413,6 +413,10 @@
                         }
 
                         break;
+                }
+
+                if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+                    operation.newPage = 1;
                 }
             },
 
