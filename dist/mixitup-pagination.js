@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build 092559f0-3a10-491a-9cc5-579a674306bf
+ * Build 9078058d-f101-4bf3-a88d-4bd4537d6040
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -41,12 +41,12 @@
         }, 1);
         //
         mixitup.ConfigPagination = function() {
-            this.limit                      = -1;
             this.loop                       = false;
             this.generatePagers             = true;
             this.generateStats              = true;
-            this.maxPagers                  = Infinity;
             this.maintainActivePage         = true;
+            this.limit                      = Infinity;
+            this.maxPagers                  = Infinity;
             this.pagerClass                 = 'mixitup-pager';
             this.pagerClassDisabled         = 'mixitup-pager-disabled';
             this.pagerClassFirst            = 'mixitup-pager-first';
@@ -90,6 +90,7 @@
             this.pagerList = null;
             this.pageStats = null;
         }, 1);
+
         mixitup.Mixer.prototype.addAction('construct', 'pagination', function() {
             this.pagination = new mixitup.ConfigPagination();
         });
@@ -97,7 +98,7 @@
         mixitup.Mixer.prototype.addFilter('_init', 'pagination', function(state, args) {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) {
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.newLimit === Infinity) {
                 return state;
             }
 
@@ -110,7 +111,7 @@
         mixitup.Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.newLimit === Infinity) return;
 
             if (typeof self.pagination.maxPagers === 'number') {
                 // Restrict max pagers to a minimum of 5. There must always
@@ -124,7 +125,7 @@
         mixitup.Mixer.prototype.addAction('_cacheDom', 'pagination', function() {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
             if (!self.pagination.generatePagers) return;
 
@@ -146,7 +147,7 @@
         mixitup.Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
             // As MixItUp always builds the pager list itself, we will only bind it once,
             // regardless of whether or not `controls.live` is enabled. Users should not
@@ -159,7 +160,7 @@
         mixitup.Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
             h.off(self._dom.pagerList, 'click', self._handler);
         }, 0);
@@ -171,7 +172,7 @@
                 pager       = null,
                 e           = args[0];
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
             pager = h.closestParent(e.target, '.' + self.pagination.pagerClass, true, self._dom.document);
 
@@ -210,7 +211,7 @@
             var self        = this,
                 operation   = args[0];
 
-            if (!self.pagination || self.pagination.limit < 0) {
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) {
                 return state;
             }
 
@@ -232,7 +233,7 @@
                 index       = -1,
                 i           = -1;
 
-            if (!self.pagination || operation.newLimit < 0) return;
+            if (!self.pagination || operation.newLimit < 0 || operation.newLimit === Infinity) return;
 
             // Calculate the new total pages as a matter of course (i.e. a change in filter)
 
@@ -247,6 +248,8 @@
                     operation.newTotalPages :
                     operation.newPage;
             }
+
+            self.pagination.limit = operation.newLimit;
 
             startPageAt = operation.newLimit * (operation.newPage - 1);
             endPageAt   = (operation.newLimit * operation.newPage) - 1;
@@ -313,7 +316,7 @@
             // from args - at has to be passed directly in the mixer. A todo has
             // been placed there for consideration too.
 
-            if (!self.pagination || self.pagination.limit < 0) return;
+            if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
             command         = operation.command;
             paginateCommand = command.paginate;
@@ -340,17 +343,15 @@
         mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation) {
             var self = this;
 
-            if (!self.pagination || self.pagination.limit < 0) return operation;
+            if (!self.pagination) {
+                return operation;
+            }
 
             if (self.pagination.generatePagers && self._dom.pagerList) {
-                // Update the pagers
-
                 self._renderPagers(operation);
             }
 
             if (self.pagination.generateStats && self._dom.pageStats) {
-                // Update the stats
-
                 self._renderStats(operation);
             }
 
@@ -468,6 +469,16 @@
                     truncatedAfter      = false,
                     html                = '',
                     i                   = -1;
+
+                if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+                    // Empty the pager list, and add disabled class
+
+                    self._dom.pagerList.innerHTML = '';
+
+                    h.addClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
+
+                    return;
+                }
 
                 activeIndex = operation.newPage - 1;
 
@@ -698,7 +709,17 @@
                     endPageAt       = -1,
                     totalTargets    = -1;
 
-                totalTargets    = operation.matching.length;
+                if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+                    // Empty the pager list, and add disabled class
+
+                    self._dom.pageStats.innerHTML = '';
+
+                    h.addClass(self._dom.pageStats, self.pagination.pageStatsClassDisabled);
+
+                    return;
+                }
+
+                totalTargets = operation.matching.length;
 
                 if (totalTargets) {
                     template = operation.newLimit === 1 ?
@@ -708,8 +729,8 @@
                     template = self.pagination.templatePageStatsFail;
                 }
 
-                startPageAt     = totalTargets ? ((operation.newPage - 1) * operation.newLimit) + 1 : 0;
-                endPageAt       = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+                startPageAt  = totalTargets ? ((operation.newPage - 1) * operation.newLimit) + 1 : 0;
+                endPageAt    = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
 
                 //
                 output = template

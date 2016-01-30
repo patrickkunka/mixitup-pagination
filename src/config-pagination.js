@@ -1,11 +1,11 @@
 // {{{{raw}}}}
 mixitup.ConfigPagination = function() {
-    this.limit                      = -1;
     this.loop                       = false;
     this.generatePagers             = true;
     this.generateStats              = true;
-    this.maxPagers                  = Infinity;
     this.maintainActivePage         = true;
+    this.limit                      = Infinity;
+    this.maxPagers                  = Infinity;
     this.pagerClass                 = 'mixitup-pager';
     this.pagerClassDisabled         = 'mixitup-pager-disabled';
     this.pagerClassFirst            = 'mixitup-pager-first';
