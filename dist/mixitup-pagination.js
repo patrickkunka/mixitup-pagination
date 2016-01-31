@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build 13888f7e-8129-40fb-a882-e92a273d3d96
+ * Build d731d3c1-7b53-4edf-9c38-84a77eaaff07
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -313,7 +313,7 @@
                 paginateCommand = null;
 
             // TODO: this should really be a filter as we don't pull in operation
-            // from args - at has to be passed directly in the mixer. A todo has
+            // from args - as has to be passed directly in the mixer. A todo has
             // been placed there for consideration too.
 
             if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
@@ -562,7 +562,7 @@
             },
 
             /**
-             * An algorithm that checks which pagers should be rendered based on their index
+             * An algorithm defining which pagers should be rendered based on their index
              * and the current active page, when a `pagination.maxPagers` value is applied.
              *
              * @private
@@ -594,7 +594,7 @@
                 // « 1 ... 3 4 *5* 6 7 ... 10 »     maxPagers = 7
                 // « *1* 2 3 4 5 6 ... 10 »         maxPagers = 7
 
-                // This algorithm is based on the assumption, that at any time, the active pager
+                // This algorithm ensures that at any time, the active pager
                 // should be surrounded by as many "padding" pagers as possible to equal the
                 // value of `pagination.maxPagers`, accounting for the fact the first and last
                 // pager should also always be rendered.
