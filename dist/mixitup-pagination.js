@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build d731d3c1-7b53-4edf-9c38-84a77eaaff07
+ * Build 488beaf7-30e2-4621-8b1f-4bcb4feb1ef9
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -195,7 +195,7 @@
             self._state.triggerElement = pager;
 
             if (typeof self.callbacks.onMixPagerClick === 'function') {
-                self.callbacks.onPagerClick.call(pager, self._state, self, e);
+                self.callbacks.onMixPagerClick.call(pager, self._state, self, e);
             }
 
             h.triggerCustom(self._dom.container, 'mixPagerClick', {
@@ -340,10 +340,19 @@
             }
         }, 0);
 
-        mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation) {
-            var self = this;
+        mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation, args) {
+            var self        = this,
+                isPreFetch  = false;
 
             if (!self.pagination) {
+                return operation;
+            }
+
+            if (args && typeof args[1] === 'boolean') {
+                isPreFetch = true;
+
+                // The operation is being pre-fetched, so don't update the pagers or stats yet.
+
                 return operation;
             }
 

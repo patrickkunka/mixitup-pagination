@@ -104,7 +104,7 @@ mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
     self._state.triggerElement = pager;
 
     if (typeof self.callbacks.onMixPagerClick === 'function') {
-        self.callbacks.onPagerClick.call(pager, self._state, self, e);
+        self.callbacks.onMixPagerClick.call(pager, self._state, self, e);
     }
 
     h.triggerCustom(self._dom.container, 'mixPagerClick', {
@@ -249,10 +249,19 @@ mixitup.Mixer.prototype.addAction('getOperation', 'pagination', function(operati
     }
 }, 0);
 
-mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation) {
-    var self = this;
+mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation, args) {
+    var self        = this,
+        isPreFetch  = false;
 
     if (!self.pagination) {
+        return operation;
+    }
+
+    if (args && typeof args[1] === 'boolean') {
+        isPreFetch = true;
+
+        // The operation is being pre-fetched, so don't update the pagers or stats yet.
+
         return operation;
     }
 
