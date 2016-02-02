@@ -75,11 +75,12 @@ mixitup.Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
 }, 0);
 
 mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
-    var self        = this,
-        pageCommand = '',
-        pageNumber  = -1,
-        pager       = null,
-        e           = args[0];
+    var self            = this,
+        returnValue     = null,
+        pageCommand     = '',
+        pageNumber      = -1,
+        pager           = null,
+        e               = args[0];
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
 
@@ -103,15 +104,21 @@ mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
 
     self._state.triggerElement = pager;
 
-    if (typeof self.callbacks.onMixPagerClick === 'function') {
-        self.callbacks.onMixPagerClick.call(pager, self._state, self, e);
-    }
-
     h.triggerCustom(self._dom.container, 'mixPagerClick', {
         state: self._state,
         instance: self,
         event: e
     }, self._dom.document);
+
+    if (typeof self.callbacks.onMixPagerClick === 'function') {
+        returnValue = self.callbacks.onMixPagerClick.call(pager, self._state, self, e);
+
+        if (returnValue === false) {
+            // User has returned `false` from the callback, so do not execute paginate command
+
+            return;
+        }
+    }
 
     self.paginate(pageNumber);
 }, 1);
