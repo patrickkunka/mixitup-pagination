@@ -24,6 +24,8 @@
 
         {{>mixer-dom}}
 
+        {{>events}}
+
         {{>mixer}}
     };
 

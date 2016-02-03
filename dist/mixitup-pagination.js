@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build 8c4d3a4e-bd16-464a-a8b6-498248c2984f
+ * Build afa2656b-ceb4-445d-a3ce-d9b47f59d730
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -90,6 +90,13 @@
             this.pagerList = null;
             this.pageStats = null;
         }, 1);
+        mixitup.Events.prototype.addAction('construct', 'pagination', function() {
+            this.mixPagerClick = null;
+        }, 1);
+
+        // Rebuild and overwrite the `mixitup.events` singleton
+
+        mixitup.events = new mixitup.Events();
 
         mixitup.Mixer.prototype.addAction('construct', 'pagination', function() {
             this.pagination = new mixitup.ConfigPagination();
@@ -195,7 +202,7 @@
 
             self._state.triggerElement = pager;
 
-            h.triggerCustom(self._dom.container, 'mixPagerClick', {
+            mixitup.events.fire('mixPagerClick', self._dom.container, {
                 state: self._state,
                 instance: self,
                 event: e

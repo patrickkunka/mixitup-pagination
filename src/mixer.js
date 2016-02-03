@@ -104,7 +104,7 @@ mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
 
     self._state.triggerElement = pager;
 
-    h.triggerCustom(self._dom.container, 'mixPagerClick', {
+    mixitup.events.fire('mixPagerClick', self._dom.container, {
         state: self._state,
         instance: self,
         event: e
