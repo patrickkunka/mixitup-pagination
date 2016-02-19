@@ -703,6 +703,10 @@ mixitup.Mixer.prototype.extend(
             if (arg !== null) {
                 if (typeof arg === 'object' || typeof arg === 'number') {
                     instruction.command = arg;
+                } else if (typeof arg === 'string' && !isNaN(parseInt(arg))) {
+                    // e.g. "4"
+
+                    instruction.command = parseInt(arg);
                 } else if (typeof arg === 'boolean') {
                     instruction.animate = arg;
                 } else if (typeof arg === 'function') {

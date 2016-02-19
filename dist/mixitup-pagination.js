@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build a2c294e7-be18-4e9a-b56f-0c8cb98b7392
+ * Build 62a7a3b7-8b0d-4704-9d79-8d924d21cd55
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -802,6 +802,10 @@
                     if (arg !== null) {
                         if (typeof arg === 'object' || typeof arg === 'number') {
                             instruction.command = arg;
+                        } else if (typeof arg === 'string' && !isNaN(parseInt(arg))) {
+                            // e.g. "4"
+
+                            instruction.command = parseInt(arg);
                         } else if (typeof arg === 'boolean') {
                             instruction.animate = arg;
                         } else if (typeof arg === 'function') {
