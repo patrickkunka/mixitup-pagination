@@ -13,6 +13,7 @@ mixitup.ConfigPagination = function() {
     this.pagerPrevClass             = 'mixitup-pager-prev';
     this.pagerNextClass             = 'mixitup-pager-next';
     this.pagerListClassDisabled     = 'mixitup-pager-list-disabled';
+    this.pagerListClassTruncated    = 'mixitup-pager-list-truncated';
     this.pageStatsClassDisabled     = 'mixitup-page-stats-disabled';
     this.templatePager              = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
     this.templatePrevPage           = '<span class="{{classes}}" data-page="prev">&laquo;</span>';

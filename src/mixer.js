@@ -479,6 +479,12 @@ mixitup.Mixer.prototype.extend(
 
         self._dom.pagerList.innerHTML = html;
 
+        if (truncatedBefore || truncatedAfter) {
+            h.addClass(self._dom.pagerList, self.pagination.pagerListClassTruncated);
+        } else {
+            h.removeClass(self._dom.pagerList, self.pagination.pagerListClassTruncated);
+        }
+
         if (operation.newTotalPages > 1) {
             h.removeClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
         } else {

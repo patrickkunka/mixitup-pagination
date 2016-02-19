@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  * A premium extension for MixItUp
- * Build afa2656b-ceb4-445d-a3ce-d9b47f59d730
+ * Build a2c294e7-be18-4e9a-b56f-0c8cb98b7392
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -54,6 +54,7 @@
             this.pagerPrevClass             = 'mixitup-pager-prev';
             this.pagerNextClass             = 'mixitup-pager-next';
             this.pagerListClassDisabled     = 'mixitup-pager-list-disabled';
+            this.pagerListClassTruncated    = 'mixitup-pager-list-truncated';
             this.pageStatsClassDisabled     = 'mixitup-page-stats-disabled';
             this.templatePager              = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
             this.templatePrevPage           = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
@@ -576,6 +577,12 @@
                 html = buttonList.join(' ');
 
                 self._dom.pagerList.innerHTML = html;
+
+                if (truncatedBefore || truncatedAfter) {
+                    h.addClass(self._dom.pagerList, self.pagination.pagerListClassTruncated);
+                } else {
+                    h.removeClass(self._dom.pagerList, self.pagination.pagerListClassTruncated);
+                }
 
                 if (operation.newTotalPages > 1) {
                     h.removeClass(self._dom.pagerList, self.pagination.pagerListClassDisabled);
