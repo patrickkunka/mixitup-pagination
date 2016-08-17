@@ -1,3 +1,3 @@
-mixitup.ConfigLoad.prototype.addAction('construct', 'pagination', function() {
+mixitup.ConfigLoad.addAction('construct', 'pagination', function() {
     this.page = 1;
 }, 1);

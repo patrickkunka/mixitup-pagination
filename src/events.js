@@ -1,4 +1,4 @@
-mixitup.Events.prototype.addAction('construct', 'pagination', function() {
+mixitup.Events.addAction('construct', 'pagination', function() {
     this.mixPagerClick = null;
 }, 1);
 

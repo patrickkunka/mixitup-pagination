@@ -1,23 +1,23 @@
 /* global mixitup, h */
 
-mixitup.Mixer.prototype.addAction('construct', 'pagination', function() {
+mixitup.Mixer.addAction('construct', 'pagination', function() {
     this.pagination = new mixitup.ConfigPagination();
 });
 
-mixitup.Mixer.prototype.addFilter('_init', 'pagination', function(state, args) {
+mixitup.Mixer.addFilter('_init', 'pagination', function(state, args) {
     var self = this;
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.newLimit === Infinity) {
         return state;
     }
 
-    state.limit       = self.pagination.limit;
-    state.activePage  = self.load.page;
+    state.limit = self.pagination.limit;
+    state.page  = self.load.page;
 
     return state;
 });
 
-mixitup.Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
+mixitup.Mixer.addAction('_getFinalMixData', 'pagination', function() {
     var self = this;
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.newLimit === Infinity) return;
@@ -31,7 +31,7 @@ mixitup.Mixer.prototype.addAction('_getFinalMixData', 'pagination', function() {
     }
 }, 1);
 
-mixitup.Mixer.prototype.addAction('_cacheDom', 'pagination', function() {
+mixitup.Mixer.addAction('_cacheDom', 'pagination', function() {
     var self = this;
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
@@ -53,7 +53,7 @@ mixitup.Mixer.prototype.addAction('_cacheDom', 'pagination', function() {
     }
 }, 1);
 
-mixitup.Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
+mixitup.Mixer.addAction('_bindEvents', 'pagination', function() {
     var self = this;
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
@@ -66,7 +66,7 @@ mixitup.Mixer.prototype.addAction('_bindEvents', 'pagination', function() {
     h.on(self._dom.pagerList, 'click', self._handler);
 }, 1);
 
-mixitup.Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
+mixitup.Mixer.addAction('_unbindEvents', 'pagination', function() {
     var self = this;
 
     if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
@@ -74,7 +74,7 @@ mixitup.Mixer.prototype.addAction('_unbindEvents', 'pagination', function() {
     h.off(self._dom.pagerList, 'click', self._handler);
 }, 0);
 
-mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
+mixitup.Mixer.addAction('_handleClick', 'pagination', function(args) {
     var self            = this,
         returnValue     = null,
         pageCommand     = '',
@@ -123,7 +123,7 @@ mixitup.Mixer.prototype.addAction('_handleClick', 'pagination', function(args) {
     self.paginate(pageNumber);
 }, 1);
 
-mixitup.Mixer.prototype.addFilter('_buildState', 'pagination', function(state, args) {
+mixitup.Mixer.addFilter('_buildState', 'pagination', function(state, args) {
     var self        = this,
         operation   = args[0];
 
@@ -132,13 +132,14 @@ mixitup.Mixer.prototype.addFilter('_buildState', 'pagination', function(state, a
     }
 
     state.limit         = operation.newLimit;
-    state.activePage    = operation.newPage;
+    state.page          = operation.newPage;
+    state.anchor        = operation.newAnchor;
     state.totalPages    = operation.newTotalPages;
 
     return state;
 });
 
-mixitup.Mixer.prototype.addAction('_filter', 'pagination', function(args) {
+mixitup.Mixer.addAction('_filter', 'pagination', function(args) {
     var self        = this,
         operation   = args && args[0],
         startPageAt = -1,
@@ -167,8 +168,21 @@ mixitup.Mixer.prototype.addAction('_filter', 'pagination', function(args) {
 
     self.pagination.limit = operation.newLimit;
 
-    startPageAt = operation.newLimit * (operation.newPage - 1);
-    endPageAt   = (operation.newLimit * operation.newPage) - 1;
+    if (operation.newAnchor) {
+        // Start page at an anchor element
+
+        for (i = 0; target = operation.matching[i]; i++) {
+            if (target.dom.el === operation.newAnchor) break;
+        }
+
+        startPageAt = i;
+        endPageAt   = i + operation.newLimit - 1;
+    } else {
+        // Start page based on limit and page index
+
+        startPageAt = operation.newLimit * (operation.newPage - 1);
+        endPageAt   = (operation.newLimit * operation.newPage) - 1;
+    }
 
     if (operation.newLimit < 0) return;
 
@@ -223,7 +237,7 @@ mixitup.Mixer.prototype.addAction('_filter', 'pagination', function(args) {
     }
 }, 1);
 
-mixitup.Mixer.prototype.addAction('getOperation', 'pagination', function(operation) {
+mixitup.Mixer.addAction('getOperation', 'pagination', function(operation) {
     var self            = this,
         command         = null,
         paginateCommand = null;
@@ -237,8 +251,9 @@ mixitup.Mixer.prototype.addAction('getOperation', 'pagination', function(operati
     command         = operation.command;
     paginateCommand = command.paginate;
 
-    operation.startPage  = operation.newPage  = operation.startState.activePage;
-    operation.startLimit = operation.newLimit = operation.startState.limit;
+    operation.startPage     = operation.newPage     = operation.startState.page;
+    operation.startLimit    = operation.newLimit    = operation.startState.limit;
+    operation.startAnchor   = operation.newAnchor   = operation.startState.anchor;
 
     operation.startTotalPages = operation.startState.totalPages;
 
@@ -251,12 +266,12 @@ mixitup.Mixer.prototype.addAction('getOperation', 'pagination', function(operati
         if (!self.pagination.maintainActivePage) {
             operation.newPage = 1;
         } else {
-            operation.newPage = self._state.activePage;
+            operation.newPage = self._state.page;
         }
     }
 }, 0);
 
-mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operation, args) {
+mixitup.Mixer.addFilter('getOperation', 'pagination', function(operation, args) {
     var self        = this,
         isPreFetch  = false;
 
@@ -283,7 +298,7 @@ mixitup.Mixer.prototype.addFilter('getOperation', 'pagination', function(operati
     return operation;
 });
 
-mixitup.Mixer.prototype.extend(
+mixitup.Mixer.extend(
 /** @lends mixitup.Mixer */
 {
     /**
@@ -296,48 +311,36 @@ mixitup.Mixer.prototype.extend(
     _parsePaginationCommand: function(command, operation) {
         var self = this;
 
-        switch (typeof command) {
-            case 'object':
-                // e.g. mixer.paginate({page: 3, limit: 2});
+        // e.g. mixer.paginate({page: 3, limit: 2});
+        // e.g. mixer.paginate({goTo: 'next'});
+        // e.g. mixer.paginate({anchor: anchorTarget, limit: 5});
 
-                typeof command.page === 'number' && (operation.newPage = command.page);
-                typeof command.limit === 'number' && (operation.newLimit = command.limit);
+        if (command.page > -1) {
+            if (command.page === 0) throw new Error(mixitup.messages[500]);
 
-                if (operation.newLimit !== operation.startLimit) {
-                    // A new limit has been sent via the API, calculate total pages
+            // TODO: replace Infinity with the highest possible page index
 
-                    operation.newTotalPages = operation.newLimit ?
-                        Math.max(Math.ceil(operation.startState.matching.length / operation.newLimit), 1) :
-                        1;
-                }
+            operation.newPage = Math.max(1, Math.min(Infinity, command.page));
+        } else if (operation.goTo === 'next') {
+            operation.newPage = self._getNextPage();
+        } else if (operation.goTo === 'prev') {
+            operation.newPage = self._getPrevPage();
+        } else if (command.anchor) {
+            operation.newAnchor = command.anchor;
+        }
 
-                if (operation.newPage === 'next') {
-                    operation.newPage = self._getNextPage();
-                } else if (operation.newPage === 'prev') {
-                    operation.newPage = self._getPrevPage();
-                }
+        if (command.limit > -1) {
+            // TODO: Should a limit of `0` be permitted?
 
-                break;
-            case 'number':
-                // e.g. mixer.paginate(3);
+            operation.newLimit = command.limit;
+        }
 
-                command = Math.max(1, Math.min(Infinity, command));
+        if (operation.newLimit !== operation.startLimit) {
+            // A new limit has been sent via the API, calculate total pages
 
-                // TODO: replace Infinity with the highest possible page index
-
-                operation.newPage = command;
-
-                break;
-            case 'string':
-                // e.g. mixer.paginate('next');
-
-                if (command === 'next') {
-                    operation.newPage = self._getNextPage();
-                } else if (command === 'prev') {
-                    operation.newPage = self._getPrevPage();
-                }
-
-                break;
+            operation.newTotalPages = operation.newLimit ?
+                Math.max(Math.ceil(operation.startState.matching.length / operation.newLimit), 1) :
+                1;
         }
 
         if (operation.newLimit < 0 || operation.newLimit === Infinity) {
@@ -354,10 +357,10 @@ mixitup.Mixer.prototype.extend(
         var self = this,
             page = -1;
 
-        page = self._state.activePage + 1;
+        page = self._state.page + 1;
 
         if (page > self._state.totalPages) {
-            page = self.pagination.loop ? 1 : self._state.activePage;
+            page = self.pagination.loop ? 1 : self._state.page;
         }
 
         return page;
@@ -372,10 +375,10 @@ mixitup.Mixer.prototype.extend(
         var self = this,
             page = -1;
 
-        page = self._state.activePage - 1;
+        page = self._state.page - 1;
 
         if (page < 1) {
-            page = self.pagination.loop ? self._state.totalPages : self._state.activePage;
+            page = self.pagination.loop ? self._state.totalPages : self._state.page;
         }
 
         return page;
@@ -696,17 +699,22 @@ mixitup.Mixer.prototype.extend(
             i           = -1;
 
         instruction.animate = self.animation.enable;
+        instruction.command = new mixitup.CommandPaginate();
 
         for (i = 0; i < args.length; i++) {
             arg = args[i];
 
             if (arg !== null) {
-                if (typeof arg === 'object' || typeof arg === 'number') {
-                    instruction.command = arg;
+                if (typeof arg === 'object' && h.isElement(arg, self._dom.document)) {
+                    instruction.command.anchor = arg;
+                } else if (typeof arg === 'object') {
+                    h.extend(instruction.command, arg);
+                } else if (typeof arg === 'number') {
+                    instruction.command.page = arg;
                 } else if (typeof arg === 'string' && !isNaN(parseInt(arg))) {
                     // e.g. "4"
 
-                    instruction.command = parseInt(arg);
+                    instruction.command.page = parseInt(arg);
                 } else if (typeof arg === 'boolean') {
                     instruction.animate = arg;
                 } else if (typeof arg === 'function') {
@@ -742,7 +750,9 @@ mixitup.Mixer.prototype.extend(
             instruction = self._parsePaginateArgs(arguments);
 
         return self.multiMix({
-            paginate: 'next'
+            paginate: {
+                goTo: 'next'
+            }
         }, instruction.animate, instruction.callback);
     },
 
@@ -756,7 +766,9 @@ mixitup.Mixer.prototype.extend(
             instruction = self._parsePaginateArgs(arguments);
 
         return self.multiMix({
-            paginate: 'prev'
+            paginate: {
+                goTo: 'prev'
+            }
         }, instruction.animate, instruction.callback);
     }
 });

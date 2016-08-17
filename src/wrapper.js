@@ -18,6 +18,8 @@
 
         {{>config}}
 
+        {{>command-paginate}}
+
         {{>operation}}
 
         {{>state}}
