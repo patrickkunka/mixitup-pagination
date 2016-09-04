@@ -1,9 +1,5 @@
 /* global mixitup, h */
 
-mixitup.Mixer.addAction('construct', 'pagination', function() {
-    this.pagination = new mixitup.ConfigPagination();
-});
-
 /**
  * @private
  * @param   {mixitup.State} state
@@ -18,7 +14,7 @@ mixitup.Mixer.addFilter('_init', 'pagination', function(state) {
     }
 
     state.limit = self.config.pagination.limit;
-    state.page  = self.load.page;
+    state.page  = self.config.load.page;
 
     return state;
 });
@@ -201,29 +197,33 @@ mixitup.Mixer.addAction('_filter', 'pagination', function(operation) {
 
 /**
  * @public
- * @param   {mixitup.Operation} operation
- * @param   {object}            command
+ * @param   {mixitup.Operation}         operation
+ * @param   {mixitup.CommandMultimix}   multimixCommand
  * @return  {mixitup.Operation}
  */
 
-mixitup.Mixer.addFilter('getOperation_unmapped', 'pagination', function(operation, command) {
+mixitup.Mixer.addFilter('getOperation_unmapped', 'pagination', function(operation, multimixCommand) {
     var self            = this,
+        instruction     = null,
         paginateCommand = null;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
         return operation;
     }
 
-    paginateCommand = command.paginate;
+    instruction     = self._parsePaginateArgs([multimixCommand.paginate]);
+    paginateCommand = instruction.command;
 
     operation.startPage         = operation.newPage     = self._state.page;
     operation.startLimit        = operation.newLimit    = self._state.limit;
     operation.startAnchor       = operation.newAnchor   = self._state.anchor;
     operation.startTotalPages                           = self._state.totalPages;
 
+    console.log(paginateCommand);
+
     if (paginateCommand) {
         self._parsePaginationCommand(paginateCommand, operation);
-    } else if (typeof command.filter !== 'undefined' || typeof command.sort !== 'undefined') {
+    } else if (typeof multimixCommand.filter !== 'undefined' || typeof multimixCommand.sort !== 'undefined') {
         // No other functionality is taking place that could affect
         // the active page, reset to 1, or maintain active:
 
@@ -274,8 +274,8 @@ mixitup.Mixer.extend(
 {
     /**
      * @private
-     * @param   {object}              command
-     * @param   {mixitup.Operation}   operation
+     * @param   {mixitup.CommandPaginate}   command
+     * @param   {mixitup.Operation}         operation
      * @return  {void}
      */
 
@@ -287,14 +287,14 @@ mixitup.Mixer.extend(
         // e.g. mixer.paginate({anchor: anchorTarget, limit: 5});
 
         if (command.page > -1) {
-            if (command.page === 0) throw new Error(mixitup.messages[500]);
+            if (command.page === 0) throw new Error(mixitup.messages.ERROR_PAGINATION_INDEX_RANGE);
 
             // TODO: replace Infinity with the highest possible page index
 
             operation.newPage = Math.max(1, Math.min(Infinity, command.page));
-        } else if (operation.goTo === 'next') {
+        } else if (command.goTo === 'next') {
             operation.newPage = self._getNextPage();
-        } else if (operation.goTo === 'prev') {
+        } else if (command.goTo === 'prev') {
             operation.newPage = self._getPrevPage();
         } else if (command.anchor) {
             operation.newAnchor = command.anchor;
@@ -592,7 +592,7 @@ mixitup.Mixer.extend(
         }
 
         if (i === activePage) {
-            classList.push(self.controls.activeClass);
+            classList.push(self.config.controls.activeClass);
         }
 
         // {{{{raw}}}}
@@ -659,8 +659,8 @@ mixitup.Mixer.extend(
 
     /**
      * @private
-     * @param   {*[]}       args
-     * @return  {Object}    instruction
+     * @param   {Array<*>}                  args
+     * @return  {mixitup.UserInstruction}   instruction
      */
 
     _parsePaginateArgs: function(args) {
@@ -669,7 +669,7 @@ mixitup.Mixer.extend(
             arg         = null,
             i           = -1;
 
-        instruction.animate = self.animation.enable;
+        instruction.animate = self.config.animation.enable;
         instruction.command = new mixitup.CommandPaginate();
 
         for (i = 0; i < args.length; i++) {
@@ -678,7 +678,7 @@ mixitup.Mixer.extend(
             if (arg !== null) {
                 if (typeof arg === 'object' && h.isElement(arg, self._dom.document)) {
                     instruction.command.anchor = arg;
-                } else if (typeof arg === 'object') {
+                } else if (arg instanceof mixitup.CommandPaginate || typeof arg === 'object') {
                     h.extend(instruction.command, arg);
                 } else if (typeof arg === 'number') {
                     instruction.command.page = arg;
@@ -686,6 +686,8 @@ mixitup.Mixer.extend(
                     // e.g. "4"
 
                     instruction.command.page = parseInt(arg);
+                } else if (typeof arg === 'string') {
+                    instruction.command.goTo = arg;
                 } else if (typeof arg === 'boolean') {
                     instruction.animate = arg;
                 } else if (typeof arg === 'function') {

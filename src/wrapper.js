@@ -20,6 +20,8 @@
 
         {{>control}}
 
+        {{>command-multimix}}
+
         {{>command-paginate}}
 
         {{>operation}}

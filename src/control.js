@@ -1,47 +1,53 @@
 /* globals mixitup, h */
 
 /**
- * @param   {object}        command
- * @param   {*[]}           args
+ * @param   {mixitup.MultimixCommand[]} commands
+ * @param   {ClickEvent}                e
  * @return  {object|null}
  */
 
-mixitup.Control.addFilter('handleClick', 'pagination', function(command, args) {
+mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
     var self            = this,
+        command         = {},
         page            = '',
         pageNumber      = -1,
         mixer           = null,
         button          = null,
-        e               = args[0],
         i               = -1;
 
-    if (!self.pagination || self.pagination.limit < 0 || self.pagination.limit === Infinity) return;
+    if (!self.selector) return commands;
 
-    button = h.closestParent(e.target, self.selector, true, self._dom.document);
-
-    if (!button) return;
-
-    page = button.getAttribute('data-page');
-
-    if (page === 'prev') {
-        command.page = 'prev';
-    } else if (page === 'next') {
-        command.page = 'next';
-    } else if (pageNumber) {
-        command.page = parseInt(page);
-    }
-
-    if (h.hasClass(button, self.bound[0].controls.activeClass)) {
-        // Button is already active, do not handle
-
-        return null;
-    }
+    button = h.closestParent(e.target, self.selector, true, self.bound[0]._dom.document);
 
     for (i = 0; mixer = self.bound[i]; i++) {
+        command = commands[i];
+
+        if (!mixer.config.pagination || mixer.config.pagination.limit < 0 || mixer.config.pagination.newLimit === Infinity) {
+            // Pagination is disabled for this instance. Do not handle.
+
+            commands[i] = null;
+        }
+
+        if (!button || h.hasClass(button, mixer.config.controls.activeClass)) {
+            // No button was clicked or button is already active. Do not handle.
+
+            commands[i] = null;
+        }
+
+        page = button.getAttribute('data-page');
+
+        if (page === 'prev') {
+            command.paginate = 'prev';
+        } else if (page === 'next') {
+            command.paginate = 'next';
+        } else if (pageNumber) {
+            command.paginate = parseInt(page);
+        }
+
         if (mixer._lastClicked) {
             mixer._lastClicked = button;
         }
     }
 
-    return command;
+    return commands;
 });
