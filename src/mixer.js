@@ -219,8 +219,6 @@ mixitup.Mixer.addFilter('getOperation_unmapped', 'pagination', function(operatio
     operation.startAnchor       = operation.newAnchor   = self._state.anchor;
     operation.startTotalPages                           = self._state.totalPages;
 
-    console.log(paginateCommand);
-
     if (paginateCommand) {
         self._parsePaginationCommand(paginateCommand, operation);
     } else if (typeof multimixCommand.filter !== 'undefined' || typeof multimixCommand.sort !== 'undefined') {
