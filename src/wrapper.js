@@ -8,6 +8,8 @@
 
         {{>version-check}}
 
+        {{>config-classnames}}
+
         {{>config-load}}
 
         {{>config-pagination}}
@@ -15,6 +17,8 @@
         {{>config-selectors}}
 
         {{>config}}
+
+        {{>ui-classnames}}
 
         {{>control-definition}}
 

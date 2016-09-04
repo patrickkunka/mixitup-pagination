@@ -26,12 +26,16 @@ mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
             // Pagination is disabled for this instance. Do not handle.
 
             commands[i] = null;
+
+            continue;
         }
 
-        if (!button || h.hasClass(button, mixer.config.controls.activeClass)) {
+        if (!button || h.hasClass(button, mixer.classnamesPager.active) || h.hasClass(button, mixer.classnamesPager.disabled)) {
             // No button was clicked or button is already active. Do not handle.
 
             commands[i] = null;
+
+            continue;
         }
 
         page = button.getAttribute('data-page');
