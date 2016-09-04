@@ -1,3 +1,5 @@
+/* global mixitup, h */
+
 // {{{{raw}}}}
 mixitup.ConfigPagination = function() {
     this.loop                       = false;
@@ -5,7 +7,7 @@ mixitup.ConfigPagination = function() {
     this.generateStats              = true;
     this.maintainActivePage         = true;
     this.limit                      = Infinity;
-    this.maxPagers                  = Infinity;
+    this.maxPagers                  = 5;
     this.pagerClass                 = 'mixitup-pager';
     this.pagerClassDisabled         = 'mixitup-pager-disabled';
     this.pagerClassFirst            = 'mixitup-pager-first';

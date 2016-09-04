@@ -1,3 +1,5 @@
+/* global mixitup */
+
 mixitup.Operation.addAction('construct', 'pagination', function() {
     this.startPage          = -1;
     this.newPage            = -1;

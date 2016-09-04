@@ -1,3 +1,5 @@
+/* global mixitup */
+
 mixitup.State.addAction('construct', 'pagination', function() {
     this.limit              = -1;
     this.page               = -1;

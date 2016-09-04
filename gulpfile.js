@@ -1,16 +1,12 @@
-/* global process */
-var gulp            = require('gulp'),
-    merge           = require('merge-stream'),
-    jshint          = require('gulp-jshint'),
-    stylish         = require('jshint-stylish'),
-    rename          = require('gulp-rename'),
-    jscs            = require('gulp-jscs'),
-    uglify          = require('gulp-uglify'),
-    livereload      = require('gulp-livereload'),
-    sourcemaps      = require('gulp-sourcemaps'),
-    parse           = require('jsdoc-parse'),
-    exec            = require('child_process').exec,
-    p               = require('./package.json');
+var gulp            = require('gulp');
+var jshint          = require('gulp-jshint');
+var stylish         = require('jshint-stylish');
+var rename          = require('gulp-rename');
+var jscs            = require('gulp-jscs');
+var uglify          = require('gulp-uglify');
+var livereload      = require('gulp-livereload');
+var sourcemaps      = require('gulp-sourcemaps');
+var exec            = require('child_process').exec;
 
 gulp.task('default', ['watch']);
 
@@ -41,7 +37,7 @@ gulp.task('prod', ['uglify']);
 
 gulp.task('uglify', ['build'], function() {
     return gulp.src([
-        './dist/mixitup-pagination.js',
+        './dist/mixitup-pagination.js'
     ])
         .pipe(uglify({
             preserveComments: 'license'
@@ -54,7 +50,7 @@ gulp.task('uglify', ['build'], function() {
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('build', ['build-script'], function(done) {
+gulp.task('build', ['build-dist'], function(done) {
     // exec('node build/build-docs.js', function(e, out) {
     //     if (out) {
     //         console.log(out);
@@ -64,11 +60,9 @@ gulp.task('build', ['build-script'], function(done) {
     // });
 });
 
-gulp.task('build-script', ['lint', 'code-style'], function(done) {
-    var version = p.version,
-        coreVersion = p.dependencies.mixitup;
 
-    exec('node build/build-script.js -v ' + version + ' -cv ' + coreVersion + ' -o mixitup-pagination.js', function(e, out) {
+gulp.task('build-dist', ['lint', 'code-style'], function(done) {
+    exec('node node_modules/mixitup-build/dist.js -o mixitup-pagination.js', function(e, out) {
         if (out) {
             console.log(out);
         }

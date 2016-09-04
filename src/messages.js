@@ -1,6 +1,8 @@
+/* globals mixitup */
+
 mixitup.Messages.addAction('construct', 'pagination', function() {
-    /* 500-549: Pagination extension errors
+    /* Pagination extension errors
     ----------------------------------------------------------------------------- */
 
-    this[500] = '[MixItUp] 500 ERROR: Page indices must start from 1';
+    this.ERROR_PAGINATION_INDEX_RANGE = '[MixItUp] Page indices must start from 1';
 }, 1);

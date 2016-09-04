@@ -8,8 +8,6 @@
 
         {{>version-check}}
 
-        {{>config-callbacks}}
-
         {{>config-load}}
 
         {{>config-pagination}}
@@ -17,6 +15,10 @@
         {{>config-selectors}}
 
         {{>config}}
+
+        {{>control-definition}}
+
+        {{>control}}
 
         {{>command-paginate}}
 
@@ -26,11 +28,10 @@
 
         {{>mixer-dom}}
 
-        {{>events}}
-
         {{>mixer}}
     };
 
+    mixitupPagination.NAME                    = '{{name}}'
     mixitupPagination.EXTENSION_VERSION       = '{{version}}';
     mixitupPagination.REQUIRE_CORE_VERSION    = '{{coreVersion}}';
 
