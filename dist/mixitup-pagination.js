@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build ed219554-7698-4421-9d3f-9b6fa35e3779
+ * Build b8b56e2d-75ab-403f-a447-e4e84bfd8a6f
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -391,8 +391,6 @@
             operation.startLimit        = operation.newLimit    = self._state.limit;
             operation.startAnchor       = operation.newAnchor   = self._state.anchor;
             operation.startTotalPages                           = self._state.totalPages;
-
-            console.log(paginateCommand);
 
             if (paginateCommand) {
                 self._parsePaginationCommand(paginateCommand, operation);
