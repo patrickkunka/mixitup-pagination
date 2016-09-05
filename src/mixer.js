@@ -74,7 +74,7 @@ mixitup.Mixer.addAction('_cacheDom', 'pagination', function() {
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) return;
 
-    if (!self.config.pagination.generatePagers) return;
+    if (!self.config.pagination.generatePageList) return;
 
     switch (self.config.controls.scope) {
         case 'local':
@@ -239,6 +239,7 @@ mixitup.Mixer.addFilter('getOperation_unmapped', 'pagination', function(operatio
     instruction     = self._parsePaginateArgs([multimixCommand.paginate]);
     paginateCommand = instruction.command;
 
+    operation.startState                                = self._state;
     operation.startPage         = operation.newPage     = self._state.page;
     operation.startLimit        = operation.newLimit    = self._state.limit;
     operation.startAnchor       = operation.newAnchor   = self._state.anchor;
@@ -281,12 +282,12 @@ mixitup.Mixer.addFilter('getOperation_mapped', 'pagination', function(operation,
         return operation;
     }
 
-    if (self.config.pagination.generatePagers && self._dom.pageList) {
-        self._renderPagers(operation);
+    if (self.config.pagination.generatePageList && self._dom.pageList) {
+        self._renderPageList(operation);
     }
 
-    if (self.config.pagination.generateStats && self._dom.pageStats) {
-        self._renderStats(operation);
+    if (self.config.pagination.generatePageStats && self._dom.pageStats) {
+        self._renderPageStats(operation);
     }
 
     return operation;
@@ -384,7 +385,7 @@ mixitup.Mixer.extend(
      * @return  {void}
      */
 
-    _renderPagers: function(operation) {
+    _renderPageList: function(operation) {
         var self                = this,
             activeIndex         = -1,
             pagerHtml           = '',
@@ -396,12 +397,16 @@ mixitup.Mixer.extend(
             html                = '',
             i                   = -1;
 
-        if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+        if (
+            operation.newLimit < 0 ||
+            operation.newLimit === Infinity ||
+            (operation.newTotalPages < 2 && self.config.pagination.hidePageListIfSinglePage)
+        ) {
             // Empty the pager list, and add disabled class
 
             self._dom.pageList.innerHTML = '';
 
-            h.addClass(self._dom.pageList, self.classnamesPagelist.disabled);
+            h.addClass(self._dom.pageList, self.classnamesPageList.disabled);
 
             return;
         }
@@ -635,7 +640,7 @@ mixitup.Mixer.extend(
      * @return  {void}
      */
 
-    _renderStats: function(operation) {
+    _renderPageStats: function(operation) {
         var self            = this,
             output          = '',
             template        = '',
@@ -643,7 +648,11 @@ mixitup.Mixer.extend(
             endPageAt       = -1,
             totalTargets    = -1;
 
-        if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+        if (
+            operation.newLimit < 0 ||
+            operation.newLimit === Infinity ||
+            (operation.newTotalPages < 2 && self.config.pagination.hidePageStatsIfSinglePage)
+        ) {
             // Empty the pager list, and add disabled class
 
             self._dom.pageStats.innerHTML = '';

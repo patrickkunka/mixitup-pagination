@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 110e0b8d-246b-404f-af16-a517ac371a04
+ * Build bfe7b8a2-7164-432e-967d-e77b704d42a3
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -52,9 +52,11 @@
         //
         mixitup.ConfigPagination = function() {
             this.loop                       = false;
-            this.generatePagers             = true;
-            this.generateStats              = true;
+            this.generatePageList           = true;
+            this.generatePageStats          = true;
             this.maintainActivePage         = true;
+            this.hidePageListIfSinglePage   = false;
+            this.hidePageStatsIfSinglePage  = false;
             this.limit                      = Infinity;
             this.maxPagers                  = 5;
             this.templatePager              = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
@@ -264,7 +266,7 @@
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) return;
 
-            if (!self.config.pagination.generatePagers) return;
+            if (!self.config.pagination.generatePageList) return;
 
             switch (self.config.controls.scope) {
                 case 'local':
@@ -429,6 +431,7 @@
             instruction     = self._parsePaginateArgs([multimixCommand.paginate]);
             paginateCommand = instruction.command;
 
+            operation.startState                                = self._state;
             operation.startPage         = operation.newPage     = self._state.page;
             operation.startLimit        = operation.newLimit    = self._state.limit;
             operation.startAnchor       = operation.newAnchor   = self._state.anchor;
@@ -471,12 +474,12 @@
                 return operation;
             }
 
-            if (self.config.pagination.generatePagers && self._dom.pageList) {
-                self._renderPagers(operation);
+            if (self.config.pagination.generatePageList && self._dom.pageList) {
+                self._renderPageList(operation);
             }
 
-            if (self.config.pagination.generateStats && self._dom.pageStats) {
-                self._renderStats(operation);
+            if (self.config.pagination.generatePageStats && self._dom.pageStats) {
+                self._renderPageStats(operation);
             }
 
             return operation;
@@ -574,7 +577,7 @@
              * @return  {void}
              */
 
-            _renderPagers: function(operation) {
+            _renderPageList: function(operation) {
                 var self                = this,
                     activeIndex         = -1,
                     pagerHtml           = '',
@@ -586,12 +589,16 @@
                     html                = '',
                     i                   = -1;
 
-                if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+                if (
+                    operation.newLimit < 0 ||
+                    operation.newLimit === Infinity ||
+                    (operation.newTotalPages < 2 && self.config.pagination.hidePageListIfSinglePage)
+                ) {
                     // Empty the pager list, and add disabled class
 
                     self._dom.pageList.innerHTML = '';
 
-                    h.addClass(self._dom.pageList, self.classnamesPagelist.disabled);
+                    h.addClass(self._dom.pageList, self.classnamesPageList.disabled);
 
                     return;
                 }
@@ -825,7 +832,7 @@
              * @return  {void}
              */
 
-            _renderStats: function(operation) {
+            _renderPageStats: function(operation) {
                 var self            = this,
                     output          = '',
                     template        = '',
@@ -833,7 +840,11 @@
                     endPageAt       = -1,
                     totalTargets    = -1;
 
-                if (operation.newLimit < 0 || operation.newLimit === Infinity) {
+                if (
+                    operation.newLimit < 0 ||
+                    operation.newLimit === Infinity ||
+                    (operation.newTotalPages < 2 && self.config.pagination.hidePageStatsIfSinglePage)
+                ) {
                     // Empty the pager list, and add disabled class
 
                     self._dom.pageStats.innerHTML = '';

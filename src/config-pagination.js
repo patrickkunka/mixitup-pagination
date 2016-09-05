@@ -3,9 +3,11 @@
 // {{{{raw}}}}
 mixitup.ConfigPagination = function() {
     this.loop                       = false;
-    this.generatePagers             = true;
-    this.generateStats              = true;
+    this.generatePageList           = true;
+    this.generatePageStats          = true;
     this.maintainActivePage         = true;
+    this.hidePageListIfSinglePage   = false;
+    this.hidePageStatsIfSinglePage  = false;
     this.limit                      = Infinity;
     this.maxPagers                  = 5;
     this.templatePager              = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
