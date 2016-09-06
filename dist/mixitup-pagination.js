@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build bfe7b8a2-7164-432e-967d-e77b704d42a3
+ * Build 9cb95169-f92a-4213-bf18-823ade6eb0ae
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -315,7 +315,7 @@
          * @return  {void}
          */
 
-        mixitup.Mixer.addAction('_filter', 'pagination', function(operation) {
+        mixitup.Mixer.addAction('_filterOperation', 'pagination', function(operation) {
             var self        = this,
                 startPageAt = -1,
                 endPageAt   = -1,

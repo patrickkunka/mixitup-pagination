@@ -123,7 +123,7 @@ mixitup.Mixer.addFilter('_buildState', 'pagination', function(state, operation) 
  * @return  {void}
  */
 
-mixitup.Mixer.addAction('_filter', 'pagination', function(operation) {
+mixitup.Mixer.addAction('_filterOperation', 'pagination', function(operation) {
     var self        = this,
         startPageAt = -1,
         endPageAt   = -1,
