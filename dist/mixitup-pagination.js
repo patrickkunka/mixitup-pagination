@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 9cb95169-f92a-4213-bf18-823ade6eb0ae
+ * Build 4d19fd96-5e53-4683-a9bc-e6dad6d9316d
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -200,15 +200,14 @@
 
         /**
          * @private
-         * @param   {mixitup.State} state
-         * @return  {mixitup.State}
+         * @return  {void}
          */
 
-        mixitup.Mixer.addFilter('_init', 'pagination', function(state) {
+        mixitup.Mixer.addAction('attach', 'pagination', function() {
             var self = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
-                return state;
+                return;
             }
 
             // Map pagination ui classnames
@@ -229,6 +228,20 @@
             self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
             self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
             // jscs:enable
+        }, 1);
+
+        /**
+         * @private
+         * @param   {mixitup.State} state
+         * @return  {mixitup.State}
+         */
+
+        mixitup.Mixer.addFilter('_getInitialState', 'pagination', function(state) {
+            var self = this;
+
+            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
+                return state;
+            }
 
             state.limit = self.config.pagination.limit;
             state.page  = self.config.load.page;
