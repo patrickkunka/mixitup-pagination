@@ -17,7 +17,7 @@ mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
 
     if (!self.selector) return commands;
 
-    button = h.closestParent(e.target, self.selector, true, self.bound[0]._dom.document);
+    button = h.closestParent(e.target, self.selector, true, self.bound[0].dom.document);
 
     for (i = 0; mixer = self.bound[i]; i++) {
         command = commands[i];
@@ -48,8 +48,8 @@ mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
             command.paginate = parseInt(page);
         }
 
-        if (mixer._lastClicked) {
-            mixer._lastClicked = button;
+        if (mixer.lastClicked) {
+            mixer.lastClicked = button;
         }
     }
 
