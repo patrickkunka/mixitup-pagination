@@ -35,6 +35,8 @@
         {{>mixer-dom}}
 
         {{>mixer}}
+
+        {{>facade}}
     };
 
     mixitupPagination.NAME                    = '{{name}}'

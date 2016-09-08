@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build e333a8dd-0c32-4f52-89dd-babcc68e8537
+ * Build c4061a98-3838-41e1-af22-c5ae8ee1b2d3
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -983,7 +983,13 @@
                     }
                 }, instruction.animate, instruction.callback);
             }
-        });    };
+        });
+
+        mixitup.Facade.addAction('construct', 'pagination', function(mixer) {
+            this.paginate = mixer.paginate.bind(mixer);
+            this.nextPage = mixer.nextPage.bind(mixer);
+            this.prevPage = mixer.prevPage.bind(mixer);
+        }, 1);    };
 
     mixitupPagination.NAME                    = 'mixitup-pagiation'
     mixitupPagination.EXTENSION_VERSION       = '2.0.0-beta';
