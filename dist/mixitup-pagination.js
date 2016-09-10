@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build fa39732b-de2a-49b2-89ab-de5a68f1c2a8
+ * Build b8937c7d-afd4-41f0-b40c-9d2e82531e61
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -99,7 +99,7 @@
          * @return  {object|null}
          */
 
-        mixitup.Control.registerFilter('handleClick', 'pagination', function(commands, e) {
+        mixitup.Control.registerFilter('commandsHandleClick', 'pagination', function(commands, e) {
             var self            = this,
                 command         = {},
                 page            = '',

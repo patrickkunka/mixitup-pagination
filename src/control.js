@@ -6,7 +6,7 @@
  * @return  {object|null}
  */
 
-mixitup.Control.registerFilter('handleClick', 'pagination', function(commands, e) {
+mixitup.Control.registerFilter('commandsHandleClick', 'pagination', function(commands, e) {
     var self            = this,
         command         = {},
         page            = '',
