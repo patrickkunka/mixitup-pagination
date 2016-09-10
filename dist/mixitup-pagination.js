@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 5d40b92d-c543-487a-a283-9fd5a8c525aa
+ * Build a5b1d40d-1ac1-4714-a5f5-544549392513
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -318,7 +318,7 @@
 
                     break;
                 default:
-                    throw new Error(mixitup.messages[102]);
+                    throw new Error(mixitup.messages.ERROR_CONFIG_INVALID_CONTROLS_SCOPE);
             }
 
             self.dom.pageList  = parent.querySelector(self.config.selectors.pageList);
@@ -543,7 +543,7 @@
                 // e.g. mixer.paginate({anchor: anchorTarget, limit: 5});
 
                 if (command.page > -1) {
-                    if (command.page === 0) throw new Error(mixitup.messages.ERROR_PAGINATION_INDEX_RANGE);
+                    if (command.page === 0) throw new Error(mixitup.messages.ERROR_PAGINATE_INDEX_RANGE);
 
                     // TODO: replace Infinity with the highest possible page index
 

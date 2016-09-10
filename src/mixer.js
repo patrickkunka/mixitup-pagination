@@ -99,7 +99,7 @@ mixitup.Mixer.registerAction('afterCacheDom', 'pagination', function() {
 
             break;
         default:
-            throw new Error(mixitup.messages[102]);
+            throw new Error(mixitup.messages.ERROR_CONFIG_INVALID_CONTROLS_SCOPE);
     }
 
     self.dom.pageList  = parent.querySelector(self.config.selectors.pageList);
@@ -324,7 +324,7 @@ mixitup.Mixer.extend(
         // e.g. mixer.paginate({anchor: anchorTarget, limit: 5});
 
         if (command.page > -1) {
-            if (command.page === 0) throw new Error(mixitup.messages.ERROR_PAGINATION_INDEX_RANGE);
+            if (command.page === 0) throw new Error(mixitup.messages.ERROR_PAGINATE_INDEX_RANGE);
 
             // TODO: replace Infinity with the highest possible page index
 
