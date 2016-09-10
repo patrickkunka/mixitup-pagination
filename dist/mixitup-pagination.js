@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build b8937c7d-afd4-41f0-b40c-9d2e82531e61
+ * Build 5afe0e99-5991-4178-a3b1-0b5c21a39796
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -953,7 +953,7 @@
                 var self        = this,
                     instruction = self.parsePaginateArgs(arguments);
 
-                return self.multiMix({
+                return self.multimix({
                     paginate: instruction.command
                 }, instruction.animate, instruction.callback);
             },
@@ -967,7 +967,7 @@
                 var self        = this,
                     instruction = self.parsePaginateArgs(arguments);
 
-                return self.multiMix({
+                return self.multimix({
                     paginate: {
                         goTo: 'next'
                     }
@@ -983,7 +983,7 @@
                 var self = this,
                     instruction = self.parsePaginateArgs(arguments);
 
-                return self.multiMix({
+                return self.multimix({
                     paginate: {
                         goTo: 'prev'
                     }

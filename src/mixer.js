@@ -757,7 +757,7 @@ mixitup.Mixer.extend(
         var self        = this,
             instruction = self.parsePaginateArgs(arguments);
 
-        return self.multiMix({
+        return self.multimix({
             paginate: instruction.command
         }, instruction.animate, instruction.callback);
     },
@@ -771,7 +771,7 @@ mixitup.Mixer.extend(
         var self        = this,
             instruction = self.parsePaginateArgs(arguments);
 
-        return self.multiMix({
+        return self.multimix({
             paginate: {
                 goTo: 'next'
             }
@@ -787,7 +787,7 @@ mixitup.Mixer.extend(
         var self = this,
             instruction = self.parsePaginateArgs(arguments);
 
-        return self.multiMix({
+        return self.multimix({
             paginate: {
                 goTo: 'prev'
             }
