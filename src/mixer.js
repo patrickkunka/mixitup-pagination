@@ -401,10 +401,12 @@ mixitup.Mixer.extend(
             activeIndex         = -1,
             pagerHtml           = '',
             buttonList          = [],
-            classList           = [],
+            model               = null,
             allowedIndices      = [],
             truncatedBefore     = false,
             truncatedAfter      = false,
+            disabled            = null,
+            el                  = null,
             html                = '',
             i                   = -1;
 
@@ -430,20 +432,22 @@ mixitup.Mixer.extend(
 
         // Render prev button
 
-        classList.push(self.classnamesPager.base);
-        classList.push(self.classnamesPager.prev);
+        model = new mixitup.ModelPager();
+
+        model.isPrev = false;
+        model.classlist.push(self.classnamesPager.base, self.classnamesPager.prev);
 
         // If first and not looping, disable the prev button
 
         if (operation.newPage === 1 && !self.config.pagination.loop) {
-            classList.push(self.classnamesPager.disabled);
+            model.classlist.push(self.classnamesPager.disabled);
 
-            // TODO: if button, actually disable it?
+            model.isDisabled = true;
         }
 
-        // {{{{raw}}}}
-        pagerHtml = self.config.pagination.templatePrevPage.replace(/{{classes}}/g, classList.join(' '));
-        // {{{{/raw}}}}
+        model.classnames = model.classlist.join(' ');
+
+        pagerHtml = h.renderTemplate(self.config.templates.pagerPrev, model, mixitup.libraries.handlebars);
 
         buttonList.push(pagerHtml);
 
@@ -452,39 +456,54 @@ mixitup.Mixer.extend(
         for (i = 0; i < operation.newTotalPages; i++) {
             pagerHtml = self.renderPager(i, operation, allowedIndices);
 
+            if (pagerHtml || (i < activeIndex && truncatedBefore) || i > activeIndex && truncatedAfter) {
+                if (pagerHtml) {
+                    buttonList.push(pagerHtml);
+                }
+
+                continue;
+            }
+
             // Replace gaps between pagers with a truncation maker, but only once
 
-            if (!pagerHtml && i < activeIndex && !truncatedBefore) {
-                pagerHtml = self.config.pagination.templateTruncated;
+            model = new mixitup.ModelPager();
 
+            model.isTruncationMarker = false;
+
+            model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
+            model.classnames = model.classlist.join(' ');
+
+            pagerHtml = h.renderTemplate(self.config.templates.pagerTruncationMarker, model, mixitup.libraries.handlebars);
+
+            buttonList.push(pagerHtml);
+
+            // Prevent multiple truncation markers
+
+            if (i < activeIndex) {
                 truncatedBefore = true;
             }
 
-            if (!pagerHtml && i > activeIndex && !truncatedAfter) {
-                pagerHtml = self.config.pagination.templateTruncated;
-
+            if (i > activeIndex) {
                 truncatedAfter = true;
             }
-
-            buttonList.push(pagerHtml);
         }
 
         // Render next button
 
-        classList = [];
+        model = new mixitup.ModelPager();
 
-        classList.push(self.classnamesPager.base);
-        classList.push(self.classnamesPager.next);
+        model.isNext = false;
+        model.classlist.push(self.classnamesPager.base, self.classnamesPager.next);
 
         // If last page and not looping, disable the next button
 
         if (operation.newPage === operation.newTotalPages && !self.config.pagination.loop) {
-            classList.push(self.classnamesPager.disabled);
+            model.classlist.push(self.classnamesPager.disabled);
         }
 
-        // {{{{raw}}}}
-        pagerHtml = self.config.pagination.templateNextPage.replace(/{{classes}}/g, classList.join(' '));
-        // {{{{/raw}}}}
+        model.classnames = model.classlist.join(' ');
+
+        pagerHtml = h.renderTemplate(self.config.templates.pagerNext, model, mixitup.libraries.handlebars);
 
         buttonList.push(pagerHtml);
 
@@ -493,6 +512,16 @@ mixitup.Mixer.extend(
         html = buttonList.join(' ');
 
         self.dom.pageList.innerHTML = html;
+
+        // Add disabled attribute to disabled buttons
+
+        disabled = self.dom.pageList.querySelectorAll('.' + self.classnamesPager.disabled);
+
+        for (i = 0; el = disabled[i]; i++) {
+            if (typeof el.disabled === 'boolean') {
+                el.disabled = true;
+            }
+        }
 
         if (truncatedBefore || truncatedAfter) {
             h.addClass(self.dom.pageList, self.classnamesPageList.truncated);
@@ -609,7 +638,7 @@ mixitup.Mixer.extend(
     renderPager: function(i, operation, allowedIndices) {
         var self        = this,
             activePage  = operation.newPage - 1,
-            classList   = [],
+            model       = new mixitup.ModelPager(),
             output      = '';
 
         if (
@@ -622,25 +651,24 @@ mixitup.Mixer.extend(
             return '';
         }
 
-        classList.push(self.classnamesPager.base);
+        model.classlist.push(self.classnamesPager.base);
 
         if (i === 0) {
-            classList.push(self.classnamesPager.first);
+            model.classlist.push(self.classnamesPager.first);
         }
 
         if (i === operation.newTotalPages - 1) {
-            classList.push(self.classnamesPager.last);
+            model.classlist.push(self.classnamesPager.last);
         }
 
         if (i === activePage) {
-            classList.push(self.classnamesPager.active);
+            model.classlist.push(self.classnamesPager.active);
         }
 
-        // {{{{raw}}}}
-        output = self.config.pagination.templatePager
-            .replace(/{{classes}}/g, classList.join(' '))
-            .replace(/{{pageNumber}}/g, (i + 1));
-        // {{{{/raw}}}}
+        model.classnames = model.classlist.join(' ');
+        model.pageNumber = i + 1;
+
+        output = h.renderTemplate(self.config.templates.pager, model, mixitup.libraries.handlebars);
 
         return output;
     },
@@ -653,11 +681,9 @@ mixitup.Mixer.extend(
 
     renderPageStats: function(operation) {
         var self            = this,
+            model           = new mixitup.ModelPageStats(),
             output          = '',
-            template        = '',
-            startPageAt     = -1,
-            endPageAt       = -1,
-            totalTargets    = -1;
+            template        = '';
 
         if (
             operation.newLimit < 0 ||
@@ -673,33 +699,28 @@ mixitup.Mixer.extend(
             return;
         }
 
-        totalTargets = operation.matching.length;
+        model.totalTargets = operation.matching.length;
 
-        if (totalTargets) {
+        if (model.totalTargets) {
             template = operation.newLimit === 1 ?
-                self.config.pagination.templatePageStatsSingle :
-                self.config.pagination.templatePageStats;
+                self.config.templates.pageStatsSingle :
+                self.config.templates.pageStats;
         } else {
-            template = self.config.pagination.templatePageStatsFail;
+            template = self.config.templates.pageStatsFail;
         }
 
-        if (totalTargets && operation.newLimit > 0) {
-            startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
-            endPageAt   = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+        if (model.totalTargets && operation.newLimit > 0) {
+            model.startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
+            model.endPageAt   = Math.min(model.startPageAt + operation.newLimit - 1, model.totalTargets);
         } else {
-            startPageAt = endPageAt = 0;
+            model.startPageAt = model.endPageAt = 0;
         }
 
-        // {{{{raw}}}}
-        output = template
-            .replace(/{{startPageAt}}/g, startPageAt.toString())
-            .replace(/{{endPageAt}}/g, endPageAt.toString())
-            .replace(/{{totalTargets}}/g, totalTargets.toString());
-        // {{{{/raw}}}}
+        output = h.renderTemplate(template, model, mixitup.libraries.handlebars);
 
         self.dom.pageStats.innerHTML = output;
 
-        if (totalTargets) {
+        if (model.totalTargets) {
             h.removeClass(self.dom.pageStats, self.classnamesPageStats.disabled);
         } else {
             h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);

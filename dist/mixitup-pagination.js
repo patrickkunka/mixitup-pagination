@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 5afe0e99-5991-4178-a3b1-0b5c21a39796
+ * Build 5d40b92d-c543-487a-a283-9fd5a8c525aa
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -49,7 +49,6 @@
             this.page = 1;
         });
 
-        //
         mixitup.ConfigPagination = function() {
             this.loop                       = false;
             this.generatePageList           = true;
@@ -59,26 +58,50 @@
             this.hidePageStatsIfSinglePage  = false;
             this.limit                      = Infinity;
             this.maxPagers                  = 5;
-            this.templatePager              = '<span class="{{classes}}" data-page="{{pageNumber}}">{{pageNumber}}</span>';
-            this.templatePrevPage           = '<span class="{{classes}}" data-page="prev">&laquo;</span>';
-            this.templateNextPage           = '<span class="{{classes}}" data-page="next">&raquo;</span>';
-            this.templatePageStats          = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}';
-            this.templatePageStatsSingle    = '{{startPageAt}} of {{totalTargets}}';
-            this.templatePageStatsFail      = 'None found';
-            this.templateTruncated          = '&hellip;';
 
             h.seal(this);
         };
-        //
 
         mixitup.ConfigSelectors.registerAction('afterConstruct', 'pagination', function() {
             this.pageList  = '.mixitup-page-list';
             this.pageStats = '.mixitup-page-stats';
         });
 
+        mixitup.ConfigTemplates.registerAction('afterConstruct', 'pagination', function() {
+            //
+            this.pager                = '<button type="button" class="{{classnames}}" data-page="{{pageNumber}}">{{pageNumber}}</button>';
+            this.pagerPrev            = '<button type="button" class="{{classnames}}" data-page="prev">&laquo;</button>';
+            this.pagerNext            = '<button type="button" class="{{classnames}}" data-page="next">&raquo;</button>';
+            this.pagerTruncationMarker = '<span class="{{classnames}}">&hellip;</span>';
+            this.pageStats            = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}';
+            this.pageStatsSingle      = '{{startPageAt}} of {{totalTargets}}';
+            this.pageStatsFail        = 'None found';
+            //
+        });
+
         mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
             this.pagination = new mixitup.ConfigPagination();
         });
+
+        mixitup.ModelPager = function() {
+            this.pageNumber         = -1;
+            this.classnames         = '';
+            this.classlist          = [];
+            this.isDisabled         = false;
+            this.isPrev             = false;
+            this.isNext             = false;
+            this.isTruncationMarker = false;
+
+            h.seal(this);
+        };
+
+        mixitup.ModelPageStats = function() {
+            this.startPageAt    = -1;
+            this.endPageAt      = -1;
+            this.totalTargets   = -1;
+
+            h.seal(this);
+        };
 
         mixitup.UiClassnames.registerAction('afterConstruct', 'pagination', function() {
             this.first              = '';
@@ -597,10 +620,12 @@
                     activeIndex         = -1,
                     pagerHtml           = '',
                     buttonList          = [],
-                    classList           = [],
+                    model               = null,
                     allowedIndices      = [],
                     truncatedBefore     = false,
                     truncatedAfter      = false,
+                    disabled            = null,
+                    el                  = null,
                     html                = '',
                     i                   = -1;
 
@@ -626,20 +651,22 @@
 
                 // Render prev button
 
-                classList.push(self.classnamesPager.base);
-                classList.push(self.classnamesPager.prev);
+                model = new mixitup.ModelPager();
+
+                model.isPrev = false;
+                model.classlist.push(self.classnamesPager.base, self.classnamesPager.prev);
 
                 // If first and not looping, disable the prev button
 
                 if (operation.newPage === 1 && !self.config.pagination.loop) {
-                    classList.push(self.classnamesPager.disabled);
+                    model.classlist.push(self.classnamesPager.disabled);
 
-                    // TODO: if button, actually disable it?
+                    model.isDisabled = true;
                 }
 
-                //
-                pagerHtml = self.config.pagination.templatePrevPage.replace(/{{classes}}/g, classList.join(' '));
-                //
+                model.classnames = model.classlist.join(' ');
+
+                pagerHtml = h.renderTemplate(self.config.templates.pagerPrev, model, mixitup.libraries.handlebars);
 
                 buttonList.push(pagerHtml);
 
@@ -648,39 +675,54 @@
                 for (i = 0; i < operation.newTotalPages; i++) {
                     pagerHtml = self.renderPager(i, operation, allowedIndices);
 
+                    if (pagerHtml || (i < activeIndex && truncatedBefore) || i > activeIndex && truncatedAfter) {
+                        if (pagerHtml) {
+                            buttonList.push(pagerHtml);
+                        }
+
+                        continue;
+                    }
+
                     // Replace gaps between pagers with a truncation maker, but only once
 
-                    if (!pagerHtml && i < activeIndex && !truncatedBefore) {
-                        pagerHtml = self.config.pagination.templateTruncated;
+                    model = new mixitup.ModelPager();
 
+                    model.isTruncationMarker = false;
+
+                    model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
+                    model.classnames = model.classlist.join(' ');
+
+                    pagerHtml = h.renderTemplate(self.config.templates.pagerTruncationMarker, model, mixitup.libraries.handlebars);
+
+                    buttonList.push(pagerHtml);
+
+                    // Prevent multiple truncation markers
+
+                    if (i < activeIndex) {
                         truncatedBefore = true;
                     }
 
-                    if (!pagerHtml && i > activeIndex && !truncatedAfter) {
-                        pagerHtml = self.config.pagination.templateTruncated;
-
+                    if (i > activeIndex) {
                         truncatedAfter = true;
                     }
-
-                    buttonList.push(pagerHtml);
                 }
 
                 // Render next button
 
-                classList = [];
+                model = new mixitup.ModelPager();
 
-                classList.push(self.classnamesPager.base);
-                classList.push(self.classnamesPager.next);
+                model.isNext = false;
+                model.classlist.push(self.classnamesPager.base, self.classnamesPager.next);
 
                 // If last page and not looping, disable the next button
 
                 if (operation.newPage === operation.newTotalPages && !self.config.pagination.loop) {
-                    classList.push(self.classnamesPager.disabled);
+                    model.classlist.push(self.classnamesPager.disabled);
                 }
 
-                //
-                pagerHtml = self.config.pagination.templateNextPage.replace(/{{classes}}/g, classList.join(' '));
-                //
+                model.classnames = model.classlist.join(' ');
+
+                pagerHtml = h.renderTemplate(self.config.templates.pagerNext, model, mixitup.libraries.handlebars);
 
                 buttonList.push(pagerHtml);
 
@@ -689,6 +731,16 @@
                 html = buttonList.join(' ');
 
                 self.dom.pageList.innerHTML = html;
+
+                // Add disabled attribute to disabled buttons
+
+                disabled = self.dom.pageList.querySelectorAll('.' + self.classnamesPager.disabled);
+
+                for (i = 0; el = disabled[i]; i++) {
+                    if (typeof el.disabled === 'boolean') {
+                        el.disabled = true;
+                    }
+                }
 
                 if (truncatedBefore || truncatedAfter) {
                     h.addClass(self.dom.pageList, self.classnamesPageList.truncated);
@@ -805,7 +857,7 @@
             renderPager: function(i, operation, allowedIndices) {
                 var self        = this,
                     activePage  = operation.newPage - 1,
-                    classList   = [],
+                    model       = new mixitup.ModelPager(),
                     output      = '';
 
                 if (
@@ -818,25 +870,24 @@
                     return '';
                 }
 
-                classList.push(self.classnamesPager.base);
+                model.classlist.push(self.classnamesPager.base);
 
                 if (i === 0) {
-                    classList.push(self.classnamesPager.first);
+                    model.classlist.push(self.classnamesPager.first);
                 }
 
                 if (i === operation.newTotalPages - 1) {
-                    classList.push(self.classnamesPager.last);
+                    model.classlist.push(self.classnamesPager.last);
                 }
 
                 if (i === activePage) {
-                    classList.push(self.classnamesPager.active);
+                    model.classlist.push(self.classnamesPager.active);
                 }
 
-                //
-                output = self.config.pagination.templatePager
-                    .replace(/{{classes}}/g, classList.join(' '))
-                    .replace(/{{pageNumber}}/g, (i + 1));
-                //
+                model.classnames = model.classlist.join(' ');
+                model.pageNumber = i + 1;
+
+                output = h.renderTemplate(self.config.templates.pager, model, mixitup.libraries.handlebars);
 
                 return output;
             },
@@ -849,11 +900,9 @@
 
             renderPageStats: function(operation) {
                 var self            = this,
+                    model           = new mixitup.ModelPageStats(),
                     output          = '',
-                    template        = '',
-                    startPageAt     = -1,
-                    endPageAt       = -1,
-                    totalTargets    = -1;
+                    template        = '';
 
                 if (
                     operation.newLimit < 0 ||
@@ -869,33 +918,28 @@
                     return;
                 }
 
-                totalTargets = operation.matching.length;
+                model.totalTargets = operation.matching.length;
 
-                if (totalTargets) {
+                if (model.totalTargets) {
                     template = operation.newLimit === 1 ?
-                        self.config.pagination.templatePageStatsSingle :
-                        self.config.pagination.templatePageStats;
+                        self.config.templates.pageStatsSingle :
+                        self.config.templates.pageStats;
                 } else {
-                    template = self.config.pagination.templatePageStatsFail;
+                    template = self.config.templates.pageStatsFail;
                 }
 
-                if (totalTargets && operation.newLimit > 0) {
-                    startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
-                    endPageAt   = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+                if (model.totalTargets && operation.newLimit > 0) {
+                    model.startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
+                    model.endPageAt   = Math.min(model.startPageAt + operation.newLimit - 1, model.totalTargets);
                 } else {
-                    startPageAt = endPageAt = 0;
+                    model.startPageAt = model.endPageAt = 0;
                 }
 
-                //
-                output = template
-                    .replace(/{{startPageAt}}/g, startPageAt.toString())
-                    .replace(/{{endPageAt}}/g, endPageAt.toString())
-                    .replace(/{{totalTargets}}/g, totalTargets.toString());
-                //
+                output = h.renderTemplate(template, model, mixitup.libraries.handlebars);
 
                 self.dom.pageStats.innerHTML = output;
 
-                if (totalTargets) {
+                if (model.totalTargets) {
                     h.removeClass(self.dom.pageStats, self.classnamesPageStats.disabled);
                 } else {
                     h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);
@@ -997,6 +1041,7 @@
             this.prevPage = mixer.prevPage.bind(mixer);
         });    };
 
+    mixitupPagination.TYPE                    = 'mixitup-extension';
     mixitupPagination.NAME                    = 'mixitup-pagiation'
     mixitupPagination.EXTENSION_VERSION       = '2.0.0-beta';
     mixitupPagination.REQUIRE_CORE_VERSION    = '3.0.0';
