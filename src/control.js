@@ -15,7 +15,11 @@ mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
         button          = null,
         i               = -1;
 
-    if (!self.selector) return commands;
+    if (!self.selector || self.selector !== '[data-page]') {
+        // Static control or non-pager live control
+
+        return commands;
+    }
 
     button = h.closestParent(e.target, self.selector, true, self.bound[0].dom.document);
 

@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build c4061a98-3838-41e1-af22-c5ae8ee1b2d3
+ * Build f64a8513-4bd1-4898-9099-2c5a3b1e9015
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -91,7 +91,7 @@
             this.truncationMarker   = '';
         }, 1);
 
-        mixitup.controlDefinitions.push(new mixitup.ControlDefinition('paginate', '[data-page]', true, 'pageList'));
+        mixitup.controlDefinitions.push(new mixitup.ControlDefinition('pager', '[data-page]', true, 'pageList'));
 
         /**
          * @param   {mixitup.MultimixCommand[]} commands
@@ -108,7 +108,11 @@
                 button          = null,
                 i               = -1;
 
-            if (!self.selector) return commands;
+            if (!self.selector || self.selector !== '[data-page]') {
+                // Static control or non-pager live control
+
+                return commands;
+            }
 
             button = h.closestParent(e.target, self.selector, true, self.bound[0].dom.document);
 

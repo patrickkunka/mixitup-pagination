@@ -1,3 +1,3 @@
 /* global mixitup */
 
-mixitup.controlDefinitions.push(new mixitup.ControlDefinition('paginate', '[data-page]', true, 'pageList'));
+mixitup.controlDefinitions.push(new mixitup.ControlDefinition('pager', '[data-page]', true, 'pageList'));
