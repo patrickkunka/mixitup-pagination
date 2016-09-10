@@ -1,5 +1,5 @@
 /* globals mixitup */
 
-mixitup.CommandMultimix.addAction('construct', 'pagination', function() {
+mixitup.CommandMultimix.registerAction('afterConstruct', 'pagination', function() {
     this.paginate = null;
-}, 1);
+});

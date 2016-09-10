@@ -1,6 +1,6 @@
 /* global mixitup */
 
-mixitup.UiClassnames.addAction('construct', 'pagination', function() {
+mixitup.UiClassnames.registerAction('afterConstruct', 'pagination', function() {
     this.first              = '';
     this.last               = '';
     this.prev               = '';
@@ -9,4 +9,4 @@ mixitup.UiClassnames.addAction('construct', 'pagination', function() {
     this.last               = '';
     this.truncated          = '';
     this.truncationMarker   = '';
-}, 1);
+});

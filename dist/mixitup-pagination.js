@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build e26bd8d2-6ece-439f-85ac-cc24966689eb
+ * Build fa39732b-de2a-49b2-89ab-de5a68f1c2a8
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -34,7 +34,7 @@
             );
         }
 
-        mixitup.ConfigClassnames.addAction('construct', 'pagination', function() {
+        mixitup.ConfigClassnames.registerAction('afterConstruct', 'pagination', function() {
             this.elementPager               = 'control';
             this.elementPageList            = 'page-list';
             this.elementPageStats           = 'page-stats';
@@ -43,11 +43,11 @@
             this.modifierPrev               = 'prev';
             this.modifierNext               = 'next';
             this.modifierTruncationMarker   = 'truncation-marker';
-        }, 1);
+        });
 
-        mixitup.ConfigLoad.addAction('construct', 'pagination', function() {
+        mixitup.ConfigLoad.registerAction('afterConstruct', 'pagination', function() {
             this.page = 1;
-        }, 1);
+        });
 
         //
         mixitup.ConfigPagination = function() {
@@ -71,16 +71,16 @@
         };
         //
 
-        mixitup.ConfigSelectors.addAction('construct', 'pagination', function() {
+        mixitup.ConfigSelectors.registerAction('afterConstruct', 'pagination', function() {
             this.pageList  = '.mixitup-page-list';
             this.pageStats = '.mixitup-page-stats';
-        }, 1);
+        });
 
-        mixitup.Config.addAction('construct', 'pagination', function() {
+        mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
             this.pagination = new mixitup.ConfigPagination();
         });
 
-        mixitup.UiClassnames.addAction('construct', 'pagination', function() {
+        mixitup.UiClassnames.registerAction('afterConstruct', 'pagination', function() {
             this.first              = '';
             this.last               = '';
             this.prev               = '';
@@ -89,7 +89,7 @@
             this.last               = '';
             this.truncated          = '';
             this.truncationMarker   = '';
-        }, 1);
+        });
 
         mixitup.controlDefinitions.push(new mixitup.ControlDefinition('pager', '[data-page]', true, 'pageList'));
 
@@ -99,7 +99,7 @@
          * @return  {object|null}
          */
 
-        mixitup.Control.addFilter('handleClick', 'pagination', function(commands, e) {
+        mixitup.Control.registerFilter('handleClick', 'pagination', function(commands, e) {
             var self            = this,
                 command         = {},
                 page            = '',
@@ -153,9 +153,9 @@
             return commands;
         });
 
-        mixitup.CommandMultimix.addAction('construct', 'pagination', function() {
+        mixitup.CommandMultimix.registerAction('afterConstruct', 'pagination', function() {
             this.paginate = null;
-        }, 1);
+        });
 
         /**
          * @constructor
@@ -173,7 +173,7 @@
             h.seal(this);
         };
 
-        mixitup.Operation.addAction('construct', 'pagination', function() {
+        mixitup.Operation.registerAction('afterConstruct', 'pagination', function() {
             this.startPage          = -1;
             this.newPage            = -1;
             this.startLimit         = -1;
@@ -182,32 +182,32 @@
             this.newTotalPages      = -1;
             this.startAnchor        = null;
             this.newAnchor          = null;
-        }, 1);
+        });
 
-        mixitup.State.addAction('construct', 'pagination', function() {
+        mixitup.State.registerAction('afterConstruct', 'pagination', function() {
             this.limit              = -1;
             this.page               = -1;
             this.totalPages         = -1;
             this.anchor             = null;
-        }, 1);
+        });
 
-        mixitup.MixerDom.addAction('construct', 'pagination', function() {
+        mixitup.MixerDom.registerAction('afterConstruct', 'pagination', function() {
             this.pageList  = null;
             this.pageStats = null;
-        }, 1);
+        });
 
-        mixitup.Mixer.addAction('construct', 'pagination', function() {
+        mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
             this.classnamesPager        = new mixitup.UiClassnames();
             this.classnamesPageList     = new mixitup.UiClassnames();
             this.classnamesPageStats    = new mixitup.UiClassnames();
-        }, 1);
+        });
 
         /**
          * @private
          * @return  {void}
          */
 
-        mixitup.Mixer.addAction('attach', 'pagination', function() {
+        mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
             var self = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
@@ -232,7 +232,7 @@
             self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
             self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
             // jscs:enable
-        }, 1);
+        });
 
         /**
          * @private
@@ -240,7 +240,7 @@
          * @return  {mixitup.State}
          */
 
-        mixitup.Mixer.addFilter('getInitialState', 'pagination', function(state) {
+        mixitup.Mixer.registerFilter('stateGetInitialState', 'pagination', function(state) {
             var self = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
@@ -258,7 +258,7 @@
          * @return  {void}
          */
 
-        mixitup.Mixer.addAction('getFinalMixData', 'pagination', function() {
+        mixitup.Mixer.registerAction('afterGetFinalMixData', 'pagination', function() {
             var self = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) return;
@@ -270,14 +270,14 @@
 
                 self.config.pagination.maxPagers = Math.max(5, self.config.pagination.maxPagers);
             }
-        }, 1);
+        });
 
         /**
          * @private
          * @return  {void}
          */
 
-        mixitup.Mixer.addAction('cacheDom', 'pagination', function() {
+        mixitup.Mixer.registerAction('afterCacheDom', 'pagination', function() {
             var self    = this,
                 parent  = null;
 
@@ -300,7 +300,7 @@
 
             self.dom.pageList  = parent.querySelector(self.config.selectors.pageList);
             self.dom.pageStats = parent.querySelector(self.config.selectors.pageStats);
-        }, 1);
+        });
 
         /**
          * @private
@@ -309,7 +309,7 @@
          * @return  {mixitup.State}
          */
 
-        mixitup.Mixer.addFilter('buildState', 'pagination', function(state, operation) {
+        mixitup.Mixer.registerFilter('stateBuildState', 'pagination', function(state, operation) {
             var self        = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
@@ -332,7 +332,7 @@
          * @return  {void}
          */
 
-        mixitup.Mixer.addAction('filterOperation', 'pagination', function(operation) {
+        mixitup.Mixer.registerAction('afterFilterOperation', 'pagination', function(operation) {
             var self        = this,
                 startPageAt = -1,
                 endPageAt   = -1,
@@ -427,7 +427,7 @@
                     operation.toHide.push(target);
                 }
             }
-        }, 1);
+        });
 
         /**
          * @public
@@ -436,7 +436,7 @@
          * @return  {mixitup.Operation}
          */
 
-        mixitup.Mixer.addFilter('getOperationUnmapped', 'pagination', function(operation, multimixCommand) {
+        mixitup.Mixer.registerFilter('operationUnmappedGetOperation', 'pagination', function(operation, multimixCommand) {
             var self            = this,
                 instruction     = null,
                 paginateCommand = null;
@@ -468,7 +468,7 @@
             }
 
             return operation;
-        }, 0);
+        });
 
         /**
          * @public
@@ -478,7 +478,7 @@
          * @return  {mixitup.Operation}
          */
 
-        mixitup.Mixer.addFilter('getOperationMapped', 'pagination', function(operation, command, isPreFetch) {
+        mixitup.Mixer.registerFilter('operationMappedGetOperation', 'pagination', function(operation, command, isPreFetch) {
             var self = this;
 
             if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
@@ -991,11 +991,11 @@
             }
         });
 
-        mixitup.Facade.addAction('construct', 'pagination', function(mixer) {
+        mixitup.Facade.registerAction('afterConstruct', 'pagination', function(mixer) {
             this.paginate = mixer.paginate.bind(mixer);
             this.nextPage = mixer.nextPage.bind(mixer);
             this.prevPage = mixer.prevPage.bind(mixer);
-        }, 1);    };
+        });    };
 
     mixitupPagination.NAME                    = 'mixitup-pagiation'
     mixitupPagination.EXTENSION_VERSION       = '2.0.0-beta';

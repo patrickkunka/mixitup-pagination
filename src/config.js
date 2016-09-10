@@ -1,5 +1,5 @@
 /* global mixitup */
 
-mixitup.Config.addAction('construct', 'pagination', function() {
+mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
     this.pagination = new mixitup.ConfigPagination();
 });

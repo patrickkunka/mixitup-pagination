@@ -1,17 +1,17 @@
 /* global mixitup, h */
 
-mixitup.Mixer.addAction('construct', 'pagination', function() {
+mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
     this.classnamesPager        = new mixitup.UiClassnames();
     this.classnamesPageList     = new mixitup.UiClassnames();
     this.classnamesPageStats    = new mixitup.UiClassnames();
-}, 1);
+});
 
 /**
  * @private
  * @return  {void}
  */
 
-mixitup.Mixer.addAction('attach', 'pagination', function() {
+mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
     var self = this;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
@@ -36,7 +36,7 @@ mixitup.Mixer.addAction('attach', 'pagination', function() {
     self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
     self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
     // jscs:enable
-}, 1);
+});
 
 /**
  * @private
@@ -44,7 +44,7 @@ mixitup.Mixer.addAction('attach', 'pagination', function() {
  * @return  {mixitup.State}
  */
 
-mixitup.Mixer.addFilter('getInitialState', 'pagination', function(state) {
+mixitup.Mixer.registerFilter('stateGetInitialState', 'pagination', function(state) {
     var self = this;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
@@ -62,7 +62,7 @@ mixitup.Mixer.addFilter('getInitialState', 'pagination', function(state) {
  * @return  {void}
  */
 
-mixitup.Mixer.addAction('getFinalMixData', 'pagination', function() {
+mixitup.Mixer.registerAction('afterGetFinalMixData', 'pagination', function() {
     var self = this;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) return;
@@ -74,14 +74,14 @@ mixitup.Mixer.addAction('getFinalMixData', 'pagination', function() {
 
         self.config.pagination.maxPagers = Math.max(5, self.config.pagination.maxPagers);
     }
-}, 1);
+});
 
 /**
  * @private
  * @return  {void}
  */
 
-mixitup.Mixer.addAction('cacheDom', 'pagination', function() {
+mixitup.Mixer.registerAction('afterCacheDom', 'pagination', function() {
     var self    = this,
         parent  = null;
 
@@ -104,7 +104,7 @@ mixitup.Mixer.addAction('cacheDom', 'pagination', function() {
 
     self.dom.pageList  = parent.querySelector(self.config.selectors.pageList);
     self.dom.pageStats = parent.querySelector(self.config.selectors.pageStats);
-}, 1);
+});
 
 /**
  * @private
@@ -113,7 +113,7 @@ mixitup.Mixer.addAction('cacheDom', 'pagination', function() {
  * @return  {mixitup.State}
  */
 
-mixitup.Mixer.addFilter('buildState', 'pagination', function(state, operation) {
+mixitup.Mixer.registerFilter('stateBuildState', 'pagination', function(state, operation) {
     var self        = this;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
@@ -136,7 +136,7 @@ mixitup.Mixer.addFilter('buildState', 'pagination', function(state, operation) {
  * @return  {void}
  */
 
-mixitup.Mixer.addAction('filterOperation', 'pagination', function(operation) {
+mixitup.Mixer.registerAction('afterFilterOperation', 'pagination', function(operation) {
     var self        = this,
         startPageAt = -1,
         endPageAt   = -1,
@@ -231,7 +231,7 @@ mixitup.Mixer.addAction('filterOperation', 'pagination', function(operation) {
             operation.toHide.push(target);
         }
     }
-}, 1);
+});
 
 /**
  * @public
@@ -240,7 +240,7 @@ mixitup.Mixer.addAction('filterOperation', 'pagination', function(operation) {
  * @return  {mixitup.Operation}
  */
 
-mixitup.Mixer.addFilter('getOperationUnmapped', 'pagination', function(operation, multimixCommand) {
+mixitup.Mixer.registerFilter('operationUnmappedGetOperation', 'pagination', function(operation, multimixCommand) {
     var self            = this,
         instruction     = null,
         paginateCommand = null;
@@ -272,7 +272,7 @@ mixitup.Mixer.addFilter('getOperationUnmapped', 'pagination', function(operation
     }
 
     return operation;
-}, 0);
+});
 
 /**
  * @public
@@ -282,7 +282,7 @@ mixitup.Mixer.addFilter('getOperationUnmapped', 'pagination', function(operation
  * @return  {mixitup.Operation}
  */
 
-mixitup.Mixer.addFilter('getOperationMapped', 'pagination', function(operation, command, isPreFetch) {
+mixitup.Mixer.registerFilter('operationMappedGetOperation', 'pagination', function(operation, command, isPreFetch) {
     var self = this;
 
     if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {

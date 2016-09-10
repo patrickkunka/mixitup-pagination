@@ -1,6 +1,6 @@
 /* global mixitup */
 
-mixitup.ConfigClassnames.addAction('construct', 'pagination', function() {
+mixitup.ConfigClassnames.registerAction('afterConstruct', 'pagination', function() {
     this.elementPager               = 'control';
     this.elementPageList            = 'page-list';
     this.elementPageStats           = 'page-stats';
@@ -9,4 +9,4 @@ mixitup.ConfigClassnames.addAction('construct', 'pagination', function() {
     this.modifierPrev               = 'prev';
     this.modifierNext               = 'next';
     this.modifierTruncationMarker   = 'truncation-marker';
-}, 1);
+});
