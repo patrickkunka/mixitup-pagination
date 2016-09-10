@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build f64a8513-4bd1-4898-9099-2c5a3b1e9015
+ * Build e26bd8d2-6ece-439f-85ac-cc24966689eb
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -534,8 +534,6 @@
                 }
 
                 if (command.limit > -1) {
-                    // TODO: Should a limit of `0` be permitted?
-
                     operation.newLimit = command.limit;
                 }
 
@@ -881,8 +879,12 @@
                     template = self.config.pagination.templatePageStatsFail;
                 }
 
-                startPageAt  = totalTargets ? ((operation.newPage - 1) * operation.newLimit) + 1 : 0;
-                endPageAt    = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+                if (totalTargets && operation.newLimit > 0) {
+                    startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
+                    endPageAt   = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+                } else {
+                    startPageAt = endPageAt = 0;
+                }
 
                 //
                 output = template

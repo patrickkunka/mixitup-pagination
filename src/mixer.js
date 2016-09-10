@@ -338,8 +338,6 @@ mixitup.Mixer.extend(
         }
 
         if (command.limit > -1) {
-            // TODO: Should a limit of `0` be permitted?
-
             operation.newLimit = command.limit;
         }
 
@@ -685,8 +683,12 @@ mixitup.Mixer.extend(
             template = self.config.pagination.templatePageStatsFail;
         }
 
-        startPageAt  = totalTargets ? ((operation.newPage - 1) * operation.newLimit) + 1 : 0;
-        endPageAt    = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+        if (totalTargets && operation.newLimit > 0) {
+            startPageAt = ((operation.newPage - 1) * operation.newLimit) + 1;
+            endPageAt   = Math.min(startPageAt + operation.newLimit - 1, totalTargets);
+        } else {
+            startPageAt = endPageAt = 0;
+        }
 
         // {{{{raw}}}}
         output = template
