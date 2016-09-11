@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 58de234e-bb9f-44aa-9f33-4bad786286ee
+ * Build 4559ad63-a1de-45cf-bb55-609f0cf828f8
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -56,7 +56,7 @@
             this.maintainActivePage         = true;
             this.hidePageListIfSinglePage   = false;
             this.hidePageStatsIfSinglePage  = false;
-            this.limit                      = Infinity;
+            this.limit                      = -1;
             this.maxPagers                  = 5;
 
             h.seal(this);
@@ -227,9 +227,7 @@
         mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
-                return;
-            }
+            if (self.config.pagination.limit < 0) return;
 
             // Map pagination ui classnames
 
@@ -260,9 +258,7 @@
         mixitup.Mixer.registerFilter('stateGetInitialState', 'pagination', function(state) {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) {
-                return state;
-            }
+            if (self.config.pagination.limit < 0) return state;
 
             state.activePagination = new mixitup.CommandPaginate();
 
@@ -280,7 +276,7 @@
         mixitup.Mixer.registerAction('afterGetFinalMixData', 'pagination', function() {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.newLimit === Infinity) return;
+            if (self.config.pagination.limit < 0) return;
 
             if (typeof self.config.pagination.maxPagers === 'number') {
                 // Restrict max pagers to a minimum of 5. There must always
@@ -300,7 +296,7 @@
             var self    = this,
                 parent  = null;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) return;
+            if (self.config.pagination.limit < 0) return;
 
             if (!self.config.pagination.generatePageList) return;
 
@@ -331,9 +327,7 @@
         mixitup.Mixer.registerFilter('stateBuildState', 'pagination', function(state, operation) {
             var self        = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
-                return state;
-            }
+            if (self.config.pagination.limit < 0) return state;
 
             // Map pagination-specific properties into state
 
@@ -349,12 +343,10 @@
          * @return  {mixitup.UserInstruction}
          */
 
-        mixitup.Mixer.registerFilter('afterParseMultimixArgs', 'pagination', function(instruction) {
+        mixitup.Mixer.registerFilter('instructionParseMultimixArgs', 'pagination', function(instruction) {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
-                return instruction;
-            }
+            if (self.config.pagination.limit < 0) return instruction;
 
             if (instruction.command.paginate && !(instruction.command.paginate instanceof mixitup.CommandPaginate)) {
                 instruction.command.paginate = self.parsePaginateArgs([instruction.command.paginate]).command;
@@ -379,7 +371,7 @@
                 index       = -1,
                 i           = -1;
 
-            if (!self.config.pagination || operation.newLimit < 0 || operation.newLimit === Infinity) return;
+            if (self.config.pagination.limit < 0) return;
 
             // Calculate the new total pages as a matter of course (i.e. a change in filter)
 
@@ -397,7 +389,7 @@
 
             // Keep config in sync with latest limit
 
-            self.config.pagination.limit = operation.newLimit;
+            self.config.pagination.limit = operation.newPagination.limit;
 
             if (operation.newPagination.anchor) {
                 // Start page at an anchor element
@@ -407,15 +399,19 @@
                 }
 
                 startPageAt = i;
-                endPageAt   = i + operation.newLimit - 1;
+                endPageAt   = i + operation.newPagination.limit - 1;
             } else {
                 // Start page based on limit and page index
 
                 startPageAt = operation.newPagination.limit * (operation.newPagination.page - 1);
                 endPageAt   = (operation.newPagination.limit * operation.newPagination.page) - 1;
+
+                if (isNaN(startPageAt)) {
+                    startPageAt = 0;
+                }
             }
 
-            if (operation.newLimit < 0) return;
+            if (operation.newPagination.limit < 0) return;
 
             for (i = 0; target = operation.show[i]; i++) {
                 // For each target in `show`, include in page, only if within the range
@@ -478,9 +474,7 @@
         mixitup.Mixer.registerFilter('operationUnmappedGetOperation', 'pagination', function(operation, command) {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
-                return operation;
-            }
+            if (self.config.pagination.limit < 0) return operation;
 
             operation.startState      = self.state;
             operation.startPagination = self.state.activePagination;
@@ -488,8 +482,11 @@
 
             operation.newPagination = new mixitup.CommandPaginate();
 
+            operation.newPagination.limit = operation.startPagination.limit;
+            operation.newPagination.page  = operation.startPagination.page;
+
             if (command.paginate) {
-                self.parsePaginationCommand(command.paginate);
+                self.parsePaginateCommand(command.paginate, operation);
             } else if (command.filter || command.sort) {
                 h.extend(operation.newPagination, operation.startPagination);
 
@@ -516,9 +513,7 @@
         mixitup.Mixer.registerFilter('operationMappedGetOperation', 'pagination', function(operation, command, isPreFetch) {
             var self = this;
 
-            if (!self.config.pagination || self.config.pagination.limit < 0 || self.config.pagination.limit === Infinity) {
-                return operation;
-            }
+            if (self.config.pagination.limit < 0) return operation;
 
             if (isPreFetch) {
                 // The operation is being pre-fetched, so don't update the pagers or stats yet.
@@ -547,7 +542,7 @@
              * @return  {void}
              */
 
-            parsePaginationCommand: function(command, operation) {
+            parsePaginateCommand: function(command, operation) {
                 var self = this;
 
                 // e.g. mixer.paginate({page: 3, limit: 2});
@@ -569,7 +564,7 @@
                 }
 
                 if (command.limit > -1) {
-                    operation.newLimit = command.limit;
+                    operation.newPagination.limit = command.limit;
                 }
 
                 if (operation.newPagination.limit !== operation.startPagination.limit) {
@@ -580,7 +575,7 @@
                         1;
                 }
 
-                if (operation.newPagination.limit < 0 || operation.newPagination.limit === Infinity) {
+                if (operation.newPagination.limit <= 0 || operation.newPagination.limit === Infinity) {
                     operation.newPagination.page = 1;
                 }
             },
@@ -933,7 +928,7 @@
                 model.totalTargets = operation.matching.length;
 
                 if (model.totalTargets) {
-                    template = operation.newLimit === 1 ?
+                    template = operation.newPagination.limit === 1 ?
                         self.config.templates.pageStatsSingle :
                         self.config.templates.pageStats;
                 } else {

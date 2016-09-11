@@ -7,7 +7,7 @@ mixitup.ConfigPagination = function() {
     this.maintainActivePage         = true;
     this.hidePageListIfSinglePage   = false;
     this.hidePageStatsIfSinglePage  = false;
-    this.limit                      = Infinity;
+    this.limit                      = -1;
     this.maxPagers                  = 5;
 
     h.seal(this);
