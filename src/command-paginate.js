@@ -10,7 +10,7 @@
 mixitup.CommandPaginate = function() {
     this.page   = -1;
     this.limit  = -1;
-    this.goTo   = '';
+    this.action = ''; // enum: ['prev', 'next']
     this.anchor = null;
 
     h.seal(this);

@@ -26,7 +26,7 @@ mixitup.Control.registerFilter('commandsHandleClick', 'pagination', function(com
     for (i = 0; mixer = self.bound[i]; i++) {
         command = commands[i];
 
-        if (!mixer.config.pagination || mixer.config.pagination.limit < 0 || mixer.config.pagination.newLimit === Infinity) {
+        if (!mixer.config.pagination || mixer.config.pagination.limit < 0 || mixer.config.pagination.limit === Infinity) {
             // Pagination is disabled for this instance. Do not handle.
 
             commands[i] = null;
