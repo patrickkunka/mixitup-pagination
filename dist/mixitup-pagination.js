@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 4559ad63-a1de-45cf-bb55-609f0cf828f8
+ * Build bc5db0b5-0a48-4810-8e10-85dc1748a88b
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -45,7 +45,26 @@
             this.modifierTruncationMarker   = 'truncation-marker';
         });
 
+        /**
+         * The `config.load` object is extended with properties relating to the pagination extension.
+         *
+         * @constructor
+         * @memberof    mixitup.Config
+         * @name        load
+         * @namespace
+         * @public
+         * @since       2.0.0
+         */
+
         mixitup.ConfigLoad.registerAction('afterConstruct', 'pagination', function() {
+            /**
+             * @name        page
+             * @memberof    mixitup.Config.load
+             * @instance
+             * @type        {number}
+             * @default     -1
+             */
+
             this.page = 1;
         });
 

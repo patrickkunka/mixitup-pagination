@@ -51,13 +51,13 @@ gulp.task('uglify', ['build'], function() {
 });
 
 gulp.task('build', ['build-dist'], function(done) {
-    // exec('node build/build-docs.js', function(e, out) {
-    //     if (out) {
-    //         console.log(out);
-    //     }
+    exec('node node_modules/mixitup-build/docs.js -s mixitup-pagination.js', function(e, out) {
+        if (out) {
+            console.log(out);
+        }
 
-    //     done(e);
-    // });
+        done(e);
+    });
 });
 
 
