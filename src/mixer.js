@@ -34,6 +34,31 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
     self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
     self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
     // jscs:enable
+
+    if (self.config.pagination.generatePageList && self.dom.pageList) {
+        self.renderPageList(self.lastOperation);
+    }
+
+    if (self.config.pagination.generatePageStats && self.dom.pageStats) {
+        self.renderPageStats(self.lastOperation);
+    }
+});
+
+/**
+ * @private
+ * @param   {mixitup.Operation} operation
+ * @param   {mixitup.State}     state
+ * @return  {mixitup.Operation}
+ */
+
+mixitup.Mixer.registerFilter('operationGetInitialState', 'pagination', function(operation, state) {
+    var self = this;
+
+    if (self.config.pagination.limit < 0) return operation;
+
+    operation.newPagination = state.activePagination;
+
+    return operation;
 });
 
 /**

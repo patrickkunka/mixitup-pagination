@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build bc5db0b5-0a48-4810-8e10-85dc1748a88b
+ * Build 4c8b5c48-b8c4-45b2-9be4-d0aaeb2faec3
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -266,6 +266,31 @@
             self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
             self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
             // jscs:enable
+
+            if (self.config.pagination.generatePageList && self.dom.pageList) {
+                self.renderPageList(self.lastOperation);
+            }
+
+            if (self.config.pagination.generatePageStats && self.dom.pageStats) {
+                self.renderPageStats(self.lastOperation);
+            }
+        });
+
+        /**
+         * @private
+         * @param   {mixitup.Operation} operation
+         * @param   {mixitup.State}     state
+         * @return  {mixitup.Operation}
+         */
+
+        mixitup.Mixer.registerFilter('operationGetInitialState', 'pagination', function(operation, state) {
+            var self = this;
+
+            if (self.config.pagination.limit < 0) return operation;
+
+            operation.newPagination = state.activePagination;
+
+            return operation;
         });
 
         /**
