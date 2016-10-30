@@ -1,6 +1,6 @@
 /* global mixitup */
 
 mixitup.State.registerAction('afterConstruct', 'pagination', function() {
-    this.activePagination = new mixitup.CommandPaginate();
+    this.activePagination = null;
     this.totalPages       = -1;
 });

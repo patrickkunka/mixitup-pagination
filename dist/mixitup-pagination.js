@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 4c8b5c48-b8c4-45b2-9be4-d0aaeb2faec3
+ * Build bbbc92e8-8c9c-45ed-a428-2a8f059b970c
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -223,7 +223,7 @@
         });
 
         mixitup.State.registerAction('afterConstruct', 'pagination', function() {
-            this.activePagination = new mixitup.CommandPaginate();
+            this.activePagination = null;
             this.totalPages       = -1;
         });
 
