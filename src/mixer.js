@@ -401,10 +401,10 @@ mixitup.Mixer.extend(
         var self = this,
             page = -1;
 
-        page = self.state.page + 1;
+        page = self.state.activePagination.page + 1;
 
         if (page > self.state.totalPages) {
-            page = self.config.pagination.loop ? 1 : self.state.page;
+            page = self.config.pagination.loop ? 1 : self.state.activePagination.page;
         }
 
         return page;
@@ -419,10 +419,10 @@ mixitup.Mixer.extend(
         var self = this,
             page = -1;
 
-        page = self.state.page - 1;
+        page = self.state.activePagination.page - 1;
 
         if (page < 1) {
-            page = self.config.pagination.loop ? self.state.totalPages : self.state.page;
+            page = self.config.pagination.loop ? self.state.totalPages : self.state.activePagination.page;
         }
 
         return page;
@@ -485,7 +485,7 @@ mixitup.Mixer.extend(
 
         model.classnames = model.classlist.join(' ');
 
-        pagerHtml = h.renderTemplate(self.config.templates.pagerPrev, model, mixitup.libraries.handlebars);
+        pagerHtml = h.template(self.config.templates.pagerPrev)(model);
 
         buttonList.push(pagerHtml);
 
@@ -511,7 +511,7 @@ mixitup.Mixer.extend(
             model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
             model.classnames = model.classlist.join(' ');
 
-            pagerHtml = h.renderTemplate(self.config.templates.pagerTruncationMarker, model, mixitup.libraries.handlebars);
+            pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
 
             buttonList.push(pagerHtml);
 
@@ -541,7 +541,7 @@ mixitup.Mixer.extend(
 
         model.classnames = model.classlist.join(' ');
 
-        pagerHtml = h.renderTemplate(self.config.templates.pagerNext, model, mixitup.libraries.handlebars);
+        pagerHtml = h.template(self.config.templates.pagerNext)(model);
 
         buttonList.push(pagerHtml);
 
@@ -706,7 +706,7 @@ mixitup.Mixer.extend(
         model.classnames = model.classlist.join(' ');
         model.pageNumber = i + 1;
 
-        output = h.renderTemplate(self.config.templates.pager, model, mixitup.libraries.handlebars);
+        output = h.template(self.config.templates.pager)(model);
 
         return output;
     },
@@ -754,7 +754,7 @@ mixitup.Mixer.extend(
             model.startPageAt = model.endPageAt = 0;
         }
 
-        output = h.renderTemplate(template, model, mixitup.libraries.handlebars);
+        output = h.template(template)(model);
 
         self.dom.pageStats.innerHTML = output;
 

@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build bbbc92e8-8c9c-45ed-a428-2a8f059b970c
+ * Build 2bcc6856-dc60-4fdb-8411-60d7f4d09a18
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -87,15 +87,13 @@
         });
 
         mixitup.ConfigTemplates.registerAction('afterConstruct', 'pagination', function() {
-            //
-            this.pager                = '<button type="button" class="{{classnames}}" data-page="{{pageNumber}}">{{pageNumber}}</button>';
-            this.pagerPrev            = '<button type="button" class="{{classnames}}" data-page="prev">&laquo;</button>';
-            this.pagerNext            = '<button type="button" class="{{classnames}}" data-page="next">&raquo;</button>';
-            this.pagerTruncationMarker = '<span class="{{classnames}}">&hellip;</span>';
-            this.pageStats            = '{{startPageAt}} to {{endPageAt}} of {{totalTargets}}';
-            this.pageStatsSingle      = '{{startPageAt}} of {{totalTargets}}';
+            this.pager                = '<button type="button" class="${classnames}" data-page="${pageNumber}">${pageNumber}</button>';
+            this.pagerPrev            = '<button type="button" class="${classnames}" data-page="prev">&laquo;</button>';
+            this.pagerNext            = '<button type="button" class="${classnames}" data-page="next">&raquo;</button>';
+            this.pagerTruncationMarker = '<span class="${classnames}">&hellip;</span>';
+            this.pageStats            = '${startPageAt} to ${endPageAt} of ${totalTargets}';
+            this.pageStatsSingle      = '${startPageAt} of ${totalTargets}';
             this.pageStatsFail        = 'None found';
-            //
         });
 
         mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
@@ -633,10 +631,10 @@
                 var self = this,
                     page = -1;
 
-                page = self.state.page + 1;
+                page = self.state.activePagination.page + 1;
 
                 if (page > self.state.totalPages) {
-                    page = self.config.pagination.loop ? 1 : self.state.page;
+                    page = self.config.pagination.loop ? 1 : self.state.activePagination.page;
                 }
 
                 return page;
@@ -651,10 +649,10 @@
                 var self = this,
                     page = -1;
 
-                page = self.state.page - 1;
+                page = self.state.activePagination.page - 1;
 
                 if (page < 1) {
-                    page = self.config.pagination.loop ? self.state.totalPages : self.state.page;
+                    page = self.config.pagination.loop ? self.state.totalPages : self.state.activePagination.page;
                 }
 
                 return page;
@@ -717,7 +715,7 @@
 
                 model.classnames = model.classlist.join(' ');
 
-                pagerHtml = h.renderTemplate(self.config.templates.pagerPrev, model, mixitup.libraries.handlebars);
+                pagerHtml = h.template(self.config.templates.pagerPrev)(model);
 
                 buttonList.push(pagerHtml);
 
@@ -743,7 +741,7 @@
                     model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
                     model.classnames = model.classlist.join(' ');
 
-                    pagerHtml = h.renderTemplate(self.config.templates.pagerTruncationMarker, model, mixitup.libraries.handlebars);
+                    pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
 
                     buttonList.push(pagerHtml);
 
@@ -773,7 +771,7 @@
 
                 model.classnames = model.classlist.join(' ');
 
-                pagerHtml = h.renderTemplate(self.config.templates.pagerNext, model, mixitup.libraries.handlebars);
+                pagerHtml = h.template(self.config.templates.pagerNext)(model);
 
                 buttonList.push(pagerHtml);
 
@@ -938,7 +936,7 @@
                 model.classnames = model.classlist.join(' ');
                 model.pageNumber = i + 1;
 
-                output = h.renderTemplate(self.config.templates.pager, model, mixitup.libraries.handlebars);
+                output = h.template(self.config.templates.pager)(model);
 
                 return output;
             },
@@ -986,7 +984,7 @@
                     model.startPageAt = model.endPageAt = 0;
                 }
 
-                output = h.renderTemplate(template, model, mixitup.libraries.handlebars);
+                output = h.template(template)(model);
 
                 self.dom.pageStats.innerHTML = output;
 
