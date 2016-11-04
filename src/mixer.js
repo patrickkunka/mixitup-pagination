@@ -1,9 +1,9 @@
 /* global mixitup, h */
 
 mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
-    this.classnamesPager        = new mixitup.UiClassnames();
-    this.classnamesPageList     = new mixitup.UiClassnames();
-    this.classnamesPageStats    = new mixitup.UiClassnames();
+    this.classNamesPager        = new mixitup.UiClassNames();
+    this.classNamesPageList     = new mixitup.UiClassNames();
+    this.classNamesPageStats    = new mixitup.UiClassNames();
 });
 
 /**
@@ -16,23 +16,23 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
 
     if (self.config.pagination.limit < 0) return;
 
-    // Map pagination ui classnames
+    // Map pagination ui classNames
 
     // jscs:disable
-    self.classnamesPager.base               = h.getClassname(self.config.classnames, 'pager');
-    self.classnamesPager.active             = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierActive);
-    self.classnamesPager.disabled           = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierDisabled);
-    self.classnamesPager.first              = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierFirst);
-    self.classnamesPager.last               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierLast);
-    self.classnamesPager.prev               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierPrev);
-    self.classnamesPager.next               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierNext);
-    self.classnamesPager.truncationMarker   = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierTruncationMarker);
+    self.classNamesPager.base               = h.getClassname(self.config.classNames, 'pager');
+    self.classNamesPager.active             = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierActive);
+    self.classNamesPager.disabled           = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierDisabled);
+    self.classNamesPager.first              = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierFirst);
+    self.classNamesPager.last               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierLast);
+    self.classNamesPager.prev               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierPrev);
+    self.classNamesPager.next               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierNext);
+    self.classNamesPager.truncationMarker   = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierTruncationMarker);
 
-    self.classnamesPageList.base            = h.getClassname(self.config.classnames, 'page-list');
-    self.classnamesPageList.disabled        = h.getClassname(self.config.classnames, 'page-list', self.config.classnames.modifierDisabled);
+    self.classNamesPageList.base            = h.getClassname(self.config.classNames, 'page-list');
+    self.classNamesPageList.disabled        = h.getClassname(self.config.classNames, 'page-list', self.config.classNames.modifierDisabled);
 
-    self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
-    self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
+    self.classNamesPageStats.base           = h.getClassname(self.config.classNames, 'page-stats');
+    self.classNamesPageStats.disabled       = h.getClassname(self.config.classNames, 'page-stats', self.config.classNames.modifierDisabled);
     // jscs:enable
 
     if (self.config.pagination.generatePageList && self.dom.pageList) {
@@ -458,7 +458,7 @@ mixitup.Mixer.extend(
 
             self.dom.pageList.innerHTML = '';
 
-            h.addClass(self.dom.pageList, self.classnamesPageList.disabled);
+            h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
 
             return;
         }
@@ -475,18 +475,18 @@ mixitup.Mixer.extend(
 
         model = new mixitup.ModelPager();
 
-        model.isPrev = false;
-        model.classlist.push(self.classnamesPager.base, self.classnamesPager.prev);
+        model.isPrev = true;
+        model.classList.push(self.classNamesPager.base, self.classNamesPager.prev);
 
         // If first and not looping, disable the prev button
 
         if (operation.newPagination.page === 1 && !self.config.pagination.loop) {
-            model.classlist.push(self.classnamesPager.disabled);
+            model.classList.push(self.classNamesPager.disabled);
 
             model.isDisabled = true;
         }
 
-        model.classnames = model.classlist.join(' ');
+        model.classNames = model.classList.join(' ');
 
         if (renderer) {
             pagerHtml = renderer(model);
@@ -515,8 +515,8 @@ mixitup.Mixer.extend(
 
             model.isTruncationMarker = false;
 
-            model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
-            model.classnames = model.classlist.join(' ');
+            model.classList.push(self.classNamesPager.base, self.classNamesPager.truncationMarker);
+            model.classNames = model.classList.join(' ');
 
             if (renderer) {
                 pagerHtml = renderer(model);
@@ -541,16 +541,16 @@ mixitup.Mixer.extend(
 
         model = new mixitup.ModelPager();
 
-        model.isNext = false;
-        model.classlist.push(self.classnamesPager.base, self.classnamesPager.next);
+        model.isNext = true;
+        model.classList.push(self.classNamesPager.base, self.classNamesPager.next);
 
         // If last page and not looping, disable the next button
 
         if (operation.newPagination.page === operation.newTotalPages && !self.config.pagination.loop) {
-            model.classlist.push(self.classnamesPager.disabled);
+            model.classList.push(self.classNamesPager.disabled);
         }
 
-        model.classnames = model.classlist.join(' ');
+        model.classNames = model.classList.join(' ');
 
         if (renderer) {
             pagerHtml = renderer(model);
@@ -568,7 +568,7 @@ mixitup.Mixer.extend(
 
         // Add disabled attribute to disabled buttons
 
-        disabled = self.dom.pageList.querySelectorAll('.' + self.classnamesPager.disabled);
+        disabled = self.dom.pageList.querySelectorAll('.' + self.classNamesPager.disabled);
 
         for (i = 0; el = disabled[i]; i++) {
             if (typeof el.disabled === 'boolean') {
@@ -577,15 +577,15 @@ mixitup.Mixer.extend(
         }
 
         if (truncatedBefore || truncatedAfter) {
-            h.addClass(self.dom.pageList, self.classnamesPageList.truncated);
+            h.addClass(self.dom.pageList, self.classNamesPageList.truncated);
         } else {
-            h.removeClass(self.dom.pageList, self.classnamesPageList.truncated);
+            h.removeClass(self.dom.pageList, self.classNamesPageList.truncated);
         }
 
         if (operation.newTotalPages > 1) {
-            h.removeClass(self.dom.pageList, self.classnamesPageList.disabled);
+            h.removeClass(self.dom.pageList, self.classNamesPageList.disabled);
         } else {
-            h.addClass(self.dom.pageList, self.classnamesPageList.disabled);
+            h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
         }
     },
 
@@ -709,21 +709,23 @@ mixitup.Mixer.extend(
 
         renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
 
-        model.classlist.push(self.classnamesPager.base);
+        model.isPageLink = true;
+
+        model.classList.push(self.classNamesPager.base);
 
         if (i === 0) {
-            model.classlist.push(self.classnamesPager.first);
+            model.classList.push(self.classNamesPager.first);
         }
 
         if (i === operation.newTotalPages - 1) {
-            model.classlist.push(self.classnamesPager.last);
+            model.classList.push(self.classNamesPager.last);
         }
 
         if (i === activePage) {
-            model.classlist.push(self.classnamesPager.active);
+            model.classList.push(self.classNamesPager.active);
         }
 
-        model.classnames = model.classlist.join(' ');
+        model.classNames = model.classList.join(' ');
         model.pageNumber = i + 1;
 
         if (renderer) {
@@ -757,7 +759,7 @@ mixitup.Mixer.extend(
 
             self.dom.pageStats.innerHTML = '';
 
-            h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+            h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
 
             return;
         }
@@ -790,9 +792,9 @@ mixitup.Mixer.extend(
         self.dom.pageStats.innerHTML = output;
 
         if (model.totalTargets) {
-            h.removeClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+            h.removeClass(self.dom.pageStats, self.classNamesPageStats.disabled);
         } else {
-            h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+            h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
         }
     },
 

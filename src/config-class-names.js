@@ -1,6 +1,6 @@
 /* global mixitup */
 
-mixitup.ConfigClassnames.registerAction('afterConstruct', 'pagination', function() {
+mixitup.ConfigClassNames.registerAction('afterConstruct', 'pagination', function() {
     this.elementPager               = 'control';
     this.elementPageList            = 'page-list';
     this.elementPageStats           = 'page-stats';

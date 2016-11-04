@@ -8,7 +8,7 @@
 
         {{>version-check}}
 
-        {{>config-classnames}}
+        {{>config-class-names}}
 
         {{>config-load}}
 
@@ -26,7 +26,7 @@
 
         {{>model-page-stats}}
 
-        {{>ui-classnames}}
+        {{>ui-class-names}}
 
         {{>control-definition}}
 

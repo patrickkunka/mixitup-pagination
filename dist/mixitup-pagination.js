@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 76323748-c123-40c1-a1c4-b283e092f9d5
+ * Build 1082276c-d83c-4b75-a2c9-72d94c98a33a
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -34,7 +34,7 @@
             );
         }
 
-        mixitup.ConfigClassnames.registerAction('afterConstruct', 'pagination', function() {
+        mixitup.ConfigClassNames.registerAction('afterConstruct', 'pagination', function() {
             this.elementPager               = 'control';
             this.elementPageList            = 'page-list';
             this.elementPageStats           = 'page-stats';
@@ -92,10 +92,10 @@
         });
 
         mixitup.ConfigTemplates.registerAction('afterConstruct', 'pagination', function() {
-            this.pager                = '<button type="button" class="${classnames}" data-page="${pageNumber}">${pageNumber}</button>';
-            this.pagerPrev            = '<button type="button" class="${classnames}" data-page="prev">&laquo;</button>';
-            this.pagerNext            = '<button type="button" class="${classnames}" data-page="next">&raquo;</button>';
-            this.pagerTruncationMarker = '<span class="${classnames}">&hellip;</span>';
+            this.pager                = '<button type="button" class="${classNames}" data-page="${pageNumber}">${pageNumber}</button>';
+            this.pagerPrev            = '<button type="button" class="${classNames}" data-page="prev">&laquo;</button>';
+            this.pagerNext            = '<button type="button" class="${classNames}" data-page="next">&raquo;</button>';
+            this.pagerTruncationMarker = '<span class="${classNames}">&hellip;</span>';
             this.pageStats            = '${startPageAt} to ${endPageAt} of ${totalTargets}';
             this.pageStatsSingle      = '${startPageAt} of ${totalTargets}';
             this.pageStatsFail        = 'None found';
@@ -107,11 +107,12 @@
 
         mixitup.ModelPager = function() {
             this.pageNumber         = -1;
-            this.classnames         = '';
-            this.classlist          = [];
+            this.classNames         = '';
+            this.classList          = [];
             this.isDisabled         = false;
             this.isPrev             = false;
             this.isNext             = false;
+            this.isPageLink         = false;
             this.isTruncationMarker = false;
 
             h.seal(this);
@@ -125,7 +126,7 @@
             h.seal(this);
         };
 
-        mixitup.UiClassnames.registerAction('afterConstruct', 'pagination', function() {
+        mixitup.UiClassNames.registerAction('afterConstruct', 'pagination', function() {
             this.first              = '';
             this.last               = '';
             this.prev               = '';
@@ -172,7 +173,7 @@
                     continue;
                 }
 
-                if (!button || h.hasClass(button, mixer.classnamesPager.active) || h.hasClass(button, mixer.classnamesPager.disabled)) {
+                if (!button || h.hasClass(button, mixer.classNamesPager.active) || h.hasClass(button, mixer.classNamesPager.disabled)) {
                     // No button was clicked or button is already active. Do not handle.
 
                     commands[i] = null;
@@ -236,9 +237,9 @@
         });
 
         mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
-            this.classnamesPager        = new mixitup.UiClassnames();
-            this.classnamesPageList     = new mixitup.UiClassnames();
-            this.classnamesPageStats    = new mixitup.UiClassnames();
+            this.classNamesPager        = new mixitup.UiClassNames();
+            this.classNamesPageList     = new mixitup.UiClassNames();
+            this.classNamesPageStats    = new mixitup.UiClassNames();
         });
 
         /**
@@ -251,23 +252,23 @@
 
             if (self.config.pagination.limit < 0) return;
 
-            // Map pagination ui classnames
+            // Map pagination ui classNames
 
             // jscs:disable
-            self.classnamesPager.base               = h.getClassname(self.config.classnames, 'pager');
-            self.classnamesPager.active             = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierActive);
-            self.classnamesPager.disabled           = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierDisabled);
-            self.classnamesPager.first              = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierFirst);
-            self.classnamesPager.last               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierLast);
-            self.classnamesPager.prev               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierPrev);
-            self.classnamesPager.next               = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierNext);
-            self.classnamesPager.truncationMarker   = h.getClassname(self.config.classnames, 'pager', self.config.classnames.modifierTruncationMarker);
+            self.classNamesPager.base               = h.getClassname(self.config.classNames, 'pager');
+            self.classNamesPager.active             = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierActive);
+            self.classNamesPager.disabled           = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierDisabled);
+            self.classNamesPager.first              = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierFirst);
+            self.classNamesPager.last               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierLast);
+            self.classNamesPager.prev               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierPrev);
+            self.classNamesPager.next               = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierNext);
+            self.classNamesPager.truncationMarker   = h.getClassname(self.config.classNames, 'pager', self.config.classNames.modifierTruncationMarker);
 
-            self.classnamesPageList.base            = h.getClassname(self.config.classnames, 'page-list');
-            self.classnamesPageList.disabled        = h.getClassname(self.config.classnames, 'page-list', self.config.classnames.modifierDisabled);
+            self.classNamesPageList.base            = h.getClassname(self.config.classNames, 'page-list');
+            self.classNamesPageList.disabled        = h.getClassname(self.config.classNames, 'page-list', self.config.classNames.modifierDisabled);
 
-            self.classnamesPageStats.base           = h.getClassname(self.config.classnames, 'page-stats');
-            self.classnamesPageStats.disabled       = h.getClassname(self.config.classnames, 'page-stats', self.config.classnames.modifierDisabled);
+            self.classNamesPageStats.base           = h.getClassname(self.config.classNames, 'page-stats');
+            self.classNamesPageStats.disabled       = h.getClassname(self.config.classNames, 'page-stats', self.config.classNames.modifierDisabled);
             // jscs:enable
 
             if (self.config.pagination.generatePageList && self.dom.pageList) {
@@ -693,7 +694,7 @@
 
                     self.dom.pageList.innerHTML = '';
 
-                    h.addClass(self.dom.pageList, self.classnamesPageList.disabled);
+                    h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
 
                     return;
                 }
@@ -710,18 +711,18 @@
 
                 model = new mixitup.ModelPager();
 
-                model.isPrev = false;
-                model.classlist.push(self.classnamesPager.base, self.classnamesPager.prev);
+                model.isPrev = true;
+                model.classList.push(self.classNamesPager.base, self.classNamesPager.prev);
 
                 // If first and not looping, disable the prev button
 
                 if (operation.newPagination.page === 1 && !self.config.pagination.loop) {
-                    model.classlist.push(self.classnamesPager.disabled);
+                    model.classList.push(self.classNamesPager.disabled);
 
                     model.isDisabled = true;
                 }
 
-                model.classnames = model.classlist.join(' ');
+                model.classNames = model.classList.join(' ');
 
                 if (renderer) {
                     pagerHtml = renderer(model);
@@ -750,8 +751,8 @@
 
                     model.isTruncationMarker = false;
 
-                    model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
-                    model.classnames = model.classlist.join(' ');
+                    model.classList.push(self.classNamesPager.base, self.classNamesPager.truncationMarker);
+                    model.classNames = model.classList.join(' ');
 
                     if (renderer) {
                         pagerHtml = renderer(model);
@@ -776,16 +777,16 @@
 
                 model = new mixitup.ModelPager();
 
-                model.isNext = false;
-                model.classlist.push(self.classnamesPager.base, self.classnamesPager.next);
+                model.isNext = true;
+                model.classList.push(self.classNamesPager.base, self.classNamesPager.next);
 
                 // If last page and not looping, disable the next button
 
                 if (operation.newPagination.page === operation.newTotalPages && !self.config.pagination.loop) {
-                    model.classlist.push(self.classnamesPager.disabled);
+                    model.classList.push(self.classNamesPager.disabled);
                 }
 
-                model.classnames = model.classlist.join(' ');
+                model.classNames = model.classList.join(' ');
 
                 if (renderer) {
                     pagerHtml = renderer(model);
@@ -803,7 +804,7 @@
 
                 // Add disabled attribute to disabled buttons
 
-                disabled = self.dom.pageList.querySelectorAll('.' + self.classnamesPager.disabled);
+                disabled = self.dom.pageList.querySelectorAll('.' + self.classNamesPager.disabled);
 
                 for (i = 0; el = disabled[i]; i++) {
                     if (typeof el.disabled === 'boolean') {
@@ -812,15 +813,15 @@
                 }
 
                 if (truncatedBefore || truncatedAfter) {
-                    h.addClass(self.dom.pageList, self.classnamesPageList.truncated);
+                    h.addClass(self.dom.pageList, self.classNamesPageList.truncated);
                 } else {
-                    h.removeClass(self.dom.pageList, self.classnamesPageList.truncated);
+                    h.removeClass(self.dom.pageList, self.classNamesPageList.truncated);
                 }
 
                 if (operation.newTotalPages > 1) {
-                    h.removeClass(self.dom.pageList, self.classnamesPageList.disabled);
+                    h.removeClass(self.dom.pageList, self.classNamesPageList.disabled);
                 } else {
-                    h.addClass(self.dom.pageList, self.classnamesPageList.disabled);
+                    h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
                 }
             },
 
@@ -944,21 +945,23 @@
 
                 renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
 
-                model.classlist.push(self.classnamesPager.base);
+                model.isPageLink = true;
+
+                model.classList.push(self.classNamesPager.base);
 
                 if (i === 0) {
-                    model.classlist.push(self.classnamesPager.first);
+                    model.classList.push(self.classNamesPager.first);
                 }
 
                 if (i === operation.newTotalPages - 1) {
-                    model.classlist.push(self.classnamesPager.last);
+                    model.classList.push(self.classNamesPager.last);
                 }
 
                 if (i === activePage) {
-                    model.classlist.push(self.classnamesPager.active);
+                    model.classList.push(self.classNamesPager.active);
                 }
 
-                model.classnames = model.classlist.join(' ');
+                model.classNames = model.classList.join(' ');
                 model.pageNumber = i + 1;
 
                 if (renderer) {
@@ -992,7 +995,7 @@
 
                     self.dom.pageStats.innerHTML = '';
 
-                    h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+                    h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
 
                     return;
                 }
@@ -1025,9 +1028,9 @@
                 self.dom.pageStats.innerHTML = output;
 
                 if (model.totalTargets) {
-                    h.removeClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+                    h.removeClass(self.dom.pageStats, self.classNamesPageStats.disabled);
                 } else {
-                    h.addClass(self.dom.pageStats, self.classnamesPageStats.disabled);
+                    h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
                 }
             },
 

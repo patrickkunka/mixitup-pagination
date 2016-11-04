@@ -34,7 +34,7 @@ mixitup.Control.registerFilter('commandsHandleClick', 'pagination', function(com
             continue;
         }
 
-        if (!button || h.hasClass(button, mixer.classnamesPager.active) || h.hasClass(button, mixer.classnamesPager.disabled)) {
+        if (!button || h.hasClass(button, mixer.classNamesPager.active) || h.hasClass(button, mixer.classNamesPager.disabled)) {
             // No button was clicked or button is already active. Do not handle.
 
             commands[i] = null;

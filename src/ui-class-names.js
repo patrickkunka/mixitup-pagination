@@ -1,6 +1,6 @@
 /* global mixitup */
 
-mixitup.UiClassnames.registerAction('afterConstruct', 'pagination', function() {
+mixitup.UiClassNames.registerAction('afterConstruct', 'pagination', function() {
     this.first              = '';
     this.last               = '';
     this.prev               = '';
