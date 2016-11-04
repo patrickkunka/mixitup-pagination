@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 1082276c-d83c-4b75-a2c9-72d94c98a33a
+ * Build 74b235ae-4151-479e-b4ba-34393e707876
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -749,7 +749,7 @@
 
                     model = new mixitup.ModelPager();
 
-                    model.isTruncationMarker = false;
+                    model.isTruncationMarker = true;
 
                     model.classList.push(self.classNamesPager.base, self.classNamesPager.truncationMarker);
                     model.classNames = model.classList.join(' ');

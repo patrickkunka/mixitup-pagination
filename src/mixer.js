@@ -513,7 +513,7 @@ mixitup.Mixer.extend(
 
             model = new mixitup.ModelPager();
 
-            model.isTruncationMarker = false;
+            model.isTruncationMarker = true;
 
             model.classList.push(self.classNamesPager.base, self.classNamesPager.truncationMarker);
             model.classNames = model.classList.join(' ');
