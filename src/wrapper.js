@@ -14,6 +14,8 @@
 
         {{>config-pagination}}
 
+        {{>config-render}}
+
         {{>config-selectors}}
 
         {{>config-templates}}

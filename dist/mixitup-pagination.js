@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 2bcc6856-dc60-4fdb-8411-60d7f4d09a18
+ * Build 76323748-c123-40c1-a1c4-b283e092f9d5
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -69,10 +69,10 @@
         });
 
         mixitup.ConfigPagination = function() {
-            this.loop                       = false;
             this.generatePageList           = true;
             this.generatePageStats          = true;
             this.maintainActivePage         = true;
+            this.loop                       = false;
             this.hidePageListIfSinglePage   = false;
             this.hidePageStatsIfSinglePage  = false;
             this.limit                      = -1;
@@ -80,6 +80,11 @@
 
             h.seal(this);
         };
+
+        mixitup.ConfigRender.registerAction('afterConstruct', 'pagination', function() {
+            this.pager = null;
+            this.pageStats = null;
+        });
 
         mixitup.ConfigSelectors.registerAction('afterConstruct', 'pagination', function() {
             this.pageList  = '.mixitup-page-list';
@@ -670,6 +675,7 @@
                     pagerHtml           = '',
                     buttonList          = [],
                     model               = null,
+                    renderer            = null,
                     allowedIndices      = [],
                     truncatedBefore     = false,
                     truncatedAfter      = false,
@@ -694,6 +700,8 @@
 
                 activeIndex = operation.newPagination.page - 1;
 
+                renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
+
                 if (self.config.pagination.maxPagers < Infinity && operation.newTotalPages > self.config.pagination.maxPagers) {
                     allowedIndices = self.getAllowedIndices(operation);
                 }
@@ -715,7 +723,11 @@
 
                 model.classnames = model.classlist.join(' ');
 
-                pagerHtml = h.template(self.config.templates.pagerPrev)(model);
+                if (renderer) {
+                    pagerHtml = renderer(model);
+                } else {
+                    pagerHtml = h.template(self.config.templates.pagerPrev)(model);
+                }
 
                 buttonList.push(pagerHtml);
 
@@ -741,7 +753,11 @@
                     model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
                     model.classnames = model.classlist.join(' ');
 
-                    pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
+                    if (renderer) {
+                        pagerHtml = renderer(model);
+                    } else {
+                        pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
+                    }
 
                     buttonList.push(pagerHtml);
 
@@ -771,7 +787,11 @@
 
                 model.classnames = model.classlist.join(' ');
 
-                pagerHtml = h.template(self.config.templates.pagerNext)(model);
+                if (renderer) {
+                    pagerHtml = renderer(model);
+                } else {
+                    pagerHtml = h.template(self.config.templates.pagerNext)(model);
+                }
 
                 buttonList.push(pagerHtml);
 
@@ -896,6 +916,8 @@
             },
 
             /**
+             * Renderes individual, per-page pagers.
+             *
              * @private
              * @param   {number}              i
              * @param   {mixitup.Operation}   operation
@@ -905,6 +927,7 @@
 
             renderPager: function(i, operation, allowedIndices) {
                 var self        = this,
+                    renderer    = null,
                     activePage  = operation.newPagination.page - 1,
                     model       = new mixitup.ModelPager(),
                     output      = '';
@@ -918,6 +941,8 @@
 
                     return '';
                 }
+
+                renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
 
                 model.classlist.push(self.classnamesPager.base);
 
@@ -936,7 +961,11 @@
                 model.classnames = model.classlist.join(' ');
                 model.pageNumber = i + 1;
 
-                output = h.template(self.config.templates.pager)(model);
+                if (renderer) {
+                    output = renderer(model);
+                } else {
+                    output = h.template(self.config.templates.pager)(model);
+                }
 
                 return output;
             },
@@ -950,6 +979,7 @@
             renderPageStats: function(operation) {
                 var self            = this,
                     model           = new mixitup.ModelPageStats(),
+                    renderer        = null,
                     output          = '',
                     template        = '';
 
@@ -966,6 +996,8 @@
 
                     return;
                 }
+
+                renderer = typeof (renderer = self.config.render.pageStats) === 'function' ?  renderer : null;
 
                 model.totalTargets = operation.matching.length;
 
@@ -984,7 +1016,11 @@
                     model.startPageAt = model.endPageAt = 0;
                 }
 
-                output = h.template(template)(model);
+                if (renderer) {
+                    output = renderer(model);
+                } else {
+                    output = h.template(template)(model);
+                }
 
                 self.dom.pageStats.innerHTML = output;
 

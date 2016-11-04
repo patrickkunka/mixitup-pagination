@@ -440,6 +440,7 @@ mixitup.Mixer.extend(
             pagerHtml           = '',
             buttonList          = [],
             model               = null,
+            renderer            = null,
             allowedIndices      = [],
             truncatedBefore     = false,
             truncatedAfter      = false,
@@ -464,6 +465,8 @@ mixitup.Mixer.extend(
 
         activeIndex = operation.newPagination.page - 1;
 
+        renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
+
         if (self.config.pagination.maxPagers < Infinity && operation.newTotalPages > self.config.pagination.maxPagers) {
             allowedIndices = self.getAllowedIndices(operation);
         }
@@ -485,7 +488,11 @@ mixitup.Mixer.extend(
 
         model.classnames = model.classlist.join(' ');
 
-        pagerHtml = h.template(self.config.templates.pagerPrev)(model);
+        if (renderer) {
+            pagerHtml = renderer(model);
+        } else {
+            pagerHtml = h.template(self.config.templates.pagerPrev)(model);
+        }
 
         buttonList.push(pagerHtml);
 
@@ -511,7 +518,11 @@ mixitup.Mixer.extend(
             model.classlist.push(self.classnamesPager.base, self.classnamesPager.truncationMarker);
             model.classnames = model.classlist.join(' ');
 
-            pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
+            if (renderer) {
+                pagerHtml = renderer(model);
+            } else {
+                pagerHtml = h.template(self.config.templates.pagerTruncationMarker)(model);
+            }
 
             buttonList.push(pagerHtml);
 
@@ -541,7 +552,11 @@ mixitup.Mixer.extend(
 
         model.classnames = model.classlist.join(' ');
 
-        pagerHtml = h.template(self.config.templates.pagerNext)(model);
+        if (renderer) {
+            pagerHtml = renderer(model);
+        } else {
+            pagerHtml = h.template(self.config.templates.pagerNext)(model);
+        }
 
         buttonList.push(pagerHtml);
 
@@ -666,6 +681,8 @@ mixitup.Mixer.extend(
     },
 
     /**
+     * Renderes individual, per-page pagers.
+     *
      * @private
      * @param   {number}              i
      * @param   {mixitup.Operation}   operation
@@ -675,6 +692,7 @@ mixitup.Mixer.extend(
 
     renderPager: function(i, operation, allowedIndices) {
         var self        = this,
+            renderer    = null,
             activePage  = operation.newPagination.page - 1,
             model       = new mixitup.ModelPager(),
             output      = '';
@@ -688,6 +706,8 @@ mixitup.Mixer.extend(
 
             return '';
         }
+
+        renderer = typeof (renderer = self.config.render.pager) === 'function' ?  renderer : null;
 
         model.classlist.push(self.classnamesPager.base);
 
@@ -706,7 +726,11 @@ mixitup.Mixer.extend(
         model.classnames = model.classlist.join(' ');
         model.pageNumber = i + 1;
 
-        output = h.template(self.config.templates.pager)(model);
+        if (renderer) {
+            output = renderer(model);
+        } else {
+            output = h.template(self.config.templates.pager)(model);
+        }
 
         return output;
     },
@@ -720,6 +744,7 @@ mixitup.Mixer.extend(
     renderPageStats: function(operation) {
         var self            = this,
             model           = new mixitup.ModelPageStats(),
+            renderer        = null,
             output          = '',
             template        = '';
 
@@ -736,6 +761,8 @@ mixitup.Mixer.extend(
 
             return;
         }
+
+        renderer = typeof (renderer = self.config.render.pageStats) === 'function' ?  renderer : null;
 
         model.totalTargets = operation.matching.length;
 
@@ -754,7 +781,11 @@ mixitup.Mixer.extend(
             model.startPageAt = model.endPageAt = 0;
         }
 
-        output = h.template(template)(model);
+        if (renderer) {
+            output = renderer(model);
+        } else {
+            output = h.template(template)(model);
+        }
 
         self.dom.pageStats.innerHTML = output;
 
