@@ -48,7 +48,7 @@
     };
 
     mixitupPagination.TYPE                    = 'mixitup-extension';
-    mixitupPagination.NAME                    = '{{name}}'
+    mixitupPagination.NAME                    = '{{name}}';
     mixitupPagination.EXTENSION_VERSION       = '{{version}}';
     mixitupPagination.REQUIRE_CORE_VERSION    = '{{coreVersion}}';
 
