@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 74b235ae-4151-479e-b4ba-34393e707876
+ * Build 92c8ba37-3a02-4a99-a0c8-289e3a2a6d4a
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -1134,7 +1134,7 @@
         });    };
 
     mixitupPagination.TYPE                    = 'mixitup-extension';
-    mixitupPagination.NAME                    = 'mixitup-pagiation'
+    mixitupPagination.NAME                    = 'mixitup-pagination';
     mixitupPagination.EXTENSION_VERSION       = '2.0.0-beta';
     mixitupPagination.REQUIRE_CORE_VERSION    = '3.0.0';
 
