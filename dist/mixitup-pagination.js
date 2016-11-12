@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 92c8ba37-3a02-4a99-a0c8-289e3a2a6d4a
+ * Build 538b91c5-d2f6-4607-b847-1d70fa2123cb
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -68,7 +68,25 @@
             this.page = 1;
         });
 
+        /**
+         * @constructor
+         * @memberof    mixitup.Config
+         * @name        pagination
+         * @namespace
+         * @public
+         * @since       2.0.0
+         */
+
         mixitup.ConfigPagination = function() {
+
+            /**
+             * @name        generatePageList
+             * @memberof    mixitup.Config.pagination
+             * @instance
+             * @type        {boolean}
+             * @default     true
+             */
+
             this.generatePageList           = true;
             this.generatePageStats          = true;
             this.maintainActivePage         = true;
@@ -101,9 +119,19 @@
             this.pageStatsFail        = 'None found';
         });
 
-        mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
+        /**
+         * @constructor
+         * @memberof    mixitup
+         * @namespace
+         * @public
+         * @since       2.0.0
+         */
+
+        var Config = function() {
             this.pagination = new mixitup.ConfigPagination();
-        });
+        };
+
+        mixitup.Config.registerAction('beforeConstruct', 'pagination', Config);
 
         mixitup.ModelPager = function() {
             this.pageNumber         = -1;

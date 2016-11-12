@@ -1,6 +1,24 @@
 /* global mixitup, h */
 
+/**
+ * @constructor
+ * @memberof    mixitup.Config
+ * @name        pagination
+ * @namespace
+ * @public
+ * @since       2.0.0
+ */
+
 mixitup.ConfigPagination = function() {
+
+    /**
+     * @name        generatePageList
+     * @memberof    mixitup.Config.pagination
+     * @instance
+     * @type        {boolean}
+     * @default     true
+     */
+
     this.generatePageList           = true;
     this.generatePageStats          = true;
     this.maintainActivePage         = true;
