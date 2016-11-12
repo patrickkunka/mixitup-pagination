@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 538b91c5-d2f6-4607-b847-1d70fa2123cb
+ * Build c9fb9497-eedc-423e-bc0a-18382ecbd634
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -120,6 +120,8 @@
         });
 
         /**
+         * The MixItUp configuration object is extended with properties relating to pagination functionality.
+         *
          * @constructor
          * @memberof    mixitup
          * @namespace
