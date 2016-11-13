@@ -1,5 +1,21 @@
 /* global mixitup, h */
 
+/**
+ * The `mixitup.Mixer` class is used to hold discreet, user-configured
+ * instances of MixItUp on a provided container element.
+ *
+ * Mixer instances are returned whenever the `mixitup()` factory function is called,
+ * which expose a range of methods enabling API-based filtering, sorting,
+ * insertion, removal and more.
+ *
+ * @constructor
+ * @namespace
+ * @name        Mixer
+ * @memberof    mixitup
+ * @public
+ * @since       3.0.0
+ */
+
 mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
     this.classNamesPager        = new mixitup.UiClassNames();
     this.classNamesPageList     = new mixitup.UiClassNames();
@@ -277,7 +293,7 @@ mixitup.Mixer.registerAction('afterFilterOperation', 'pagination', function(oper
 });
 
 /**
- * @public
+ * @private
  * @param   {mixitup.Operation}         operation
  * @param   {mixitup.CommandMultimix}   command
  * @return  {mixitup.Operation}
@@ -315,7 +331,7 @@ mixitup.Mixer.registerFilter('operationUnmappedGetOperation', 'pagination', func
 });
 
 /**
- * @public
+ * @private
  * @param   {mixitup.Operation} operation
  * @param   {object}            command
  * @param   {boolean}           [isPreFetch=false]
@@ -845,8 +861,70 @@ mixitup.Mixer.extend(
     },
 
     /**
+     * Changes the current page and/or the current page limit.
+     *
+     * @example
+     *
+     * .paginate(elements [, animate] [, callback])
+     *
+     * @example <caption>Example 1: Changing the active page</caption>
+     *
+     * console.log(mixer.getState().activePagination.page); // 1
+     *
+     * mixer.paginate(2)
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.page === 2); // true
+     *     });
+     *
+     * @example <caption>Example 2: Progressing to the next page</caption>
+     *
+     * console.log(mixer.getState().activePagination.page); // 1
+     *
+     * mixer.paginate('next')
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.page === 2); // true
+     *     });
+     *
+     * @example <caption>Example 3: Starting a page from an abitrary "anchor" element</caption>
+     *
+     * var anchorEl = mixer.getState().show[3];
+     *
+     * mixer.paginate(anchorEl)
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.anchor === anchorEl); // true
+     *         console.log(mixer.getState().show[0] === anchorEl); // true
+     *     });
+     *
+     * @example <caption>Example 4: Changing the page limit</caption>
+     *
+     * var anchorEl = mixer.getState().show[3];
+     *
+     * console.log(mixer.getState().activePagination.limit); // 8
+     *
+     * mixer.paginate({
+     *    limit: 4
+     * })
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.limit === 4); // true
+     *     });
+     *
+     * @example <caption>Example 5: Changing the active page and page limit</caption>
+     *
+     * mixer.paginate({
+     *    limit: 4,
+     *    page: 2
+     * })
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.page === 2); // true
+     *         console.log(mixer.getState().activePagination.limit === 4); // true
+     *     });
+     *
      * @public
+     * @instance
+     * @param       {(number|string|object|HTMLElement)}    page
+     *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
      * @return      {Promise.<mixitup.State>}
+     *     A promise resolving with the current state object.
      */
 
     paginate: function() {
@@ -859,8 +937,27 @@ mixitup.Mixer.extend(
     },
 
     /**
+     * A shorthand for `.paginate('next')`. Move to the next page.
+     *
+     * @example
+     *
+     * .nextPage()
+     *
+     * @example <caption>Example: Moving to the next page</caption>
+     *
+     * console.log(mixer.getState().activePagination.page); // 1
+     *
+     * mixer.nextPage()
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.page === 2); // true
+     *     });
+     *
      * @public
+     * @instance
+     * @param       {(number|string|object|HTMLElement)}    page
+     *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
      * @return      {Promise.<mixitup.State>}
+     *     A promise resolving with the current state object.
      */
 
     nextPage: function() {
@@ -875,8 +972,27 @@ mixitup.Mixer.extend(
     },
 
     /**
+     * A shorthand for `.paginate('prev')`. Moves to the previous page.
+     *
+     * @example
+     *
+     * .prevPage()
+     *
+     * @example <caption>Example: Moving to the previous page</caption>
+     *
+     * console.log(mixer.getState().activePagination.page); // 5
+     *
+     * mixer.prevtPage()
+     *     .then(function(state) {
+     *         console.log(mixer.getState().activePagination.page === 4); // true
+     *     });
+     *
      * @public
+     * @instance
+     * @param       {(number|string|object|HTMLElement)}    page
+     *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
      * @return      {Promise.<mixitup.State>}
+     *     A promise resolving with the current state object.
      */
 
     prevPage: function() {

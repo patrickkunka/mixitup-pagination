@@ -5,13 +5,12 @@
  *
  * @constructor
  * @memberof    mixitup
+ * @name        Config
  * @namespace
  * @public
  * @since       2.0.0
  */
 
-var Config = function() {
+mixitup.Config.registerAction('beforeConstruct', 'pagination', function() {
     this.pagination = new mixitup.ConfigPagination();
-};
-
-mixitup.Config.registerAction('beforeConstruct', 'pagination', Config);
+});

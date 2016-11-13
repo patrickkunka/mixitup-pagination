@@ -6,30 +6,222 @@ The MixItUp configuration object is extended with properties relating to paginat
 
 ### Contents
 
+- [template](#template)
+- [classNames](#classNames)
 - [load](#load)
 - [pagination](#pagination)
+- [render](#render)
+- [selectors](#selectors)
+
+
+<h3 id="template">template</h3>
+
+*Version added: 3.0.0*
+
+
+
+
+
+
+
+
+<h2 id="classNames">classNames</h2>
+
+A group of properties defining the output and structure of class names programmatically
+added to controls and containers to reflect the state of the mixer.
+
+Most commonly, class names are added to controls by MixItUp to indicate that
+the control is active so that it can be styled accordingly - `'mixitup-control-active'` by default.
+
+Using a "BEM" like structure, each classname is broken into the three parts:
+a block namespace (`'mixitup'`), an element name (e.g. `'control'`), and an optional modifier
+name (e.g. `'active'`) reflecting the state of the element.
+
+By default, each part of the classname is concatenated together using single hyphens as
+delineators, but this can be easily customised to match the naming convention and style of
+your project.
+
+### elementPager
+
+
+
+
+The "element" portion of the class name added to pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'control'`
+
+###### Example: changing the `config.classNames.elementPager` value
+
+```js
+
+// Change from the default value of 'control' to 'pager'
+
+var mixer = mixitup(containerEl, {
+    classNames: {
+        elementPager: 'pager'
+    }
+});
+
+// Base pager output: "mixitup-pager"
+```
+### elementPageList
+
+
+
+
+The "element" portion of the class name added to the page list element, when it is
+in its disabled state.
+
+The page list element is the containing element in which pagers are rendered.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'page-list'`
+
+###### Example: changing the `config.classNames.elementPageList` value
+
+```js
+
+// Change from the default value of 'page-list' to 'pagination-links'
+
+var mixer = mixitup(containerEl, {
+    classNames: {
+        elementPageList: 'pagination-links'
+    }
+});
+
+// Disabled page-list output: "mixitup-pagination-links-disabled"
+```
+### elementPageStats
+
+
+
+
+The "element" portion of the class name added to the page stats element, when it is
+in its disabled state.
+
+The page stats element is the containing element in which information about the
+current page and total number of pages is rendered.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'page-stats'`
+
+###### Example: changing the `config.classNames.elementPageStats` value
+
+```js
+
+// Change from the default value of 'page-stats' to 'pagination-info'
+
+var mixer = mixitup(containerEl, {
+    classNames: {
+        elementPageList: 'pagination-info'
+    }
+});
+
+// Disabled page-list output: "mixitup-pagination-info-disabled"
+```
+### modifierFirst
+
+
+
+
+The "modifier" portion of the class name added to the first pager in the list of pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'first'`
+
+### modifierLast
+
+
+
+
+The "modifier" portion of the class name added to the last pager in the list of pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'last'`
+
+### modifierLast
+
+
+
+
+The "modifier" portion of the class name added to the previous pager in the list of pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'prev'`
+
+### modifierNext
+
+
+
+
+The "modifier" portion of the class name added to the next pager in the list of pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'next'`
+
+### modifierTruncationMarker
+
+
+
+
+The "modifier" portion of the class name added to truncation markers in the list of pager controls.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'truncation-marker'`
 
 
 <h2 id="load">load</h2>
 
-The `config.load` object is extended with properties relating to the pagination extension.
+A group of properties defining the initial state of the mixer on load (instantiation).
 
 ### page
 
 
 
 
-
+An integer defining the starting page on load, if a page limit is active.
 
 
 |Type | Default
 |---  | ---
-|`number`| `-1`
+|`number`| `1`
 
+###### Example: Defining a start page other than 1 to be applied on load
+
+```js
+
+// The mixer will show page 3 on load, with 8 items per page.
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8
+    },
+    load: {
+        page: 3
+    }
+});
+```
 
 <h2 id="pagination">pagination</h2>
 
-
+A group of properties defining the mixer's pagination behavior.
 
 ### generatePageList
 
@@ -42,5 +234,171 @@ The `config.load` object is extended with properties relating to the pagination 
 |Type | Default
 |---  | ---
 |`boolean`| `true`
+
+### generatePageStats
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`boolean`| `true`
+
+### maintainActivePage
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`boolean`| `true`
+
+### loop
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`boolean`| `false`
+
+### hidePageListIfSinglePage
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`boolean`| `false`
+
+### hidePageStatsIfSinglePage
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`boolean`| `false`
+
+### limit
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`number`| `-1`
+
+### maxPagers
+
+
+
+
+A number dictating the maximum number of individual pager controls to render before
+truncating the list.
+
+
+|Type | Default
+|---  | ---
+|`number`| `5`
+
+
+<h2 id="render">render</h2>
+
+A group of optional render functions for creating and updating elements.
+
+All render functions receive a data object, and should return a valid HTML string.
+
+### pager
+
+
+
+
+A function returning an HTML string representing a single pager control element.
+
+By default, MixItUp will render pager controls using its own internal renderer
+and templates (see `templates.pager`), but you may override this functionality by
+providing your own render function here instead. All pager elements must have a
+data-page element indicating the action of the control.
+
+The function receives an object containing all neccessary information
+about the pager as its first parameter.
+
+
+|Type | Default
+|---  | ---
+|`function`| `'null'`
+
+### pageStats
+
+
+
+
+A function returning an HTML string forming the contents of the "page stats" element.
+
+By default, MixItUp will render page stats using its own internal renderer
+and templates (see `templates.pageStats`), but you may override this functionality by
+providing your own render function here instead.
+
+The function receives an object containing all neccessary information
+about the current page and total pages as its first parameter.
+
+
+|Type | Default
+|---  | ---
+|`function`| `'null'`
+
+
+<h2 id="selectors">selectors</h2>
+
+A group of properties defining the selectors used to query elements within a mixitup container.
+
+### pageList
+
+
+
+
+A selector string used to query the page list element.
+
+Depending on the value of `controls.scope`, MixItUp will either query the
+entire document for the page list element, or just the container.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'.mixitup-page-list'`
+
+### pageStats
+
+
+
+
+A selector string used to query the page stats element.
+
+Depending on the value of `controls.scope`, MixItUp will either query the
+entire document for the page stats element, or just the container.
+
+
+|Type | Default
+|---  | ---
+|`string`| `'.mixitup-page-stats'`
 
 
