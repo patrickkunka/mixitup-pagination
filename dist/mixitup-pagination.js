@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v2.0.0-beta
  *
- * Build 1e9c93ac-2ba1-4379-a2c6-cf5ddbda8650
+ * Build 9da3cea2-8092-4c67-81e4-937126ac4946
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -37,17 +37,6 @@
         /**
          * A group of properties defining the output and structure of class names programmatically
          * added to controls and containers to reflect the state of the mixer.
-         *
-         * Most commonly, class names are added to controls by MixItUp to indicate that
-         * the control is active so that it can be styled accordingly - `'mixitup-control-active'` by default.
-         *
-         * Using a "BEM" like structure, each classname is broken into the three parts:
-         * a block namespace (`'mixitup'`), an element name (e.g. `'control'`), and an optional modifier
-         * name (e.g. `'active'`) reflecting the state of the element.
-         *
-         * By default, each part of the classname is concatenated together using single hyphens as
-         * delineators, but this can be easily customised to match the naming convention and style of
-         * your project.
          *
          * @constructor
          * @memberof    mixitup.Config
@@ -338,8 +327,6 @@
 
         /**
          * A group of optional render functions for creating and updating elements.
-         *
-         * All render functions receive a data object, and should return a valid HTML string.
          *
          * @constructor
          * @memberof    mixitup.Config
@@ -1563,7 +1550,7 @@
              *
              * @example
              *
-             * .paginate(elements [, animate] [, callback])
+             * .paginate(page [, animate] [, callback])
              *
              * @example <caption>Example 1: Changing the active page</caption>
              *
@@ -1621,6 +1608,10 @@
              * @instance
              * @param       {(number|string|object|HTMLElement)}    page
              *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
+             * @param       {boolean}   [animate=true]
+             *      An optional boolean dictating whether the operation should animate, or occur syncronously with no animation. `true` by default.
+             * @param       {function}  [callback=null]
+             *      An optional callback function to be invoked after the operation has completed.
              * @return      {Promise.<mixitup.State>}
              *     A promise resolving with the current state object.
              */
@@ -1635,7 +1626,7 @@
             },
 
             /**
-             * A shorthand for `.paginate('next')`. Move to the next page.
+             * A shorthand for `.paginate('next')`. Moves to the next page.
              *
              * @example
              *
@@ -1652,8 +1643,6 @@
              *
              * @public
              * @instance
-             * @param       {(number|string|object|HTMLElement)}    page
-             *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
              * @return      {Promise.<mixitup.State>}
              *     A promise resolving with the current state object.
              */
@@ -1687,8 +1676,6 @@
              *
              * @public
              * @instance
-             * @param       {(number|string|object|HTMLElement)}    page
-             *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
              * @return      {Promise.<mixitup.State>}
              *     A promise resolving with the current state object.
              */

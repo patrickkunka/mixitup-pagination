@@ -4,17 +4,6 @@
  * A group of properties defining the output and structure of class names programmatically
  * added to controls and containers to reflect the state of the mixer.
  *
- * Most commonly, class names are added to controls by MixItUp to indicate that
- * the control is active so that it can be styled accordingly - `'mixitup-control-active'` by default.
- *
- * Using a "BEM" like structure, each classname is broken into the three parts:
- * a block namespace (`'mixitup'`), an element name (e.g. `'control'`), and an optional modifier
- * name (e.g. `'active'`) reflecting the state of the element.
- *
- * By default, each part of the classname is concatenated together using single hyphens as
- * delineators, but this can be easily customised to match the naming convention and style of
- * your project.
- *
  * @constructor
  * @memberof    mixitup.Config
  * @name        classNames

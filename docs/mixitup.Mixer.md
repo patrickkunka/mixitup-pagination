@@ -19,13 +19,15 @@ insertion, removal and more.
 <h3 id="paginate">paginate()</h3>
 
 
-`.paginate(elements [, animate] [, callback])`
+`.paginate(page [, animate] [, callback])`
 
 Changes the current page and/or the current page limit.
 
 |   |Type | Name | Description
 |---|--- | --- | ---
 |Param   |`number, string, object, HTMLElement` | `page` | A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
+|Param   |`boolean` | `[animate]` | An optional boolean dictating whether the operation should animate, or occur syncronously with no animation. `true` by default.
+|Param   |`function` | `[callback]` | An optional callback function to be invoked after the operation has completed.
 |Returns |`Promise.<mixitup.State>` | A promise resolving with the current state object.
 
 
@@ -97,11 +99,10 @@ mixer.paginate({
 
 `.nextPage()`
 
-A shorthand for `.paginate('next')`. Move to the next page.
+A shorthand for `.paginate('next')`. Moves to the next page.
 
 |   |Type | Name | Description
 |---|--- | --- | ---
-|Param   |`number, string, object, HTMLElement` | `page` | A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
 |Returns |`Promise.<mixitup.State>` | A promise resolving with the current state object.
 
 
@@ -126,7 +127,6 @@ A shorthand for `.paginate('prev')`. Moves to the previous page.
 
 |   |Type | Name | Description
 |---|--- | --- | ---
-|Param   |`number, string, object, HTMLElement` | `page` | A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
 |Returns |`Promise.<mixitup.State>` | A promise resolving with the current state object.
 
 

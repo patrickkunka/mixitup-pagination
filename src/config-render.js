@@ -3,8 +3,6 @@
 /**
  * A group of optional render functions for creating and updating elements.
  *
- * All render functions receive a data object, and should return a valid HTML string.
- *
  * @constructor
  * @memberof    mixitup.Config
  * @name        render

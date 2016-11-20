@@ -865,7 +865,7 @@ mixitup.Mixer.extend(
      *
      * @example
      *
-     * .paginate(elements [, animate] [, callback])
+     * .paginate(page [, animate] [, callback])
      *
      * @example <caption>Example 1: Changing the active page</caption>
      *
@@ -923,6 +923,10 @@ mixitup.Mixer.extend(
      * @instance
      * @param       {(number|string|object|HTMLElement)}    page
      *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
+     * @param       {boolean}   [animate=true]
+     *      An optional boolean dictating whether the operation should animate, or occur syncronously with no animation. `true` by default.
+     * @param       {function}  [callback=null]
+     *      An optional callback function to be invoked after the operation has completed.
      * @return      {Promise.<mixitup.State>}
      *     A promise resolving with the current state object.
      */
@@ -937,7 +941,7 @@ mixitup.Mixer.extend(
     },
 
     /**
-     * A shorthand for `.paginate('next')`. Move to the next page.
+     * A shorthand for `.paginate('next')`. Moves to the next page.
      *
      * @example
      *
@@ -954,8 +958,6 @@ mixitup.Mixer.extend(
      *
      * @public
      * @instance
-     * @param       {(number|string|object|HTMLElement)}    page
-     *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
      * @return      {Promise.<mixitup.State>}
      *     A promise resolving with the current state object.
      */
@@ -989,8 +991,6 @@ mixitup.Mixer.extend(
      *
      * @public
      * @instance
-     * @param       {(number|string|object|HTMLElement)}    page
-     *     A page number, string (`'next'`, `'prev'`), HTML element reference, or command object.
      * @return      {Promise.<mixitup.State>}
      *     A promise resolving with the current state object.
      */
