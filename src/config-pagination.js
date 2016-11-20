@@ -14,6 +14,16 @@
 mixitup.ConfigPagination = function() {
 
     /**
+     * A boolean dictating whether or not MixItUp should render a list of pager controls.
+     *
+     * If you wish to control pagination functionality via the API, or your own UI, this can be set to `false`.
+     *
+     * In order for this functionality to work, you must provide MixItUp with a `pageList`
+     * element matching the selector defined in `selectors.pageList`. Pager controls will be
+     * rendered inside this element as per the templates defined for the `templates.pager`
+     * and related configuration options, or if set, a custom render
+     * function supplied to the `render.pager` configuration option.
+     *
      * @name        generatePageList
      * @memberof    mixitup.Config.pagination
      * @instance
@@ -24,6 +34,15 @@ mixitup.ConfigPagination = function() {
     this.generatePageList = true;
 
     /**
+     * A boolean dictating whether or not MixItUp should render a stats about the
+     * current page (e.g. "1 to 4 of 16").
+     *
+     * In order for this functionality to work, you must provide MixItUp with a `pageStats`
+     * element matching the selector defined in `selectors.pageStats`. Page stats content will
+     * be rendered inside this element as per the templates defined for the `templates.pageStats`
+     * and `templates.pageStatsSingle` configuration options, or if set, a custom render
+     * function supplied to the `render.pageStats` configuration option.
+     *
      * @name        generatePageStats
      * @memberof    mixitup.Config.pagination
      * @instance
