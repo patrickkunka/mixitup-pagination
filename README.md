@@ -82,7 +82,9 @@ You need only call the `.use()` function once per project, per extension, as mod
 
 ### Using Pagination
 
-MixItUp Pagination extends MixItUp's API and configuration object with various new methods and properties, by default, pagination functionality is disabled and you can use MixItUp as normal, even with the extension installed. To enable pagination functionality, you simply need to set a value for the `pagination.limit` configuration option.
+MixItUp Pagination extends MixItUp's API and configuration object with various new methods and properties.
+
+By default, pagination functionality is disabled so that you can use MixItUp as normal, even with the extension installed. To enable pagination functionality for a mixer, you simply need to set a value for the `pagination.limit` configuration option.
 
 ```js
 var mixer = mixitup(containerEl, {
