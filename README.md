@@ -1,6 +1,6 @@
 # MixItUp Pagination
 
-MixItUp Pagination is a premium extension for the MixItUp library (`v3`), adding dynamic and responsive client-side pagination to filterable and sortable content.
+MixItUp Pagination is a premium extension for the MixItUp 3, adding dynamic and responsive client-side pagination to filterable and sortable content.
 
 ### Features
 
@@ -12,8 +12,8 @@ MixItUp Pagination is a premium extension for the MixItUp library (`v3`), adding
 
 ### Uses
 
-- Increase usability of and reduce excessive scrolling when dealing with large datasets
-- Provide visual feedback about the content to users as they filter and sort
+- Increase usability and reduce excessive scrolling when dealing with large datasets
+- Provide visual feedback about content to users as they filter and sort
 
 ### Limitations
 
@@ -29,7 +29,7 @@ Premium extensions are not publically available via GitHub or NPM and must there
 
 #### Script Tag
 
-If using a script tag, you simply need to load the pagination distribution script (`mixitup-pagination.min.js` or `mixitup-pagination.js`) **after** mixitup, and the extension will automatically detect MixItUp and install itself.
+If using a script tag, you simply need to load the pagination distribution script (i.e. `mixitup-pagination.min.js`) **after** mixitup, and the extension will automatically detect the `mixitup` global variable and install itself.
 
 ```html
         ...
@@ -42,7 +42,7 @@ If using a script tag, you simply need to load the pagination distribution scrip
 
 #### Module Import
 
-If you are building a modular JavaScript project with Webpack, Browserify, or RequireJS, mixitup will not expose any global variables. Therefore, an extra step is required when installing extensions whereby the `mixitup.use()` method must be called, with the extension passed in as an argument.
+If you are building a modular JavaScript project with Webpack, Browserify, or RequireJS, no global variables are exposed. Firstly require both the MixItUp core *and* the Pagination extension into your module. Then call `mixitup.use()` with the extension passed in as an argument. Your extension will be installed and made available to all MixItUp instances throghout your project.
 
 ```js
 // ES2015
@@ -67,7 +67,13 @@ mixitup.use(mixitupPagination);
 ```js
 // AMD
 
-require(['mixitup', '../path/to/mixitup-pagination'], function(mixitup, mixitupPagination) {
+require([
+    'mixitup',
+    '../path/to/mixitup-pagination'
+], function(
+    mixitup,
+    mixitupPagination
+) {
     mixitup.use(mixitupPagination);
 });
 ```
