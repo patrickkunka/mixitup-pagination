@@ -25,7 +25,7 @@ MixItUp Pagination is a premium extension for the MixItUp 3, adding dynamic and 
 
 ### Installing Extensions
 
-Premium extensions are not publically available via GitHub or NPM and must therefore be downloaded from your KunkaLabs account after purchase. Once downloaded they can be included in your project in a directory of your choosing, and then required as modules, or globally via a script tag.
+Premium extensions are not publicly available via GitHub or NPM and must therefore be downloaded from your KunkaLabs account after purchase. Once downloaded they can be included in your project in a directory of your choosing, and then required as modules, or globally via a script tag.
 
 #### Script Tag
 
@@ -42,7 +42,7 @@ If using a script tag, you simply need to load the pagination distribution scrip
 
 #### Module Import
 
-If you are building a modular JavaScript project with Webpack, Browserify, or RequireJS, no global variables are exposed. Firstly require both the MixItUp core *and* the Pagination extension into your module. Then call `mixitup.use()` with the extension passed in as an argument. Your extension will be installed and made available to all MixItUp instances throghout your project.
+If you are building a modular JavaScript project with Webpack, Browserify, or RequireJS, no global variables are exposed. Firstly require both the MixItUp core *and* the Pagination extension into your module. Then call `mixitup.use()` with the extension passed in as an argument. Your extension will be installed and made available to all MixItUp instances throughout your project.
 
 ```js
 // ES2015
@@ -98,7 +98,7 @@ var mixer = mixitup(containerEl, {
 
 Given a "page list" element in DOM, MixItUp Pagination will automatically generate a list of "pager" controls allowing the user to move from page to page, as well as providing visual feedback about the current number of pages.
 
-MixItUp Pagination will query the DOM for an element matching the `selectors.pageList` configuration option (`'.mixitup-page-list'` by default). If a matching element is found, a list of pager buttons will be automically rendered inside this element.
+MixItUp Pagination will query the DOM for an element matching the `selectors.pageList` configuration option (`'.mixitup-page-list'` by default). If a matching element is found, a list of pager buttons will be automatically rendered inside this element.
 
 ```html
 <div class="container">
@@ -112,7 +112,7 @@ MixItUp Pagination will query the DOM for an element matching the `selectors.pag
 
 ### Page Stats UI
 
-Given a "page stats" element in the DOM, MixItUp Pagination will automically render information about the page and matching dataset, for example "5-8 of 32".
+Given a "page stats" element in the DOM, MixItUp Pagination will automatically render information about the page and matching dataset, for example "5-8 of 32".
 
 MixItUp Pagination will query the DOM for an element matching the `selectors.pageStats` configuration option (`'.mixitup-page-stats'` by default). If a matching element is found, content will be rendered inside this element.
 
