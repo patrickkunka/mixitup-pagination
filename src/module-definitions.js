@@ -9,5 +9,5 @@ if (typeof exports === 'object' && typeof module === 'object') {
 } else if (window.mixitup && typeof window.mixitup === 'function') {
     mixitupPagination(window.mixitup);
 } else {
-    console.error('[MixItUp-pagination] MixItUp core not found');
+    throw new Error('[MixItUp Pagination] MixItUp core not found');
 }
