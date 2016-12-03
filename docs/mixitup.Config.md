@@ -2,7 +2,11 @@
 
 ## Overview
 
-The MixItUp configuration object is extended with properties relating to pagination functionality.
+The MixItUp configuration object is extended with properties relating to
+the Pagination extension.
+
+For the full list of configuration options, please refer to the MixItUp
+core documentation.
 
 ### Contents
 

@@ -1,12 +1,11 @@
 /* global mixitup, h */
 
 /**
- * The `mixitup.Mixer` class is used to hold discreet, user-configured
- * instances of MixItUp on a provided container element.
+ * The MixItUp configuration object is extended with properties relating to
+ * the Pagination extension.
  *
- * Mixer instances are returned whenever the `mixitup()` factory function is called,
- * which expose a range of methods enabling API-based filtering, sorting,
- * insertion, removal and more.
+ * For the full list of configuration option properties,
+ * please refer to the MixItUp core documentation.
  *
  * @constructor
  * @namespace

@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v3.0.0-beta
  * Client-side pagination for filtered and sorted content
- * Build 8d249dbf-a223-46e9-9519-7b61a2723814
+ * Build 630cd817-3d3a-4de3-9ae2-971a2d5df00b
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -522,7 +522,11 @@
         });
 
         /**
-         * The MixItUp configuration object is extended with properties relating to pagination functionality.
+         * The MixItUp configuration object is extended with properties relating to
+         * the Pagination extension.
+         *
+         * For the full list of configuration options, please refer to the MixItUp
+         * core documentation.
          *
          * @constructor
          * @memberof    mixitup
@@ -705,12 +709,11 @@
         });
 
         /**
-         * The `mixitup.Mixer` class is used to hold discreet, user-configured
-         * instances of MixItUp on a provided container element.
+         * The MixItUp configuration object is extended with properties relating to
+         * the Pagination extension.
          *
-         * Mixer instances are returned whenever the `mixitup()` factory function is called,
-         * which expose a range of methods enabling API-based filtering, sorting,
-         * insertion, removal and more.
+         * For the full list of configuration option properties,
+         * please refer to the MixItUp core documentation.
          *
          * @constructor
          * @namespace
