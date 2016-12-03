@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v3.0.0-beta
  * Client-side pagination for filtered and sorted content
- * Build 150b5f7a-a17d-44fc-a03d-ae6d17d2a393
+ * Build 8d249dbf-a223-46e9-9519-7b61a2723814
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -27,7 +27,7 @@
             !h.compareVersions(mixitupPagination.REQUIRE_CORE_VERSION, mixitup.CORE_VERSION)
         ) {
             throw new Error(
-                '[MixItUp-Pagination] MixItUp Pagination v' +
+                '[MixItUp Pagination] MixItUp Pagination v' +
                 mixitupPagination.EXTENSION_VERSION +
                 ' requires at least MixItUp v' +
                 mixitupPagination.REQUIRE_CORE_VERSION
@@ -1731,5 +1731,5 @@
     } else if (window.mixitup && typeof window.mixitup === 'function') {
         mixitupPagination(window.mixitup);
     } else {
-        console.error('[MixItUp-pagination] MixItUp core not found');
+        throw new Error('[MixItUp Pagination] MixItUp core not found');
     }})(window);
