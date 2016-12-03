@@ -15,8 +15,7 @@ gulp.task('watch', function() {
 
     gulp.watch([
         './src/*.js',
-        './build/*.js',
-        './build/*.md'
+        './src/*.hbs'
     ], ['reload-js'])
         .on('change', function(e) {
             console.log(
@@ -73,8 +72,7 @@ gulp.task('build-dist', ['lint', 'code-style'], function(done) {
 
 gulp.task('lint', function() {
     return gulp.src([
-        './src/*.js',
-        '!./src/wrapper.js'
+        './src/*.js'
     ],
     {
         base: '/'
@@ -86,8 +84,7 @@ gulp.task('lint', function() {
 
 gulp.task('code-style', function() {
     return gulp.src([
-        './src/*.js',
-        '!./src/wrapper.js'
+        './src/*.js'
     ],
     {
         base: '/'

@@ -1,7 +1,7 @@
 /**!
- * MixItUp Pagination v2.0.0-beta
- *
- * Build 73317216-460f-441a-8cdf-73b4f47d2079
+ * MixItUp Pagination v3.0.0-beta
+ * Client-side pagination for filtered and sorted content
+ * Build 150b5f7a-a17d-44fc-a03d-ae6d17d2a393
  *
  * Requires mixitup.js >= v3.0.0
  *
@@ -1719,7 +1719,7 @@
 
     mixitupPagination.TYPE                    = 'mixitup-extension';
     mixitupPagination.NAME                    = 'mixitup-pagination';
-    mixitupPagination.EXTENSION_VERSION       = '2.0.0-beta';
+    mixitupPagination.EXTENSION_VERSION       = '3.0.0-beta';
     mixitupPagination.REQUIRE_CORE_VERSION    = '3.0.0';
 
     if (typeof exports === 'object' && typeof module === 'object') {
