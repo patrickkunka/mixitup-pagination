@@ -1,9 +1,9 @@
 /**!
- * MixItUp Pagination v3.0.0
+ * MixItUp Pagination v3.1.0
  * Client-side pagination for filtered and sorted content
- * Build f05164c1-8a42-4a9d-9370-a77b4c0ee28f
+ * Build 9e4e84d7-3390-4751-9754-af5732338cbb
  *
- * Requires mixitup.js >= v3.0.0
+ * Requires mixitup.js >= v^3.1.2
  *
  * @copyright Copyright 2014-2016 KunkaLabs Limited.
  * @author    KunkaLabs Limited.
@@ -27,9 +27,9 @@
             !h.compareVersions(mixitupPagination.REQUIRE_CORE_VERSION, mixitup.CORE_VERSION)
         ) {
             throw new Error(
-                '[MixItUp Pagination] MixItUp Pagination v' +
+                '[MixItUp Pagination] MixItUp Pagination ' +
                 mixitupPagination.EXTENSION_VERSION +
-                ' requires at least MixItUp v' +
+                ' requires at least MixItUp ' +
                 mixitupPagination.REQUIRE_CORE_VERSION
             );
         }
@@ -1722,8 +1722,8 @@
 
     mixitupPagination.TYPE                    = 'mixitup-extension';
     mixitupPagination.NAME                    = 'mixitup-pagination';
-    mixitupPagination.EXTENSION_VERSION       = '3.0.0';
-    mixitupPagination.REQUIRE_CORE_VERSION    = '3.0.0';
+    mixitupPagination.EXTENSION_VERSION       = '3.1.0';
+    mixitupPagination.REQUIRE_CORE_VERSION    = '^3.1.2';
 
     if (typeof exports === 'object' && typeof module === 'object') {
         module.exports = mixitupPagination;
