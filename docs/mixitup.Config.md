@@ -10,23 +10,12 @@ core documentation.
 
 ### Contents
 
-- [template](#template)
 - [classNames](#classNames)
 - [load](#load)
 - [pagination](#pagination)
 - [render](#render)
 - [selectors](#selectors)
-
-
-<h3 id="template">template</h3>
-
-*Version added: 3.0.0*
-
-
-
-
-
-
+- [templates](#templates)
 
 
 <h2 id="classNames">classNames</h2>
@@ -406,5 +395,94 @@ entire document for the page stats element, or just the container.
 |Type | Default
 |---  | ---
 |`string`| `'.mixitup-page-stats'`
+
+
+<h2 id="templates">templates</h2>
+
+A group of template strings used to render pager controls and page stats elements.
+
+### pager
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'<button type="button" class="${classNames}" data-page="${pageNumber}">${pageNumber}</button>'`
+
+### pagerPrev
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'<button type="button" class="${classNames}" data-page="prev">&laquo;</button>'`
+
+### pagerNext
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'<button type="button" class="${classNames}" data-page="next">&raquo;</button>'`
+
+### pagerTruncationMarker
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'<span class="${classNames}">&hellip;</span>'`
+
+### pageStats
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'${startPageAt} to ${endPageAt} of ${totalTargets}'`
+
+### pageStatsSingle
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'${startPageAt} of ${totalTargets}'`
+
+### pageStatsFail
+
+
+
+
+
+
+
+|Type | Default
+|---  | ---
+|`string`| `'None found'`
 
 

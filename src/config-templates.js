@@ -5,7 +5,8 @@
  *
  * @constructor
  * @memberof    mixitup.Config
- * @name        template
+ * @name        templates
+ * @namespace
  * @public
  * @since       3.0.0
  */
