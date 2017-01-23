@@ -159,14 +159,13 @@ body {
     border-radius: 0 3px 3px 0;
 }
 
-.mixitup-control:hover {
+.mixitup-control:not(.mixitup-control-active):hover {
     color: #91e6c7;
 }
 
 .mixitup-control-active {
     border-bottom-color: #91e6c7;
     cursor: default;
-    pointer-events: none;
 }
 
 .mixitup-control:disabled {
