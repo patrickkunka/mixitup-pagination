@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="../reset.css" rel="stylesheet"/>
+        <link href="./style.css" rel="stylesheet"/>
+
+        <title>MixItUp Pagination Demo - Responsive Pagination</title>
+
+        <!-- Responsive pagination enables to define the initial pagination limit based on the
+        viewport width and then make real time adjustments in reaction to resize events. This
+        is crucial when we want to maintain a full final row in our grid when our CSS contains a
+        mixer of odd and even column counts at different breakpoints. -->
+    </head>
+    <body>
+        <div class="controls">
+            <button type="button" class="control" data-filter="all">All</button>
+            <button type="button" class="control" data-filter=".green">Green</button>
+            <button type="button" class="control" data-filter=".blue">Blue</button>
+            <button type="button" class="control" data-filter=".pink">Pink</button>
+            <button type="button" class="control" data-filter="none">None</button>
+
+            <button type="button" class="control" data-sort="default:asc">Asc</button>
+            <button type="button" class="control" data-sort="default:desc">Desc</button>
+        </div>
+
+        <div class="container">
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+
+            <div class="gap"></div>
+            <div class="gap"></div>
+            <div class="gap"></div>
+        </div>
+
+        <div class="controls-pagination">
+            <div class="mixitup-page-list"></div>
+            <div class="mixitup-page-stats"></div>
+        </div>
+
+        <input type="hidden" class="column-counter"/>
+
+        <script src="../mixitup.min.js"></script>
+        <script src="../../dist/mixitup-pagination.js"></script>
+
+        <script>
+            var containerEl = document.querySelector('.container');
+            var columnCounter = document.querySelector('.column-counter');
+            var currentLimit = -1;
+
+            // NB: The `columnLimitLookup` object is used as a lookup table for
+            // the pagination limit relative to a particular number of columns.
+            // This could also be expressed a function if, for example, the limit
+            // is always twice the number of columns (e.g. 2 rows), but
+            // this is often not the desired behavior case.
+
+            var columnLimitLookup = {
+                '2': 8,
+                '3': 9,
+                '4': 12,
+                '5': 15
+            };
+
+            /**
+             * Reads the value of the `font-size` CSS property from a hidden
+             * `.column-counter` element in the DOM. This ensures all our responsive
+             * behavior is defined solely in our CSS, without need to track viewport
+             * width or define breakpoints in our JavaScript, which may also be
+             * unreliable as scroll bars are added and removed on certain platforms
+             * (i.e. windows). See style.css to understand how this is defined
+             * at each breakpoint.
+             *
+             * @returns {number}
+             */
+
+            function getColumns() {
+                var styles = window.getComputedStyle(columnCounter);
+
+                return parseInt(styles.fontSize);
+            }
+
+            /**
+             * @return {number}
+             */
+
+            function getPaginationLimit() {
+                var columns = getColumns();
+
+                return columnLimitLookup[columns];
+            }
+
+            /**
+             * Compares the new limit to the current limit, and if has changed,
+             * triggers a .paginate() API call to update the mixer.
+             *
+             * @return {void}
+             */
+
+            function handleResize() {
+                var newLimit = getPaginationLimit();
+
+                // If the limit has not changed since the last resize event, do nothing.
+
+                if (newLimit === currentLimit) return;
+
+                currentLimit = newLimit;
+
+                console.log('Changing to a limit of ' + currentLimit + ' items per page');
+
+                mixer.paginate({
+                    limit: currentLimit
+                }, false);
+
+                // NB: We don't want to animate the limit change and create
+                // unneeded jank on resize, so `false` is passed to ensure the
+                // operation happens syncronously.
+            }
+
+            // Get the initial limit which with to instantiate the mixer.
+
+            currentLimit = getPaginationLimit();
+
+            // Instantiate MixItUp
+
+            var mixer = mixitup(containerEl, {
+                pagination: {
+                    limit: currentLimit
+                },
+                animation: {
+                    nudge: false
+                }
+            });
+
+            console.log('Instantiating with a limit of ' + currentLimit + ' items per page');
+
+            // Add a resize event handler. NB: You may want to throttle this
+            // in production for performance, as the window.getComputedStyles()
+            // call can be expensive.
+
+            window.addEventListener('resize', handleResize);
+        </script>
+    </body>
+</html>

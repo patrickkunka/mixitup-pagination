@@ -1,11 +1,10 @@
 /* global mixitup, h */
 
 /**
- * The MixItUp configuration object is extended with properties relating to
+ * The mixitup.Mixer class is extended with the following methods relating to
  * the Pagination extension.
  *
- * For the full list of configuration option properties,
- * please refer to the MixItUp core documentation.
+ * For the full list of methods, please refer to the MixItUp core documentation.
  *
  * @constructor
  * @namespace
@@ -27,7 +26,9 @@ mixitup.Mixer.registerAction('afterConstruct', 'pagination', function() {
  */
 
 mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
-    var self = this;
+    var self = this,
+        el   = null,
+        i    = -1;
 
     if (self.config.pagination.limit < 0) return;
 
@@ -50,12 +51,16 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
     self.classNamesPageStats.disabled       = h.getClassname(self.config.classNames, 'page-stats', self.config.classNames.modifierDisabled);
     // jscs:enable
 
-    if (self.config.pagination.generatePageList && self.dom.pageList) {
-        self.renderPageList(self.lastOperation);
+    if (self.config.pagination.generatePageList && self.dom.pageListEls.length > 0) {
+        for (i = 0; (el = self.dom.pageListEls[i]); i++) {
+            self.renderPageListEl(el, self.lastOperation);
+        }
     }
 
-    if (self.config.pagination.generatePageStats && self.dom.pageStats) {
-        self.renderPageStats(self.lastOperation);
+    if (self.config.pagination.generatePageStats && self.dom.pageStatsEls.length > 0) {
+        for (i = 0; (el = self.dom.pageStatsEls[i]); i++) {
+            self.renderPageStatsEl(el, self.lastOperation);
+        }
     }
 });
 
@@ -140,8 +145,8 @@ mixitup.Mixer.registerAction('afterCacheDom', 'pagination', function() {
             throw new Error(mixitup.messages.ERROR_CONFIG_INVALID_CONTROLS_SCOPE);
     }
 
-    self.dom.pageList  = parent.querySelector(self.config.selectors.pageList);
-    self.dom.pageStats = parent.querySelector(self.config.selectors.pageStats);
+    self.dom.pageListEls  = parent.querySelectorAll(self.config.selectors.pageList);
+    self.dom.pageStatsEls = parent.querySelectorAll(self.config.selectors.pageStats);
 });
 
 /**
@@ -338,7 +343,9 @@ mixitup.Mixer.registerFilter('operationUnmappedGetOperation', 'pagination', func
  */
 
 mixitup.Mixer.registerFilter('operationMappedGetOperation', 'pagination', function(operation, command, isPreFetch) {
-    var self = this;
+    var self = this,
+        el   = null,
+        i    = -1;
 
     if (self.config.pagination.limit < 0) return operation;
 
@@ -348,12 +355,16 @@ mixitup.Mixer.registerFilter('operationMappedGetOperation', 'pagination', functi
         return operation;
     }
 
-    if (self.config.pagination.generatePageList && self.dom.pageList) {
-        self.renderPageList(operation);
+    if (self.config.pagination.generatePageList && self.dom.pageListEls.length > 0) {
+        for (i = 0; (el = self.dom.pageListEls[i]); i++) {
+            self.renderPageListEl(el, operation);
+        }
     }
 
-    if (self.config.pagination.generatePageStats && self.dom.pageStats) {
-        self.renderPageStats(operation);
+    if (self.config.pagination.generatePageStats && self.dom.pageStatsEls.length > 0) {
+        for (i = 0; (el = self.dom.pageStatsEls[i]); i++) {
+            self.renderPageStatsEl(el, operation);
+        }
     }
 
     return operation;
@@ -445,11 +456,12 @@ mixitup.Mixer.extend(
 
     /**
      * @private
+     * @param   {HTMLElement}        pageListEl
      * @param   {mixitup.Operation}  operation
      * @return  {void}
      */
 
-    renderPageList: function(operation) {
+    renderPageListEl: function(pageListEl, operation) {
         var self                = this,
             activeIndex         = -1,
             pagerHtml           = '',
@@ -471,9 +483,9 @@ mixitup.Mixer.extend(
         ) {
             // Empty the pager list, and add disabled class
 
-            self.dom.pageList.innerHTML = '';
+            pageListEl.innerHTML = '';
 
-            h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
+            h.addClass(pageListEl, self.classNamesPageList.disabled);
 
             return;
         }
@@ -579,11 +591,11 @@ mixitup.Mixer.extend(
 
         html = buttonList.join(' ');
 
-        self.dom.pageList.innerHTML = html;
+        pageListEl.innerHTML = html;
 
         // Add disabled attribute to disabled buttons
 
-        disabled = self.dom.pageList.querySelectorAll('.' + self.classNamesPager.disabled);
+        disabled = pageListEl.querySelectorAll('.' + self.classNamesPager.disabled);
 
         for (i = 0; el = disabled[i]; i++) {
             if (typeof el.disabled === 'boolean') {
@@ -592,15 +604,15 @@ mixitup.Mixer.extend(
         }
 
         if (truncatedBefore || truncatedAfter) {
-            h.addClass(self.dom.pageList, self.classNamesPageList.truncated);
+            h.addClass(pageListEl, self.classNamesPageList.truncated);
         } else {
-            h.removeClass(self.dom.pageList, self.classNamesPageList.truncated);
+            h.removeClass(pageListEl, self.classNamesPageList.truncated);
         }
 
         if (operation.newTotalPages > 1) {
-            h.removeClass(self.dom.pageList, self.classNamesPageList.disabled);
+            h.removeClass(pageListEl, self.classNamesPageList.disabled);
         } else {
-            h.addClass(self.dom.pageList, self.classNamesPageList.disabled);
+            h.addClass(pageListEl, self.classNamesPageList.disabled);
         }
     },
 
@@ -754,11 +766,12 @@ mixitup.Mixer.extend(
 
     /**
      * @private
+     * @param   {HTMLElement}       pageStatsEl
      * @param   {mixitup.Operation} operation
      * @return  {void}
      */
 
-    renderPageStats: function(operation) {
+    renderPageStatsEl: function(pageStatsEl, operation) {
         var self            = this,
             model           = new mixitup.ModelPageStats(),
             renderer        = null,
@@ -772,9 +785,9 @@ mixitup.Mixer.extend(
         ) {
             // Empty the pager list, and add disabled class
 
-            self.dom.pageStats.innerHTML = '';
+            pageStatsEl.innerHTML = '';
 
-            h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
+            h.addClass(pageStatsEl, self.classNamesPageStats.disabled);
 
             return;
         }
@@ -804,12 +817,12 @@ mixitup.Mixer.extend(
             output = h.template(template)(model);
         }
 
-        self.dom.pageStats.innerHTML = output;
+        pageStatsEl.innerHTML = output;
 
         if (model.totalTargets) {
-            h.removeClass(self.dom.pageStats, self.classNamesPageStats.disabled);
+            h.removeClass(pageStatsEl, self.classNamesPageStats.disabled);
         } else {
-            h.addClass(self.dom.pageStats, self.classNamesPageStats.disabled);
+            h.addClass(pageStatsEl, self.classNamesPageStats.disabled);
         }
     },
 
@@ -983,7 +996,7 @@ mixitup.Mixer.extend(
      *
      * console.log(mixer.getState().activePagination.page); // 5
      *
-     * mixer.prevtPage()
+     * mixer.prevPage()
      *     .then(function(state) {
      *         console.log(mixer.getState().activePagination.page === 4); // true
      *     });

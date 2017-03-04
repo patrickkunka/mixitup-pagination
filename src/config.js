@@ -1,8 +1,8 @@
 /* global mixitup */
 
 /**
- * The MixItUp configuration object is extended with properties relating to
- * the Pagination extension.
+ * The MixItUp configuration object is extended with the following properties
+ * relating to the Pagination extension.
  *
  * For the full list of configuration options, please refer to the MixItUp
  * core documentation.

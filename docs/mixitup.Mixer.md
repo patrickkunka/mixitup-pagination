@@ -2,11 +2,10 @@
 
 ## Overview
 
-The MixItUp configuration object is extended with properties relating to
+The mixitup.Mixer class is extended with the following methods relating to
 the Pagination extension.
 
-For the full list of configuration option properties,
-please refer to the MixItUp core documentation.
+For the full list of methods, please refer to the MixItUp core documentation.
 
 ### Contents
 
@@ -135,7 +134,7 @@ A shorthand for `.paginate('prev')`. Moves to the previous page.
 
 console.log(mixer.getState().activePagination.page); // 5
 
-mixer.prevtPage()
+mixer.prevPage()
     .then(function(state) {
         console.log(mixer.getState().activePagination.page === 4); // true
     });
