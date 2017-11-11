@@ -21,7 +21,8 @@ core documentation.
 
 <h2 id="callbacks">callbacks</h2>
 
-A group of properties defining the initial state of the mixer on load (instantiation).
+A group of optional callback functions to be invoked at various
+points within the lifecycle of a mixer operation.
 
 ### onPaginateStart
 
