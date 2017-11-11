@@ -5,7 +5,7 @@
  *
  * @constructor
  * @memberof    mixitup.Config
- * @name        load
+ * @name        callbacks
  * @namespace
  * @public
  * @since       2.0.0

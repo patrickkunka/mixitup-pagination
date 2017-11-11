@@ -10,7 +10,7 @@ core documentation.
 
 ### Contents
 
-- [load](#load)
+- [callbacks](#callbacks)
 - [classNames](#classNames)
 - [load](#load)
 - [pagination](#pagination)
@@ -19,37 +19,42 @@ core documentation.
 - [templates](#templates)
 
 
-<h2 id="load">load</h2>
+<h2 id="callbacks">callbacks</h2>
 
 A group of properties defining the initial state of the mixer on load (instantiation).
 
-### page
+### onPaginateStart
 
 
 
 
-An integer defining the starting page on load, if a page limit is active.
+A callback function invoked whenever a pagination operation starts.
+
+This function is equivalent to `onMixStart`, and is invoked immediately
+after it with the same arguments. Unlike `onMixStart` however, it will
+not be invoked for filter or sort operations.
 
 
 |Type | Default
 |---  | ---
-|`number`| `1`
+|`function`| `null`
 
-###### Example: Defining a start page other than 1 to be applied on load
+### onPaginateStart
 
-```js
 
-// The mixer will show page 3 on load, with 8 items per page.
 
-var mixer = mixitup(containerEl, {
-    pagination: {
-        limit: 8
-    },
-    load: {
-        page: 3
-    }
-});
-```
+
+A callback function invoked whenever a pagination operation ends.
+
+This function is equivalent to `onMixEnd`, and is invoked immediately
+after it with the same arguments. Unlike `onMixEnd` however, it will
+not be invoked for filter or sort operations.
+
+
+|Type | Default
+|---  | ---
+|`function`| `null`
+
 
 <h2 id="classNames">classNames</h2>
 

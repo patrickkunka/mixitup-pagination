@@ -1,9 +1,9 @@
 /**!
  * MixItUp Pagination v3.3.0
  * Client-side pagination for filtered and sorted content
- * Build 1c76896a-cd11-45f8-a15e-a77080bdfca6
+ * Build 6633a301-3ac4-47b6-8105-0cb5a2124c71
  *
- * Requires mixitup.js >= v^3.2.2
+ * Requires mixitup.js >= v^3.1.8
  *
  * @copyright Copyright 2014-2017 KunkaLabs Limited.
  * @author    KunkaLabs Limited.
@@ -39,7 +39,7 @@
          *
          * @constructor
          * @memberof    mixitup.Config
-         * @name        load
+         * @name        callbacks
          * @namespace
          * @public
          * @since       2.0.0
@@ -1958,7 +1958,7 @@
     mixitupPagination.TYPE                    = 'mixitup-extension';
     mixitupPagination.NAME                    = 'mixitup-pagination';
     mixitupPagination.EXTENSION_VERSION       = '3.3.0';
-    mixitupPagination.REQUIRE_CORE_VERSION    = '^3.2.2';
+    mixitupPagination.REQUIRE_CORE_VERSION    = '^3.1.8';
 
     if (typeof exports === 'object' && typeof module === 'object') {
         module.exports = mixitupPagination;
