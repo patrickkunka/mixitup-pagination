@@ -32,6 +32,8 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
 
     if (self.config.pagination.limit < 0) return;
 
+    console.log('hello!');
+
     // Map pagination ui classNames
 
     // jscs:disable
@@ -62,6 +64,55 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
             self.renderPageStatsEl(el, self.lastOperation);
         }
     }
+});
+
+mixitup.Mixer.registerAction('afterSanitizeConfig', 'pagination', function() {
+    var self            = this,
+        onMixStart      = self.config.callbacks.onMixStart,
+        onMixEnd        = self.config.callbacks.onMixEnd,
+        onPaginateStart = self.config.callbacks.onPaginateStart,
+        onPaginateEnd   = self.config.callbacks.onPaginateEnd,
+        didPaginate     = false;
+
+    self.classNamesPager        = new mixitup.UiClassNames();
+    self.classNamesPageList     = new mixitup.UiClassNames();
+    self.classNamesPageStats    = new mixitup.UiClassNames();
+
+    self.config.callbacks.onMixStart = function(prevState, nextState) {
+        if (
+            prevState.activePagination.limit !== nextState.activePagination.limit ||
+            prevState.activePagination.page !== nextState.activePagination.page
+        ) {
+            didPaginate = true;
+        }
+
+        if (typeof onMixStart === 'function') onMixStart.apply(self.dom.container, arguments);
+
+        if (!didPaginate) return;
+
+        mixitup.events.fire('paginateStart', self.dom.container, {
+            state: prevState,
+            futureState: nextState,
+            instance: self
+        }, self.dom.document);
+
+        if (typeof onPaginateStart === 'function') onPaginateStart.apply(self.dom.container, arguments);
+    };
+
+    self.config.callbacks.onMixEnd = function(state) {
+        if (typeof onMixEnd === 'function') onMixEnd.apply(self.dom.container, arguments);
+
+        if (!didPaginate) return;
+
+        didPaginate = false;
+
+        mixitup.events.fire('paginateEnd', self.dom.container, {
+            state: state,
+            instance: self
+        }, self.dom.document);
+
+        if (typeof onPaginateEnd === 'function') onPaginateEnd.apply(self.dom.container, arguments);
+    };
 });
 
 /**

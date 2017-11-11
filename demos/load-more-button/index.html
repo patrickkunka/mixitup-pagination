@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="../reset.css" rel="stylesheet"/>
+        <link href="./style.css" rel="stylesheet"/>
+
+        <title>MixItUp Pagination Demo - Load More Button</title>
+    </head>
+    <body>
+        <div class="controls">
+            <button type="button" class="control" data-filter="all">All</button>
+            <button type="button" class="control" data-filter=".green">Green</button>
+            <button type="button" class="control" data-filter=".blue">Blue</button>
+            <button type="button" class="control" data-filter=".pink">Pink</button>
+            <button type="button" class="control" data-filter="none">None</button>
+
+            <button type="button" class="control" data-sort="default:asc">Asc</button>
+            <button type="button" class="control" data-sort="default:desc">Desc</button>
+        </div>
+
+        <div class="container">
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+
+            <div class="gap"></div>
+            <div class="gap"></div>
+            <div class="gap"></div>
+        </div>
+
+        <div class="load-more-wrapper">
+            <button type="button" class="load-more">Load more</button>
+        </div>
+
+        <script src="../mixitup.min.js"></script>
+        <script src="../../dist/mixitup-pagination.js"></script>
+
+        <script>
+            var containerEl = document.querySelector('.container');
+            var loadMoreEl = document.querySelector('.load-more');
+            var currentLimit = 4;
+            var incrementAmount = 4;
+
+            var mixer = mixitup(containerEl, {
+                pagination: {
+                    limit: currentLimit
+                },
+                callbacks: {
+                    onMixEnd: handleMixEnd
+                }
+            });
+
+            function handleMixEnd(state) {
+                // At the end of each operation, we must check whether the current
+                // matching collection of target elements has additional hidden
+                // elements, and enable or disable the load more button as
+                // appropriate
+
+                if (state.activePagination.limit + incrementAmount >= state.totalMatching) {
+                    // Disable button
+
+                    loadMoreEl.disabled = true;
+                } else if (loadMoreEl.disabled) {
+                    // Enable button
+
+                    loadMoreEl.disabled = false;
+                }
+            }
+
+            function handleLoadMoreClick() {
+                // On each click of the load more button, we increment
+                // the current limit by a defined amount
+
+                currentLimit += incrementAmount;
+
+                mixer.paginate({limit: currentLimit});
+            }
+
+            loadMoreEl.addEventListener('click', handleLoadMoreClick);
+        </script>
+    </body>
+</html>

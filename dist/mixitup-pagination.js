@@ -1,9 +1,9 @@
 /**!
- * MixItUp Pagination v3.2.0
+ * MixItUp Pagination v3.3.0
  * Client-side pagination for filtered and sorted content
- * Build 5aaffcad-3608-4b8f-9fd2-812c0d8ff732
+ * Build 1c76896a-cd11-45f8-a15e-a77080bdfca6
  *
- * Requires mixitup.js >= v^3.1.8
+ * Requires mixitup.js >= v^3.2.2
  *
  * @copyright Copyright 2014-2017 KunkaLabs Limited.
  * @author    KunkaLabs Limited.
@@ -33,6 +33,52 @@
                 mixitupPagination.REQUIRE_CORE_VERSION
             );
         }
+
+        /**
+         * A group of properties defining the initial state of the mixer on load (instantiation).
+         *
+         * @constructor
+         * @memberof    mixitup.Config
+         * @name        load
+         * @namespace
+         * @public
+         * @since       2.0.0
+         */
+
+        mixitup.ConfigCallbacks.registerAction('afterConstruct', 'pagination', function() {
+            /**
+             * A callback function invoked whenever a pagination operation starts.
+             *
+             * This function is equivalent to `onMixStart`, and is invoked immediately
+             * after it with the same arguments. Unlike `onMixStart` however, it will
+             * not be invoked for filter or sort operations.
+             *
+             *
+             * @name        onPaginateStart
+             * @memberof    mixitup.Config.callbacks
+             * @instance
+             * @type        {function}
+             * @default     null
+             */
+
+            this.onPaginateStart = null;
+
+            /**
+             * A callback function invoked whenever a pagination operation ends.
+             *
+             * This function is equivalent to `onMixEnd`, and is invoked immediately
+             * after it with the same arguments. Unlike `onMixEnd` however, it will
+             * not be invoked for filter or sort operations.
+             *
+             * @name        onPaginateStart
+             * @memberof    mixitup.Config.callbacks
+             * @instance
+             * @type        {function}
+             * @default     null
+             */
+
+            this.onPaginateEnd = null;
+        });
 
         /**
          * A group of properties defining the output and structure of class names programmatically
@@ -250,6 +296,15 @@
              * and related configuration options, or if set, a custom render
              * function supplied to the `render.pager` configuration option.
              *
+             * @example <caption>Example: Disabling the rendering of the built-in "page list" UI</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         generatePageList: false
+             *     }
+             * });
+             *
              * @name        generatePageList
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -269,6 +324,15 @@
              * and `templates.pageStatsSingle` configuration options, or if set, a custom render
              * function supplied to the `render.pageStats` configuration option.
              *
+             * @example <caption>Example: Disabling the rendering of the built-in "page stats" UI</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         generatePageStats: false
+             *     }
+             * });
+             *
              * @name        generatePageStats
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -279,6 +343,24 @@
             this.generatePageStats = true;
 
             /**
+             * A boolean dictating whether or not to maintain the active page when switching
+             * from filter to filter.
+             *
+             * By default, MixItUp will attempt to maintain the active page or its highest
+             * equivalent in the new collection of matching targets (e.g. page 3 would become
+             * page 2 if there are not enough targets in the new collection), but by setting
+             * this option to `false`, changing the active filter will always cause the mixer
+             * to revert to page one of the new collection.
+             *
+             * @example <caption>Example: Ensuring that the mixer reverts to page one when filtered</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         maintainActivePage: false
+             *     }
+             * });
+             *
              * @name        maintainActivePage
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -289,6 +371,23 @@
             this.maintainActivePage = true;
 
             /**
+             * A boolean dictating whether or not to allow "looping" of the built-in previous
+             * and next pagination controls.
+             *
+             * By default, when on the first page, the "previous" button will be disabled,
+             * and when on the last page, the "next" button will be disabled. By setting
+             * this option to `true`, the user may loop from the first to last page and
+             * vice-versa.
+             *
+             * @example <caption>Example: Allowing prev/next controls to "loop" through pages</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         loop: true
+             *     }
+             * });
+             *
              * @name        loop
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -299,6 +398,19 @@
             this.loop = false;
 
             /**
+             * A boolean dictating whether or not to prevent rendering of the built-in
+             * "page list" UI if the matching collection of targets has only enough content
+             * for one page.
+             *
+             * @example <caption>Example: Hiding the page list UI if only one page</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         hidePageListIfSinglePage: true
+             *     }
+             * });
+             *
              * @name        hidePageListIfSinglePage
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -309,6 +421,19 @@
             this.hidePageListIfSinglePage = false;
 
             /**
+             * A boolean dictating whether or not to prevent rendering of the built-in
+             * "page stats" UI if the matching collection of targets has only enough content
+             * for one page.
+             *
+             * @example <caption>Example: Hiding the page stats UI if only one page</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8,
+             *         hidePageStatsIfSinglePage: true
+             *     }
+             * });
+             *
              * @name        hidePageStatsIfSinglePage
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -319,6 +444,21 @@
             this.hidePageStatsIfSinglePage = false;
 
             /**
+             * A number defining the maximum number of items per page.
+             *
+             * By default, this is set to `-1` and pagination is effectively
+             * disabled. By setting this to any number greater than 0, pagination
+             * will be applied to the mixers targets, effectively activating the
+             * extension.
+             *
+             * @example <caption>Example: Activating the pagination extension by defining a valid limit</caption>
+             *
+             * var mixer = mixitup(containerEl, {
+             *     pagination: {
+             *         limit: 8
+             *     }
+             * });
+             *
              * @name        limit
              * @memberof    mixitup.Config.pagination
              * @instance
@@ -330,7 +470,11 @@
 
             /**
              * A number dictating the maximum number of individual pager controls to render before
-             * truncating the list.
+             * truncating the list (e.g. adding an ellipses between non-consecutive pagers).
+             *
+             * The minimum value permitted for this option is 5, which ensures
+             * there will always be at least a first, last, and two padding pagers, in addition
+             * to the pager representing the currently active page.
              *
              * @name        maxPagers
              * @memberof    mixitup.Config.pagination
@@ -655,6 +799,32 @@
             h.seal(this);
         };
 
+        mixitup.Events.registerAction('afterConstruct', 'pagination', function() {
+            /**
+             * A custom event triggered whenever a pagination operation starts.
+             *
+             * @name        paginateStart
+             * @memberof    mixitup.Events
+             * @static
+             * @type        {CustomEvent}
+             */
+
+            this.paginateStart = null;
+
+            /**
+             * A custom event triggered whenever a pagination operation ends.
+             *
+             * @name        paginateEnd
+             * @memberof    mixitup.Events
+             * @static
+             * @type        {CustomEvent}
+             */
+
+            this.paginateEnd = null;
+        });
+
+        mixitup.events = new mixitup.Events();
+
         mixitup.Operation.registerAction('afterConstruct', 'pagination', function() {
             this.startPagination    = null;
             this.newPagination      = null;
@@ -741,6 +911,8 @@
 
             if (self.config.pagination.limit < 0) return;
 
+            console.log('hello!');
+
             // Map pagination ui classNames
 
             // jscs:disable
@@ -771,6 +943,55 @@
                     self.renderPageStatsEl(el, self.lastOperation);
                 }
             }
+        });
+
+        mixitup.Mixer.registerAction('afterSanitizeConfig', 'pagination', function() {
+            var self            = this,
+                onMixStart      = self.config.callbacks.onMixStart,
+                onMixEnd        = self.config.callbacks.onMixEnd,
+                onPaginateStart = self.config.callbacks.onPaginateStart,
+                onPaginateEnd   = self.config.callbacks.onPaginateEnd,
+                didPaginate     = false;
+
+            self.classNamesPager        = new mixitup.UiClassNames();
+            self.classNamesPageList     = new mixitup.UiClassNames();
+            self.classNamesPageStats    = new mixitup.UiClassNames();
+
+            self.config.callbacks.onMixStart = function(prevState, nextState) {
+                if (
+                    prevState.activePagination.limit !== nextState.activePagination.limit ||
+                    prevState.activePagination.page !== nextState.activePagination.page
+                ) {
+                    didPaginate = true;
+                }
+
+                if (typeof onMixStart === 'function') onMixStart.apply(self.dom.container, arguments);
+
+                if (!didPaginate) return;
+
+                mixitup.events.fire('paginateStart', self.dom.container, {
+                    state: prevState,
+                    futureState: nextState,
+                    instance: self
+                }, self.dom.document);
+
+                if (typeof onPaginateStart === 'function') onPaginateStart.apply(self.dom.container, arguments);
+            };
+
+            self.config.callbacks.onMixEnd = function(state) {
+                if (typeof onMixEnd === 'function') onMixEnd.apply(self.dom.container, arguments);
+
+                if (!didPaginate) return;
+
+                didPaginate = false;
+
+                mixitup.events.fire('paginateEnd', self.dom.container, {
+                    state: state,
+                    instance: self
+                }, self.dom.document);
+
+                if (typeof onPaginateEnd === 'function') onPaginateEnd.apply(self.dom.container, arguments);
+            };
         });
 
         /**
@@ -1736,8 +1957,8 @@
 
     mixitupPagination.TYPE                    = 'mixitup-extension';
     mixitupPagination.NAME                    = 'mixitup-pagination';
-    mixitupPagination.EXTENSION_VERSION       = '3.2.0';
-    mixitupPagination.REQUIRE_CORE_VERSION    = '^3.1.8';
+    mixitupPagination.EXTENSION_VERSION       = '3.3.0';
+    mixitupPagination.REQUIRE_CORE_VERSION    = '^3.2.2';
 
     if (typeof exports === 'object' && typeof module === 'object') {
         module.exports = mixitupPagination;

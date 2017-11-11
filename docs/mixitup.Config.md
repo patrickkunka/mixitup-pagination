@@ -10,6 +10,7 @@ core documentation.
 
 ### Contents
 
+- [load](#load)
 - [classNames](#classNames)
 - [load](#load)
 - [pagination](#pagination)
@@ -17,6 +18,38 @@ core documentation.
 - [selectors](#selectors)
 - [templates](#templates)
 
+
+<h2 id="load">load</h2>
+
+A group of properties defining the initial state of the mixer on load (instantiation).
+
+### page
+
+
+
+
+An integer defining the starting page on load, if a page limit is active.
+
+
+|Type | Default
+|---  | ---
+|`number`| `1`
+
+###### Example: Defining a start page other than 1 to be applied on load
+
+```js
+
+// The mixer will show page 3 on load, with 8 items per page.
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8
+    },
+    load: {
+        page: 3
+    }
+});
+```
 
 <h2 id="classNames">classNames</h2>
 
@@ -225,6 +258,17 @@ function supplied to the `render.pager` configuration option.
 |---  | ---
 |`boolean`| `true`
 
+###### Example: Disabling the rendering of the built-in "page list" UI
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        generatePageList: false
+    }
+});
+```
 ### generatePageStats
 
 
@@ -244,73 +288,164 @@ function supplied to the `render.pageStats` configuration option.
 |---  | ---
 |`boolean`| `true`
 
+###### Example: Disabling the rendering of the built-in "page stats" UI
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        generatePageStats: false
+    }
+});
+```
 ### maintainActivePage
 
 
 
 
+A boolean dictating whether or not to maintain the active page when switching
+from filter to filter.
 
+By default, MixItUp will attempt to maintain the active page or its highest
+equivalent in the new collection of matching targets (e.g. page 3 would become
+page 2 if there are not enough targets in the new collection), but by setting
+this option to `false`, changing the active filter will always cause the mixer
+to revert to page one of the new collection.
 
 
 |Type | Default
 |---  | ---
 |`boolean`| `true`
 
+###### Example: Ensuring that the mixer reverts to page one when filtered
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        maintainActivePage: false
+    }
+});
+```
 ### loop
 
 
 
 
+A boolean dictating whether or not to allow "looping" of the built-in previous
+and next pagination controls.
 
+By default, when on the first page, the "previous" button will be disabled,
+and when on the last page, the "next" button will be disabled. By setting
+this option to `true`, the user may loop from the first to last page and
+vice-versa.
 
 
 |Type | Default
 |---  | ---
 |`boolean`| `false`
 
+###### Example: Allowing prev/next controls to "loop" through pages
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        loop: true
+    }
+});
+```
 ### hidePageListIfSinglePage
 
 
 
 
-
+A boolean dictating whether or not to prevent rendering of the built-in
+"page list" UI if the matching collection of targets has only enough content
+for one page.
 
 
 |Type | Default
 |---  | ---
 |`boolean`| `false`
 
+###### Example: Hiding the page list UI if only one page
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        hidePageListIfSinglePage: true
+    }
+});
+```
 ### hidePageStatsIfSinglePage
 
 
 
 
-
+A boolean dictating whether or not to prevent rendering of the built-in
+"page stats" UI if the matching collection of targets has only enough content
+for one page.
 
 
 |Type | Default
 |---  | ---
 |`boolean`| `false`
 
+###### Example: Hiding the page stats UI if only one page
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8,
+        hidePageStatsIfSinglePage: true
+    }
+});
+```
 ### limit
 
 
 
 
+A number defining the maximum number of items per page.
 
+By default, this is set to `-1` and pagination is effectively
+disabled. By setting this to any number greater than 0, pagination
+will be applied to the mixers targets, effectively activating the
+extension.
 
 
 |Type | Default
 |---  | ---
 |`number`| `-1`
 
+###### Example: Activating the pagination extension by defining a valid limit
+
+```js
+
+var mixer = mixitup(containerEl, {
+    pagination: {
+        limit: 8
+    }
+});
+```
 ### maxPagers
 
 
 
 
 A number dictating the maximum number of individual pager controls to render before
-truncating the list.
+truncating the list (e.g. adding an ellipses between non-consecutive pagers).
+
+The minimum value permitted for this option is 5, which ensures
+there will always be at least a first, last, and two padding pagers, in addition
+to the pager representing the currently active page.
 
 
 |Type | Default
