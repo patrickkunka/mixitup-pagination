@@ -72,6 +72,8 @@ mixitup.Mixer.registerAction('afterSanitizeConfig', 'pagination', function() {
         onPaginateEnd   = self.config.callbacks.onPaginateEnd,
         didPaginate     = false;
 
+    if (self.config.pagination.limit < 0) return;
+
     self.classNamesPager        = new mixitup.UiClassNames();
     self.classNamesPageList     = new mixitup.UiClassNames();
     self.classNamesPageStats    = new mixitup.UiClassNames();

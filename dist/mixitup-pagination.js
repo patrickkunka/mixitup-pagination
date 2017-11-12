@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v3.3.0
  * Client-side pagination for filtered and sorted content
- * Build 8bf6a4ac-e982-4e6d-a148-fe3443043cdc
+ * Build 875b7d31-63d1-4040-ac6f-b1c814027891
  *
  * Requires mixitup.js >= v^3.1.8
  *
@@ -951,6 +951,8 @@
                 onPaginateStart = self.config.callbacks.onPaginateStart,
                 onPaginateEnd   = self.config.callbacks.onPaginateEnd,
                 didPaginate     = false;
+
+            if (self.config.pagination.limit < 0) return;
 
             self.classNamesPager        = new mixitup.UiClassNames();
             self.classNamesPageList     = new mixitup.UiClassNames();
