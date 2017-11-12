@@ -1,7 +1,7 @@
 /**!
  * MixItUp Pagination v3.3.0
  * Client-side pagination for filtered and sorted content
- * Build 04f2e004-b781-4f56-a026-b704b749c21e
+ * Build 8bf6a4ac-e982-4e6d-a148-fe3443043cdc
  *
  * Requires mixitup.js >= v^3.1.8
  *
@@ -911,8 +911,6 @@
                 i    = -1;
 
             if (self.config.pagination.limit < 0) return;
-
-            console.log('hello!');
 
             // Map pagination ui classNames
 

@@ -32,8 +32,6 @@ mixitup.Mixer.registerAction('afterAttach', 'pagination', function() {
 
     if (self.config.pagination.limit < 0) return;
 
-    console.log('hello!');
-
     // Map pagination ui classNames
 
     // jscs:disable
