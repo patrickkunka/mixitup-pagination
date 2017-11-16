@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="../reset.css" rel="stylesheet"/>
+        <link href="./style.css" rel="stylesheet"/>
+
+        <title>MixItUp Pagination Demo - Infinite Scroll</title>
+
+        <!--
+        NB: This grid's responsive behavior has been limited to 2 or 4 columns for
+        simplicity, but could easily be combined with the responsive pagination demo
+        to load in a dynamic amount of items while scrolling, as per the current
+        column count.
+        -->
+    </head>
+    <body>
+        <div class="controls">
+            <button type="button" class="control" data-filter="all">All</button>
+            <button type="button" class="control" data-filter=".green">Green</button>
+            <button type="button" class="control" data-filter=".blue">Blue</button>
+            <button type="button" class="control" data-filter=".pink">Pink</button>
+            <button type="button" class="control" data-filter="none">None</button>
+
+            <button type="button" class="control" data-sort="default:asc">Asc</button>
+            <button type="button" class="control" data-sort="default:desc">Desc</button>
+        </div>
+
+        <div class="container">
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+            <div class="mix green"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix green"></div>
+            <div class="mix blue"></div>
+            <div class="mix pink"></div>
+            <div class="mix blue"></div>
+
+            <div class="gap"></div>
+            <div class="gap"></div>
+            <div class="gap"></div>
+        </div>
+
+        <script src="../mixitup.min.js"></script>
+        <script src="../../dist/mixitup-pagination.js"></script>
+
+        <script>
+            var containerEl = document.querySelector('.container');
+            var loadMoreEl = document.querySelector('.load-more');
+            var currentLimit = 16;
+            var incrementAmount = 4;
+            var canLoadMore = true;
+            var scrollThreshold = 50;
+
+            /**
+             * A generic throttle function to prevent UI thrashing
+             * on scroll.
+             *
+             * @param  {function} fn
+             * @param  {number}   interval
+             * @return {function}
+             */
+
+            function throttle(fn, interval) {
+                var timeoutId = -1;
+                var last = -1;
+
+                return function() {
+                    var self = this;
+                    var args = arguments;
+                    var now = Date.now();
+                    var difference = last ? now - last : Infinity;
+
+                    var later = function() {
+                        last = now;
+
+                        fn.apply(self, args);
+                    };
+
+                    if (!last || difference >= interval) {
+                        later();
+                    } else {
+                        clearTimeout(timeoutId);
+
+                        timeoutId = setTimeout(later, interval - difference);
+                    }
+                };
+            }
+
+            /**
+             * Checks if we are within the scroll threshold on each
+             * scroll event, and if so, increments the page limit.
+             *
+             * @return {void}
+             */
+
+            function handleScroll() {
+                if (mixer.isMixing() || !canLoadMore) return;
+
+                var scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+                var offset = scrollTop + window.innerHeight;
+                var containerHeight = containerEl.offsetHeight;
+
+                if (offset >= containerHeight - scrollThreshold) {
+                    incrementPageLimit();
+                }
+            }
+
+            /**
+             * Shows a set number of new targets at the bottom of
+             * the page by incrementing the page limit.
+             *
+             * @return {void}
+             */
+
+            function incrementPageLimit() {
+                currentLimit += incrementAmount;
+
+                mixer.paginate({limit: currentLimit});
+            }
+
+            /**
+             * Check whether the current matching collection of target
+             * elements has additional hidden elements, and set the
+             * `canLoadMore` flag accordingly.
+             *
+             * @param {mixitup.State} state
+             * @return {void}
+             */
+
+            function handleMixEnd(state) {
+                // At the end of each operation, we must check whether the current
+                // matching collection of target elements has additional hidden
+                // elements, and set the `canLoadMore` flag accordingly.
+
+                if (state.activePagination.limit + incrementAmount >= state.totalMatching) {
+                    canLoadMore = false;
+                } else {
+                    canLoadMore = true;
+                }
+
+                setTimeout(handleScroll, 10);
+            }
+
+            // Instantiate mixitup
+
+            var mixer = mixitup(containerEl, {
+                pagination: {
+                    limit: currentLimit
+                },
+                callbacks: {
+                    onMixEnd: handleMixEnd
+                }
+            });
+
+            // Attach a throttled scroll handler to the scroll event. Will fire
+            // up to a maximum of once every 50ms.
+
+            window.addEventListener('scroll', throttle(handleScroll, 50));
+        </script>
+    </body>
+</html>

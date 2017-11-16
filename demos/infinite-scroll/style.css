@@ -100,33 +100,6 @@ body {
     color: #2f2f2f;
 }
 
-/* Load More Button
----------------------------------------------------------------------- */
-
-.load-more-wrapper {
-    text-align: center;
-    padding: 1rem;
-}
-
-.load-more {
-    display: inline-block;
-    background: white;
-    font-size: 1rem;
-    font-family: 'helvetica', arial, sans-serif;
-    padding: 1rem;
-    min-width: 8rem;
-    cursor: pointer;
-    color: #333;
-    box-shadow: 0 0 8px rgba(0, 0, 0, .05);
-    border-radius: 3px;
-}
-
-.load-more:disabled {
-    opacity: .5;
-    color: #aaa;
-    cursor: default;
-}
-
 /* Container
 ---------------------------------------------------------------------- */
 
@@ -195,4 +168,3 @@ body {
         width: calc(100%/4 - (((4 - 1) * 1rem) / 4));
     }
 }
-
