@@ -1,14 +1,14 @@
 {
   "name": "mixitup-pagination",
   "title": "MixItUp Pagination",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Client-side pagination for filtered and sorted content",
   "author": "KunkaLabs Limited",
   "license" : "Apache-2.0",
   "main": "./dist/mixitup-pagination.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/patrickkunka/mixitup/"
+    "url": "https://github.com/patrickkunka/mixitup-pagination/"
   },
   "dependencies": {
       "mixitup": "^3.1.8"
