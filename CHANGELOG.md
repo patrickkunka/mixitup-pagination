@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+## 3.3.1
+- Non run-time changes to licensing and distribution model
+
 ## 3.3.0
 - Adds missing documentation for various configuration options.
 - Adds `onPaginateStart` and `onPaginateEnd` callbacks, and corresponding events.

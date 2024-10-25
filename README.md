@@ -1,6 +1,14 @@
+# 📣 November 2024 Update 📣
+
+The MixItUp Pagination Extension is now **fully open source** and publicly available for all types of use. A purchase or commercial license is no longer required.
+
+Read more: http://github.com/patrickkunka/mixitup#november-2024-update
+
+---
+
 # MixItUp Pagination
 
-MixItUp Pagination is a premium extension for the MixItUp 3, adding dynamic and responsive client-side pagination to filterable and sortable content.
+MixItUp Pagination is an extension for MixItUp 3, adding dynamic and responsive client-side pagination to filterable and sortable content.
 
 ### Features
 
@@ -21,11 +29,15 @@ MixItUp Pagination is a premium extension for the MixItUp 3, adding dynamic and 
 
 *NB: If you're looking to integrate server-side ajax pagination with MixItUp, consider using MixItUp 3's Dataset API.*
 
+## Demos
+
+Hosted interactive demos may be found at [patrickkunka.github.io/mixitup-pagination/demos](https://patrickkunka.github.io/mixitup-pagination/demos). The documented source code of each demo can be found in the [/demos](./demos/) directory if this repository.
+
 ## Get Started
 
 ### Installing Extensions
 
-Premium extensions are not publicly available via GitHub or NPM and must therefore be downloaded from your KunkaLabs account after purchase. Once downloaded they can be included in your project in a directory of your choosing, and then required as modules, or globally via a script tag.
+MixItUp extensions may be included in your project via NPM and imported as modules, or loaded globally via a script tag.
 
 #### Script Tag
 
@@ -45,10 +57,10 @@ If using a script tag, you simply need to load the pagination distribution scrip
 If you are building a modular JavaScript project with Webpack, Browserify, or RequireJS, no global variables are exposed. Firstly require both the MixItUp core *and* the Pagination extension into your module. Then call `mixitup.use()` with the extension passed in as an argument. Your extension will be installed and made available to all MixItUp instances throughout your project.
 
 ```js
-// ES2015
+// ES2015+
 
-import mixitup from 'mixitup'; // loaded from node_modules
-import mixitupPagination from '../path/to/mixitup-pagination'; // loaded from a directory of your choice within your project
+import mixitup from 'mixitup';
+import mixitupPagination from 'mixitup-pagination';
 
 // Call the mixitup factory's .use() method, passing in the extension to install it
 
@@ -59,7 +71,7 @@ mixitup.use(mixitupPagination);
 // CommonJS
 
 var mixitup = require('mixitup');
-var mixitupPagination = require('../path/to/mixitup-pagination');
+var mixitupPagination = require('mixitup-pagination');
 
 mixitup.use(mixitupPagination);
 ```
@@ -69,7 +81,7 @@ mixitup.use(mixitupPagination);
 
 require([
     'mixitup',
-    '../path/to/mixitup-pagination'
+    'mixitup-pagination'
 ], function(
     mixitup,
     mixitupPagination
