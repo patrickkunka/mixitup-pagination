@@ -8,7 +8,7 @@ Read more: http://github.com/patrickkunka/mixitup#november-2024-update
 
 # MixItUp Pagination
 
-MixItUp Pagination is an extension for MixItUp 3, adding dynamic and responsive client-side pagination to filterable and sortable content.
+MixItUp Pagination is an extension for [MixItUp](https://github.com/patrickkunka/mixitup), adding dynamic and responsive client-side pagination to filterable and sortable content.
 
 ### Features
 
