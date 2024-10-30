@@ -8,6 +8,8 @@ Read more: [MixItUp - November 2024 Update](https://github.com/patrickkunka/mixi
 
 # MixItUp Pagination
 
+[![Latest Release](https://img.shields.io/npm/v/mixitup-pagination.svg?style=flat-square)](https://www.npmjs.com/package/mixitup-pagination)
+
 MixItUp Pagination is an extension for [MixItUp](https://github.com/patrickkunka/mixitup), adding dynamic and responsive client-side pagination to filterable and sortable content.
 
 ### Features
